@@ -112,7 +112,59 @@ nav a.active {
   border: 1px solid #2b2b2b;
   box-shadow: 0 0 50px rgba(255, 0, 106, 0.18);
 }
+/* จุดเด่นของบริการ */
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: -55px;
+  margin-bottom: 55px;
+  position: relative;
+  z-index: 2;
+}
 
+.feature-card {
+  min-height: 128px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: rgba(7, 7, 7, 0.96);
+  border: 1px solid #383838;
+  border-radius: 17px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.38);
+}
+
+.feature-icon {
+  width: 76px;
+  height: 76px;
+  flex: 0 0 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ff0b72;
+  border-radius: 50%;
+  color: #ff70b0;
+  font-size: 19px;
+}
+
+.user-icon,
+.replay-icon {
+  font-size: 40px;
+  font-weight: 300;
+}
+
+.feature-content h2 {
+  margin-bottom: 4px;
+  font-size: 25px;
+  font-weight: 500;
+}
+
+.feature-content p {
+  color: #d2d2d2;
+  font-size: 15px;
+  line-height: 1.5;
+}
 @media (max-width: 800px) {
   header {
     padding: 13px 16px;
@@ -142,5 +194,15 @@ nav a.active {
 
   .button {
     text-align: center;
+  }
+
+  .features {
+    grid-template-columns: 1fr;
+    margin-top: 5px;
+    margin-bottom: 40px;
+  }
+
+  .feature-card {
+    min-height: 115px;
   }
 }
