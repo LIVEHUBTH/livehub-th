@@ -2,31 +2,89 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LIVEHUB TH</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>LIVEHUB TH | Live Concert & Replay</title>
+
+  <meta
+    name="description"
+    content="ศูนย์รวมไลฟ์สตรีมคอนเสิร์ตและรีเพลย์คอนเสิร์ต LIVEHUB TH"
+  >
+
+  <link rel="stylesheet" href="style.css">
 </head>
 
-<body style="margin:0;background:#050505;color:white;font-family:Arial,sans-serif;text-align:center;">
+<body>
 
-  <div style="padding:80px 20px;">
-    <h1 style="font-size:52px;margin-bottom:10px;">
-      LIVE<span style="color:#ff0f7b;">HUB TH</span>
-    </h1>
+  <div class="page">
 
-    <p style="font-size:22px;">
-      ศูนย์รวมไลฟ์สตรีมคอนเสิร์ตและรีเพลย์คอนเสิร์ต
-    </p>
+    <!-- ส่วนหัวเว็บไซต์ -->
+    <header>
 
-    <button style="
-      margin-top:25px;
-      padding:15px 30px;
-      background:#ff0f7b;
-      color:white;
-      border:none;
-      border-radius:10px;
-      font-size:18px;">
-      ดูคอนเสิร์ตสด
-    </button>
+      <div class="logo-text">
+        LIVE<span>HUB TH</span>
+      </div>
+
+      <nav>
+        <a href="#home" class="active">หน้าแรก</a>
+        <a href="#live">LIVE CONCERT</a>
+        <a href="#replay">REPLAY CONCERT</a>
+        <a href="#packages">แพ็กเกจ</a>
+        <a href="#contact">ติดต่อ</a>
+      </nav>
+
+    </header>
+
+    <!-- ส่วนแนะนำเว็บไซต์ -->
+    <main>
+
+      <section class="hero" id="home">
+
+        <div class="hero-content">
+
+          <h1>
+            LIVE<span>HUB TH</span>
+          </h1>
+
+          <p class="hero-description">
+            ศูนย์รวมไลฟ์สตรีมคอนเสิร์ต<br>
+            และรีเพลย์คอนเสิร์ต
+          </p>
+
+          <div class="hero-buttons">
+
+            <a
+              href="#live"
+              class="button button-primary"
+            >
+              ◉ ดูคอนเสิร์ตสด
+            </a>
+
+            <a
+              href="#replay"
+              class="button"
+            >
+              ▷ ดูรีเพลย์
+            </a>
+
+          </div>
+
+        </div>
+
+        <div
+          class="hero-image"
+          role="img"
+          aria-label="เวทีคอนเสิร์ต LIVEHUB TH"
+        ></div>
+
+      </section>
+
+    </main>
+
   </div>
 
 </body>
