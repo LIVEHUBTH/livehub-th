@@ -165,6 +165,136 @@ nav a.active {
   font-size: 15px;
   line-height: 1.5;
 }
+/* =========================
+   คอนเสิร์ตแนะนำ
+========================= */
+
+.recommended {
+  margin-top: 10px;
+  margin-bottom: 60px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.section-title h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 32px;
+  font-weight: 500;
+}
+
+.section-title h2 span {
+  color: #ff0b72;
+  font-size: 30px;
+}
+
+.view-all {
+  padding: 10px 18px;
+  border: 1px solid #ff0b72;
+  border-radius: 10px;
+  color: #ff4c9a;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.concert-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.concert-card {
+  overflow: hidden;
+  background: #080808;
+  border: 1px solid #383838;
+  border-radius: 15px;
+  transition: 0.25s ease;
+}
+
+.concert-card:hover {
+  transform: translateY(-4px);
+  border-color: #ff0b72;
+  box-shadow: 0 12px 35px rgba(255, 11, 114, 0.16);
+}
+
+.concert-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(255, 11, 114, 0.35),
+      rgba(20, 0, 10, 0.8) 50%,
+      #050505 100%
+    );
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.concert-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 6px 11px;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  z-index: 2;
+}
+
+.live-badge {
+  background: #ff1744;
+}
+
+.hot-badge {
+  background: #ff1744;
+}
+
+.replay-badge {
+  background: #6b00ff;
+}
+
+.concert-details {
+  padding: 18px;
+}
+
+.concert-details h3 {
+  color: #ff2d83;
+  font-size: 27px;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.concert-type {
+  margin-top: 5px;
+  color: #ffffff;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+}
+
+.concert-meta {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #282828;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #e5e5e5;
+  font-size: 14px;
+}
+
+.replay-meta {
+  justify-content: flex-start;
+}
 @media (max-width: 800px) {
   header {
     padding: 13px 16px;
@@ -204,5 +334,31 @@ nav a.active {
 
   .feature-card {
     min-height: 115px;
+  }
+
+  .recommended {
+    margin-top: 35px;
+  }
+
+  .section-title h2 {
+    font-size: 27px;
+  }
+
+  .view-all {
+    padding: 8px 13px;
+    font-size: 14px;
+  }
+
+  .concert-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .concert-image {
+    aspect-ratio: 16 / 9;
+  }
+
+  .concert-details h3 {
+    font-size: 25px;
   }
 }
