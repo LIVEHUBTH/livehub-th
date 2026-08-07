@@ -295,6 +295,32 @@ nav a.active {
 .replay-meta {
   justify-content: flex-start;
 }
+.concert-one {
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.05),
+      rgba(0, 0, 0, 0.35)
+    ),
+    url("concert1.PNG");
+}
+
+.concert-two {
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.05),
+      rgba(0, 0, 0, 0.35)
+    ),
+    url("concert2.PNG");
+}
+
+.concert-three {
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.08),
+      rgba(0, 0, 0, 0.42)
+    ),
+    url("concert3.PNG");
+}
 @media (max-width: 800px) {
   header {
     padding: 13px 16px;
