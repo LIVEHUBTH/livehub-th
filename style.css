@@ -108,7 +108,7 @@ nav a.active {
   border-radius: 20px;
   background:
     linear-gradient(rgba(255, 0, 106, 0.12), rgba(0, 0, 0, 0.28)),
-    url("hero.jpg") center/cover no-repeat;
+    url("hero.PNG") center/cover no-repeat;
   border: 1px solid #2b2b2b;
   box-shadow: 0 0 50px rgba(255, 0, 106, 0.18);
 }
