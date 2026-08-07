@@ -295,32 +295,6 @@ nav a.active {
 .replay-meta {
   justify-content: flex-start;
 }
-.concert-one {
-  background-image:
-    linear-gradient(
-      rgba(0, 0, 0, 0.05),
-      rgba(0, 0, 0, 0.35)
-    ),
-    url("concert1.PNG");
-}
-
-.concert-two {
-  background-image:
-    linear-gradient(
-      rgba(0, 0, 0, 0.05),
-      rgba(0, 0, 0, 0.35)
-    ),
-    url("concert2.PNG");
-}
-
-.concert-three {
-  background-image:
-    linear-gradient(
-      rgba(0, 0, 0, 0.08),
-      rgba(0, 0, 0, 0.42)
-    ),
-    url("concert3.PNG");
-}
 /* รูปปกคอนเสิร์ต */
 
 .concert-one {
@@ -349,7 +323,134 @@ nav a.active {
     ),
     url("concert3.PNG");
 }
-@media (max-width: 800px) {
+/* =========================
+   แพ็กเกจ
+========================= */
+
+.packages {
+  margin-top: 20px;
+  margin-bottom: 60px;
+}
+
+.package-heading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.package-heading span {
+  color: #ff0b72;
+  font-size: 28px;
+}
+
+.package-heading h2 {
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.package-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.package-card {
+  min-height: 420px;
+  padding: 24px 18px 18px;
+  border: 2px solid #ff0b72;
+  border-radius: 18px;
+  background: #080808;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.package-card h3 {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.package-subtitle {
+  min-height: 48px;
+  margin-top: 4px;
+  color: #e5e5e5;
+  font-size: 14px;
+}
+
+.package-subtitle span {
+  color: #ff2d83;
+}
+
+.package-price {
+  margin-top: 18px;
+  color: #ff0b72;
+  line-height: 1;
+}
+
+.package-price strong {
+  font-size: 58px;
+  font-weight: 800;
+}
+
+.package-price span {
+  margin-left: 6px;
+  font-size: 21px;
+}
+
+.package-days {
+  margin-top: 8px;
+  color: #ff0b72;
+  font-size: 17px;
+}
+
+.package-card ul {
+  margin-top: 22px;
+  margin-bottom: 24px;
+  list-style: none;
+  text-align: left;
+}
+
+.package-card li {
+  margin-bottom: 9px;
+  color: #f0f0f0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.package-button {
+  width: 100%;
+  margin-top: auto;
+  padding: 13px 12px;
+  border: 1px solid #ff0b72;
+  border-radius: 10px;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.featured-package {
+  box-shadow: 0 0 30px rgba(255, 11, 114, 0.2);
+}
+
+.featured-package .package-button {
+  border-color: #ff0b72;
+  background: linear-gradient(135deg, #ff0b72, #e8005e);
+}
+@media (max-width: 800px)  {
+.package-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .package-card {
+    min-height: 390px;
+  }
+
+  .package-heading h2 {
+    font-size: 27px;
+    }
   header {
     padding: 13px 16px;
   }
