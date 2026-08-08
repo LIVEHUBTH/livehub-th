@@ -6,7 +6,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "livehub-orders"
+      "database_name": "livehub-orders",
+      "database_id": "68e31c80-8b55-49fd-9fe3-0893b653d79b"
     }
   ],
   "r2_buckets": [
