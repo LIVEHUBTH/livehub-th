@@ -211,31 +211,102 @@
 
   </div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
+<script>
+  const API_URL =
+    "https://livehub-payment-api.livehubth.workers.dev/api/payment";
 
-    const packageNumber = params.get("package") || "-";
-    const packagePrice = params.get("price") || "0";
+  const params = new URLSearchParams(window.location.search);
 
-    document.getElementById("packageName").textContent =
-      `แพ็กเกจ ${packageNumber}`;
+  const packageNumber = params.get("package") || "";
+  const packagePrice = params.get("price") || "0";
 
-    document.getElementById("packagePrice").textContent =
-      packagePrice;
+  const packageNameElement =
+    document.getElementById("packageName");
 
-    function submitPayment() {
-      const slipInput = document.getElementById("slip");
+  const packagePriceElement =
+    document.getElementById("packagePrice");
 
-      if (!slipInput.files.length) {
-        alert("กรุณาเลือกภาพสลิปก่อนยืนยัน");
-        return;
+  const confirmButton =
+    document.querySelector(".confirm-button");
+
+  packageNameElement.textContent =
+    packageNumber
+      ? `แพ็กเกจ ${packageNumber}`
+      : "ไม่พบแพ็กเกจ";
+
+  packagePriceElement.textContent = packagePrice;
+
+  async function submitPayment() {
+    const slipInput = document.getElementById("slip");
+    const slipFile = slipInput.files[0];
+
+    if (!packageNumber) {
+      alert("ไม่พบข้อมูลแพ็กเกจ กรุณากลับไปเลือกแพ็กเกจใหม่");
+      return;
+    }
+
+    if (!slipFile) {
+      alert("กรุณาเลือกภาพสลิปก่อนยืนยัน");
+      return;
+    }
+
+    const maximumSize = 5 * 1024 * 1024;
+
+    if (slipFile.size > maximumSize) {
+      alert("ไฟล์สลิปต้องมีขนาดไม่เกิน 5 MB");
+      return;
+    }
+
+    const originalButtonText = confirmButton.textContent;
+
+    confirmButton.disabled = true;
+    confirmButton.textContent = "กำลังส่งข้อมูล...";
+
+    const formData = new FormData();
+
+    formData.append("packageNumber", packageNumber);
+    formData.append("price", packagePrice);
+    formData.append("slip", slipFile);
+
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || "ไม่สามารถส่งข้อมูลได้"
+        );
       }
 
       alert(
-        "ได้รับข้อมูลเบื้องต้นแล้ว ระบบอัปโหลดจริงจะเชื่อมต่อในขั้นตอนถัดไป"
+        `ส่งสลิปสำเร็จ\n\n` +
+        `เลขคำสั่งซื้อ: ${result.orderId}\n` +
+        `สถานะ: รอตรวจสอบการชำระเงิน`
       );
+
+      slipInput.value = "";
+
+      confirmButton.textContent = "ส่งสลิปสำเร็จ";
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        error.message ||
+        "ระบบขัดข้อง กรุณาลองใหม่อีกครั้ง"
+      );
+
+      confirmButton.disabled = false;
+      confirmButton.textContent = originalButtonText;
     }
-  </script>
+  }
+</script>
+      }
+  }
+</script>
 
 </body>
 </html>
