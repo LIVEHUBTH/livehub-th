@@ -1,3 +1,4 @@
+// Redeploy after fixing root directory
 export default {
   async fetch(request, env) {
     const corsHeaders = {
