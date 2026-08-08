@@ -2422,36 +2422,46 @@
    */
 
   async function loadPackages(
-    concertId
-  ) {
+  concertId,
+  showError = true
+) {
+  packageList.innerHTML =
+    '<div class="empty">กำลังโหลดแพ็กเกจ...</div>';
+
+  try {
+    const { data } =
+      await apiFetch(
+        "/api/admin/packages?concertId=" +
+        encodeURIComponent(
+          concertId
+        )
+      );
+
+    packages = Array.isArray(
+      data?.packages
+    )
+      ? data.packages
+      : [];
+
+    renderPackages();
+
+    return true;
+
+  } catch (error) {
     packageList.innerHTML =
-      '<div class="empty">กำลังโหลดแพ็กเกจ...</div>';
+      '<div class="empty">โหลดแพ็กเกจไม่สำเร็จ</div>';
 
-    try {
-      const { data } =
-        await apiFetch(
-          "/api/admin/packages?concertId=" +
-          encodeURIComponent(
-            concertId
-          )
-        );
-
-      packages =
-        data.packages || [];
-
-      renderPackages();
-
-    } catch (error) {
-      packageList.innerHTML =
-        '<div class="empty">โหลดแพ็กเกจไม่สำเร็จ</div>';
-
+    if (showError) {
       showMessage(
-        error.message,
+        error.message ||
+        "โหลดแพ็กเกจไม่สำเร็จ",
         "error"
       );
     }
-  }
 
+    return false;
+  }
+}
   function renderPackages() {
     if (
       packages.length === 0
@@ -2717,198 +2727,321 @@
       "change",
       updatePackagePreview
     );
+function packageMatchesSubmission(
+  packageItem,
+  submitted
+) {
+  if (!packageItem) {
+    return false;
+  }
 
+  const packageSessionIds =
+    Array.isArray(
+      packageItem.session_ids
+    )
+      ? [...packageItem.session_ids]
+          .map(String)
+          .sort()
+      : [];
+
+  const submittedSessionIds =
+    [...submitted.sessionIds]
+      .map(String)
+      .sort();
+
+  return (
+    String(packageItem.name || "")
+      .trim() === submitted.name &&
+
+    Number(packageItem.price) ===
+      submitted.price &&
+
+    String(
+      packageItem.access_type || ""
+    ) === submitted.accessType &&
+
+    Number(
+      packageItem.replay_months || 0
+    ) === submitted.replayMonths &&
+
+    Number(
+      packageItem.has_ecard || 0
+    ) === submitted.hasEcard &&
+
+    String(
+      packageItem.video_quality ||
+      "1080p"
+    ) === submitted.videoQuality &&
+
+    packageSessionIds.length ===
+      submittedSessionIds.length &&
+
+    packageSessionIds.every(
+      (id, index) =>
+        id ===
+        submittedSessionIds[index]
+    )
+  );
+}
+
+async function confirmPackageSaved(
+  submitted
+) {
+  await new Promise(
+    resolve =>
+      setTimeout(resolve, 900)
+  );
+
+  const loaded =
+    await loadPackages(
+      selectedConcertId,
+      false
+    );
+
+  if (!loaded) {
+    return false;
+  }
+
+  return packages.some(
+    packageItem =>
+      packageMatchesSubmission(
+        packageItem,
+        submitted
+      )
+  );
+}
   async function savePackage() {
-    if (!selectedConcertId) {
-      showMessage(
-        "กรุณาเลือกคอนเสิร์ตก่อน",
-        "error"
-      );
+  if (!selectedConcertId) {
+    showMessage(
+      "กรุณาเลือกคอนเสิร์ตก่อน",
+      "error"
+    );
 
-      return;
-    }
+    return;
+  }
 
-    const packageId =
+  const packageId =
+    document.getElementById(
+      "packageId"
+    ).value.trim();
+
+  const name =
+    document.getElementById(
+      "packageName"
+    ).value.trim();
+
+  const price =
+    Number(
       document.getElementById(
-        "packageId"
-      ).value.trim();
+        "packagePrice"
+      ).value
+    );
 
-    const name =
-      document.getElementById(
-        "packageName"
-      ).value.trim();
+  const accessType =
+    document.getElementById(
+      "accessType"
+    ).value;
 
-    const price =
-      Number(
-        document.getElementById(
-          "packagePrice"
-        ).value
-      );
-
-    const accessType =
-      document.getElementById(
-        "accessType"
-      ).value;
-
-    const replayMonths =
-      accessType ===
-      "live_replay"
-        ? Number(
-            document.getElementById(
-              "replayMonths"
-            ).value
-          )
-        : 0;
-
-    const hasEcard =
-      document.getElementById(
-        "hasEcard"
-      ).checked
-        ? 1
-        : 0;
-
-    const videoQuality =
-      document.getElementById(
-        "videoQuality"
-      ).value;
-
-    const isActive =
-      document.getElementById(
-        "packageActive"
-      ).checked
-        ? 1
-        : 0;
-
-    const sessionIds =
-      Array.from(
-        document.querySelectorAll(
-          ".package-session-checkbox:checked"
+  const replayMonths =
+    accessType === "live_replay"
+      ? Number(
+          document.getElementById(
+            "replayMonths"
+          ).value
         )
-      ).map(
-        input =>
-          input.value
+      : 0;
+
+  const hasEcard =
+    document.getElementById(
+      "hasEcard"
+    ).checked
+      ? 1
+      : 0;
+
+  const videoQuality =
+    document.getElementById(
+      "videoQuality"
+    ).value;
+
+  const isActive =
+    document.getElementById(
+      "packageActive"
+    ).checked
+      ? 1
+      : 0;
+
+  const sessionIds =
+    Array.from(
+      document.querySelectorAll(
+        ".package-session-checkbox:checked"
+      )
+    ).map(
+      input => input.value
+    );
+
+  if (!name) {
+    showMessage(
+      "กรุณากรอกชื่อแพ็กเกจ",
+      "error"
+    );
+
+    return;
+  }
+
+  if (
+    !Number.isInteger(price) ||
+    price < 0
+  ) {
+    showMessage(
+      "ราคาแพ็กเกจไม่ถูกต้อง",
+      "error"
+    );
+
+    return;
+  }
+
+  if (
+    accessType === "live_replay" &&
+    (
+      !Number.isInteger(
+        replayMonths
+      ) ||
+      replayMonths < 1
+    )
+  ) {
+    showMessage(
+      "กรุณากำหนดจำนวนเดือน Replay อย่างน้อย 1 เดือน",
+      "error"
+    );
+
+    return;
+  }
+
+  if (sessionIds.length === 0) {
+    showMessage(
+      "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
+      "error"
+    );
+
+    return;
+  }
+
+  const submittedPackage = {
+    name,
+    price,
+    accessType,
+    replayMonths,
+    hasEcard,
+    videoQuality,
+    sessionIds,
+    isActive
+  };
+
+  const button =
+    document.getElementById(
+      "savePackageButton"
+    );
+
+  button.disabled = true;
+  button.textContent =
+    "กำลังบันทึก...";
+
+  try {
+    const path = packageId
+      ? "/api/admin/packages/" +
+        encodeURIComponent(
+          packageId
+        )
+      : "/api/admin/packages";
+
+    const { data } =
+      await apiFetch(
+        path,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            concertId:
+              selectedConcertId,
+
+            ...submittedPackage
+          })
+        }
       );
 
-    if (!name) {
-      showMessage(
-        "กรุณากรอกชื่อแพ็กเกจ",
-        "error"
-      );
+    resetPackageForm();
 
-      return;
-    }
+    await loadPackages(
+      selectedConcertId
+    );
 
+    await loadConcerts();
+
+    showMessage(
+      data?.message ||
+      "บันทึกแพ็กเกจสำเร็จ",
+      "success"
+    );
+
+  } catch (error) {
+    /*
+     * Safari อาจขึ้น Load failed
+     * แม้ Worker บันทึกข้อมูลสำเร็จแล้ว
+     */
     if (
-      !Number.isInteger(price) ||
-      price < 0
-    ) {
-      showMessage(
-        "ราคาแพ็กเกจไม่ถูกต้อง",
-        "error"
-      );
-
-      return;
-    }
-
-    if (
-      accessType ===
-        "live_replay" &&
+      !packageId &&
       (
-        !Number.isInteger(
-          replayMonths
-        ) ||
-        replayMonths < 1
+        error.message ===
+          "Load failed" ||
+        error.message ===
+          "Failed to fetch"
       )
     ) {
-      showMessage(
-        "กรุณากำหนดจำนวนเดือน Replay อย่างน้อย 1 เดือน",
-        "error"
-      );
+      button.textContent =
+        "กำลังตรวจสอบผลการบันทึก...";
 
-      return;
-    }
-
-    if (
-      sessionIds.length === 0
-    ) {
-      showMessage(
-        "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
-        "error"
-      );
-
-      return;
-    }
-
-    const button =
-      document.getElementById(
-        "savePackageButton"
-      );
-
-    button.disabled = true;
-    button.textContent =
-      "กำลังบันทึก...";
-
-    try {
-      const path = packageId
-        ? "/api/admin/packages/" +
-          encodeURIComponent(
-            packageId
-          )
-        : "/api/admin/packages";
-
-      const { data } =
-        await apiFetch(
-          path,
-          {
-            method: "POST",
-
-            headers: {
-              "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify({
-              concertId:
-                selectedConcertId,
-
-              name,
-              price,
-              accessType,
-              replayMonths,
-              hasEcard,
-              videoQuality,
-              sessionIds,
-              isActive
-            })
-          }
+      const saved =
+        await confirmPackageSaved(
+          submittedPackage
         );
 
-      showMessage(
-        data.message ||
-        "บันทึกแพ็กเกจสำเร็จ",
-        "success"
-      );
+      if (saved) {
+        resetPackageForm();
 
-      resetPackageForm();
+        await loadConcerts();
 
-      await loadPackages(
-        selectedConcertId
-      );
+        showMessage(
+          "เพิ่มแพ็กเกจสำเร็จ ระบบตรวจพบว่าข้อมูลถูกบันทึกแล้ว",
+          "success"
+        );
 
-      await loadConcerts();
-
-    } catch (error) {
-      showMessage(
-        error.message,
-        "error"
-      );
-
-    } finally {
-      button.disabled = false;
-      button.textContent =
-        "เพิ่มแพ็กเกจ";
+        return;
+      }
     }
+
+    showMessage(
+      (
+        error.message ||
+        "บันทึกแพ็กเกจไม่สำเร็จ"
+      ) +
+      " — กรุณาตรวจรายการก่อนกดซ้ำ",
+      "error"
+    );
+
+  } finally {
+    button.disabled = false;
+
+    button.textContent =
+      packageId
+        ? "บันทึกการแก้ไขแพ็กเกจ"
+        : "เพิ่มแพ็กเกจ";
   }
+}
 
   function editPackage(
     packageId
