@@ -179,27 +179,46 @@
 
       <section class="payment-section">
 
-        <label
-          for="slip"
-          class="upload-label"
-        >
-          อัปโหลดสลิปการโอน
-        </label>
+        <form
+  action="https://livehub-payment-api.livehubth.workers.dev/api/payment"
+  method="post"
+  enctype="multipart/form-data"
+>
+  <input
+    type="hidden"
+    id="packageNumberInput"
+    name="packageNumber"
+  >
 
-        <input
-          type="file"
-          id="slip"
-          class="upload-input"
-          accept="image/*"
-        >
+  <input
+    type="hidden"
+    id="priceInput"
+    name="price"
+  >
 
-        <button
-          type="button"
-          class="confirm-button"
-          onclick="submitPayment()"
-        >
-          ยืนยันการชำระเงิน
-        </button>
+  <label
+    for="slip"
+    class="upload-label"
+  >
+    อัปโหลดสลิปการโอน
+  </label>
+
+  <input
+    type="file"
+    id="slip"
+    name="slip"
+    class="upload-input"
+    accept="image/*"
+    required
+  >
+
+  <button
+    type="submit"
+    class="confirm-button"
+  >
+    ยืนยันการชำระเงิน
+  </button>
+</form>
 
         <a href="index.html#packages" class="back-link">
           ← กลับไปเลือกแพ็กเกจ
@@ -212,97 +231,24 @@
   </div>
 
 <script>
-  const API_URL =
-    "https://livehub-payment-api.livehubth.workers.dev/api/payment";
-
   const params = new URLSearchParams(window.location.search);
 
   const packageNumber = params.get("package") || "";
   const packagePrice = params.get("price") || "0";
 
-  const packageNameElement =
-    document.getElementById("packageName");
-
-  const packagePriceElement =
-    document.getElementById("packagePrice");
-
-  const confirmButton =
-    document.querySelector(".confirm-button");
-
-  packageNameElement.textContent =
+  document.getElementById("packageName").textContent =
     packageNumber
       ? `แพ็กเกจ ${packageNumber}`
       : "ไม่พบแพ็กเกจ";
 
-  packagePriceElement.textContent = packagePrice;
+  document.getElementById("packagePrice").textContent =
+    packagePrice;
 
-  async function submitPayment() {
-    const slipInput = document.getElementById("slip");
-    const slipFile = slipInput.files[0];
+  document.getElementById("packageNumberInput").value =
+    packageNumber;
 
-    if (!packageNumber) {
-      alert("ไม่พบข้อมูลแพ็กเกจ กรุณากลับไปเลือกแพ็กเกจใหม่");
-      return;
-    }
-
-    if (!slipFile) {
-      alert("กรุณาเลือกภาพสลิปก่อนยืนยัน");
-      return;
-    }
-
-    const maximumSize = 5 * 1024 * 1024;
-
-    if (slipFile.size > maximumSize) {
-      alert("ไฟล์สลิปต้องมีขนาดไม่เกิน 5 MB");
-      return;
-    }
-
-    const originalButtonText = confirmButton.textContent;
-
-    confirmButton.disabled = true;
-    confirmButton.textContent = "กำลังส่งข้อมูล...";
-
-    const formData = new FormData();
-
-    formData.append("packageNumber", packageNumber);
-    formData.append("price", packagePrice);
-    formData.append("slip", slipFile);
-
-    try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
-        throw new Error(
-          result.message || "ไม่สามารถส่งข้อมูลได้"
-        );
-      }
-
-      alert(
-        `ส่งสลิปสำเร็จ\n\n` +
-        `เลขคำสั่งซื้อ: ${result.orderId}\n` +
-        `สถานะ: รอตรวจสอบการชำระเงิน`
-      );
-
-      slipInput.value = "";
-
-      confirmButton.textContent = "ส่งสลิปสำเร็จ";
-    } catch (error) {
-      console.error(error);
-
-      alert(
-        error.message ||
-        "ระบบขัดข้อง กรุณาลองใหม่อีกครั้ง"
-      );
-
-      confirmButton.disabled = false;
-      confirmButton.textContent = originalButtonText;
-    }
-  }
+  document.getElementById("priceInput").value =
+    packagePrice;
 </script>
   
 </body>
