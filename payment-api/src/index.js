@@ -77,7 +77,21 @@ export default {
           corsHeaders
         );
       }
+if (
+  path.startsWith("/api/admin/packages/") &&
+  request.method === "DELETE"
+) {
+  const packageId = getPathId(
+    path,
+    "/api/admin/packages/"
+  );
 
+  return await deletePackage(
+    packageId,
+    env,
+    corsHeaders
+  );
+}
       if (
         path === "/api/admin/concerts" &&
         request.method === "POST"
@@ -1500,7 +1514,93 @@ async function updatePackage(
     corsHeaders
   );
 }
+async function deletePackage(
+  packageId,
+  env,
+  corsHeaders
+) {
+  if (!packageId) {
+    return errorResponse(
+      "ไม่พบรหัสแพ็กเกจ",
+      400,
+      corsHeaders
+    );
+  }
 
+  const existingPackage =
+    await env.DB.prepare(
+      `
+      SELECT
+        id,
+        name
+      FROM packages
+      WHERE id = ?
+      LIMIT 1
+      `
+    )
+      .bind(packageId)
+      .first();
+
+  if (!existingPackage) {
+    return errorResponse(
+      "ไม่พบแพ็กเกจ",
+      404,
+      corsHeaders
+    );
+  }
+
+  const orderCount =
+    await env.DB.prepare(
+      `
+      SELECT COUNT(*) AS total
+      FROM orders
+      WHERE package_id = ?
+      `
+    )
+      .bind(packageId)
+      .first();
+
+  if (
+    Number(orderCount?.total || 0) > 0
+  ) {
+    return errorResponse(
+      "ไม่สามารถลบแพ็กเกจนี้ได้ เพราะมีรายการสั่งซื้ออยู่แล้ว ให้ปิดขายแทน",
+      409,
+      corsHeaders
+    );
+  }
+
+  await env.DB.prepare(
+    `
+    DELETE FROM package_sessions
+    WHERE package_id = ?
+    `
+  )
+    .bind(packageId)
+    .run();
+
+  await env.DB.prepare(
+    `
+    DELETE FROM packages
+    WHERE id = ?
+    `
+  )
+    .bind(packageId)
+    .run();
+
+  return jsonResponse(
+    {
+      success: true,
+      packageId,
+      message:
+        "ลบแพ็กเกจ " +
+        existingPackage.name +
+        " สำเร็จ"
+    },
+    200,
+    corsHeaders
+  );
+}
 /*
  * =========================================
  * PAYMENT
