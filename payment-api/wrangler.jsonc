@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "livehub-payment-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-08-08",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "livehub-orders"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "SLIPS",
+      "bucket_name": "livehubth-payment-slips"
+    }
+  ]
+}
