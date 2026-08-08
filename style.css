@@ -534,7 +534,13 @@ nav a.active {
   font-size: 14px;
   font-weight: 700;
 }
-
+.qr-image {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  border-radius: 8px;
+}
 .contact-text p {
   color: #dddddd;
   font-size: 16px;
