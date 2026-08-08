@@ -2,23 +2,15 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ระบบแอดมิน | LIVEHUB TH</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     :root {
       --pink: #ff1493;
       --pink-dark: #d90068;
-      --black: #050505;
       --card: rgba(10, 10, 10, 0.97);
       --line: #343434;
       --muted: #bdbdbd;
@@ -31,22 +23,12 @@
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(
-          circle at top,
-          #351025 0,
-          #10050c 35%,
-          #050505 75%
-        );
-      color: #ffffff;
+        radial-gradient(circle at top, #351025 0, #10050c 35%, #050505 75%);
+      color: #fff;
       font-family: Arial, sans-serif;
     }
 
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
+    button, input, textarea, select { font: inherit; }
 
     .container {
       width: min(1180px, 94%);
@@ -66,7 +48,7 @@
     }
 
     .header p {
-      color: #cccccc;
+      color: #ccc;
       margin: 10px 0 0;
     }
 
@@ -75,8 +57,7 @@
       border: 1px solid var(--line);
       border-radius: 22px;
       padding: 24px;
-      box-shadow:
-        0 0 35px rgba(255, 20, 147, 0.14);
+      box-shadow: 0 0 35px rgba(255, 20, 147, 0.14);
     }
 
     .login-card {
@@ -90,15 +71,13 @@
       font-weight: 700;
     }
 
-    input,
-    textarea,
-    select {
+    input, textarea, select {
       width: 100%;
       padding: 13px 14px;
       border: 1px solid #454545;
       border-radius: 12px;
-      background: #111111;
-      color: #ffffff;
+      background: #111;
+      color: #fff;
       font-size: 16px;
     }
 
@@ -107,13 +86,10 @@
       resize: vertical;
     }
 
-    input:focus,
-    textarea:focus,
-    select:focus {
+    input:focus, textarea:focus, select:focus {
       outline: none;
       border-color: var(--pink);
-      box-shadow:
-        0 0 0 3px rgba(255, 20, 147, 0.13);
+      box-shadow: 0 0 0 3px rgba(255, 20, 147, 0.13);
     }
 
     button {
@@ -131,28 +107,23 @@
     }
 
     .primary-button {
-      background:
-        linear-gradient(
-          135deg,
-          var(--pink),
-          var(--pink-dark)
-        );
-      color: #ffffff;
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+      color: #fff;
     }
 
     .secondary-button {
-      background: #333333;
-      color: #ffffff;
+      background: #333;
+      color: #fff;
     }
 
     .green-button {
       background: var(--green);
-      color: #ffffff;
+      color: #fff;
     }
 
     .red-button {
       background: var(--red);
-      color: #ffffff;
+      color: #fff;
     }
 
     .login-button {
@@ -160,9 +131,7 @@
       margin-top: 16px;
     }
 
-    .hidden {
-      display: none !important;
-    }
+    .hidden { display: none !important; }
 
     .top-toolbar {
       display: flex;
@@ -173,9 +142,7 @@
       margin-bottom: 18px;
     }
 
-    .top-toolbar h2 {
-      margin: 0;
-    }
+    .top-toolbar h2 { margin: 0; }
 
     .toolbar-buttons {
       display: flex;
@@ -192,16 +159,11 @@
 
     .tab-button {
       background: #252525;
-      color: #ffffff;
+      color: #fff;
     }
 
     .tab-button.active {
-      background:
-        linear-gradient(
-          135deg,
-          var(--pink),
-          var(--pink-dark)
-        );
+      background: linear-gradient(135deg, var(--pink), var(--pink-dark));
     }
 
     .message {
@@ -210,16 +172,11 @@
       line-height: 1.6;
     }
 
-    .error {
-      color: #ff7777;
-    }
-
-    .success {
-      color: #4ade80;
-    }
+    .error { color: #ff7777; }
+    .success { color: #4ade80; }
 
     .empty {
-      padding: 40px 20px;
+      padding: 32px 16px;
       text-align: center;
       color: var(--muted);
     }
@@ -231,14 +188,11 @@
 
     .form-grid {
       display: grid;
-      grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 16px;
     }
 
-    .field-full {
-      grid-column: 1 / -1;
-    }
+    .field-full { grid-column: 1 / -1; }
 
     .form-actions {
       display: flex;
@@ -254,23 +208,17 @@
 
     .management-layout {
       display: grid;
-      grid-template-columns:
-        minmax(310px, 0.9fr)
-        minmax(0, 1.5fr);
+      grid-template-columns: minmax(310px, 0.9fr) minmax(0, 1.5fr);
       gap: 20px;
       align-items: start;
     }
 
-    .concert-list,
-    .orders,
-    .package-list {
+    .concert-list, .orders, .package-list, .session-list {
       display: grid;
       gap: 16px;
     }
 
-    .concert-item,
-    .package-item,
-    .order {
+    .concert-item, .package-item, .session-item, .order {
       padding: 18px;
       border: 1px solid var(--line);
       border-radius: 17px;
@@ -279,12 +227,10 @@
 
     .concert-item.selected {
       border-color: var(--pink);
-      box-shadow:
-        0 0 20px rgba(255, 20, 147, 0.13);
+      box-shadow: 0 0 20px rgba(255, 20, 147, 0.13);
     }
 
-    .item-top,
-    .order-top {
+    .item-top, .order-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
@@ -301,7 +247,7 @@
 
     .item-subtitle {
       margin-top: 7px;
-      color: #cccccc;
+      color: #ccc;
       line-height: 1.6;
     }
 
@@ -330,21 +276,17 @@
       background: rgba(255, 209, 102, 0.12);
     }
 
-    .approved,
-    .on_sale,
-    .live {
+    .approved, .on_sale, .live {
       color: #4ade80;
       background: rgba(74, 222, 128, 0.12);
     }
 
-    .rejected,
-    .hidden-status {
+    .rejected, .hidden-status {
       color: #ff6b6b;
       background: rgba(255, 107, 107, 0.12);
     }
 
-    .draft,
-    .ended {
+    .draft, .ended {
       color: #d0d0d0;
       background: rgba(208, 208, 208, 0.12);
     }
@@ -358,7 +300,7 @@
     .details {
       margin-top: 15px;
       line-height: 1.8;
-      color: #dddddd;
+      color: #ddd;
     }
 
     .slip {
@@ -370,8 +312,8 @@
       max-width: 100%;
       max-height: 650px;
       border-radius: 14px;
-      border: 1px solid #333333;
-      background: #ffffff;
+      border: 1px solid #333;
+      background: #fff;
     }
 
     .actions {
@@ -380,13 +322,11 @@
       margin-top: 18px;
     }
 
-    .actions button {
-      flex: 1;
-    }
+    .actions button { flex: 1; }
 
     .panel-block {
-      margin-top: 20px;
-      padding-top: 20px;
+      margin-top: 22px;
+      padding-top: 22px;
       border-top: 1px solid #2d2d2d;
     }
 
@@ -403,7 +343,7 @@
     }
 
     .hint {
-      color: #aaaaaa;
+      color: #aaa;
       font-size: 14px;
       line-height: 1.6;
       margin-top: 7px;
@@ -422,14 +362,42 @@
       margin: 0;
     }
 
-    .checkbox-row label {
+    .checkbox-row label { margin: 0; }
+
+    .session-picker {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border: 1px solid #343434;
+      border-radius: 14px;
+      background: #0d0d0d;
+    }
+
+    .session-choice {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px;
+      border: 1px solid #292929;
+      border-radius: 12px;
+      background: #111;
+    }
+
+    .session-choice input {
+      width: 22px;
+      height: 22px;
+      margin: 1px 0 0;
+      flex: 0 0 auto;
+    }
+
+    .session-choice label {
       margin: 0;
+      line-height: 1.5;
+      font-weight: 600;
     }
 
     @media (max-width: 850px) {
-      .management-layout {
-        grid-template-columns: 1fr;
-      }
+      .management-layout { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 650px) {
@@ -438,45 +406,24 @@
         padding-top: 22px;
       }
 
-      .card {
-        padding: 18px;
-      }
-
-      .form-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .field-full {
-        grid-column: auto;
-      }
-
-      .tabs {
-        grid-template-columns: 1fr;
-      }
-
-      .actions {
-        flex-direction: column;
-      }
+      .card { padding: 18px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field-full { grid-column: auto; }
+      .tabs { grid-template-columns: 1fr; }
+      .actions { flex-direction: column; }
     }
   </style>
 </head>
 
 <body>
-
   <main class="container">
-
     <header class="header">
       <h1>LIVEHUB TH</h1>
-      <p>ระบบจัดการคอนเสิร์ต แพ็กเกจ และการชำระเงิน</p>
+      <p>ระบบจัดการคอนเสิร์ต วันแสดง แพ็กเกจ และการชำระเงิน</p>
     </header>
 
-    <section
-      id="loginSection"
-      class="card login-card"
-    >
-      <label for="adminToken">
-        รหัสแอดมิน
-      </label>
+    <section id="loginSection" class="card login-card">
+      <label for="adminToken">รหัสแอดมิน</label>
 
       <input
         id="adminToken"
@@ -494,21 +441,13 @@
         เข้าสู่ระบบแอดมิน
       </button>
 
-      <div
-        id="loginMessage"
-        class="message"
-      ></div>
+      <div id="loginMessage" class="message"></div>
     </section>
 
-    <section
-      id="adminSection"
-      class="hidden"
-    >
-
+    <section id="adminSection" class="hidden">
       <div class="card">
 
         <div class="top-toolbar">
-
           <h2>ระบบหลังบ้าน</h2>
 
           <div class="toolbar-buttons">
@@ -528,11 +467,9 @@
               ออกจากระบบ
             </button>
           </div>
-
         </div>
 
         <div class="tabs">
-
           <button
             id="paymentsTabButton"
             class="tab-button active"
@@ -550,14 +487,10 @@
           >
             จัดการคอนเสิร์ตและแพ็กเกจ
           </button>
-
         </div>
 
         <section id="paymentsTab">
-
-          <h2 class="section-title">
-            รายการรอตรวจสอบ
-          </h2>
+          <h2 class="section-title">รายการรอตรวจสอบ</h2>
 
           <div id="orders" class="orders"></div>
 
@@ -565,20 +498,16 @@
             id="paymentMessage"
             class="message"
           ></div>
-
         </section>
 
         <section
           id="managementTab"
           class="hidden"
         >
-
           <div class="management-layout">
 
             <div>
-
               <div class="panel-block">
-
                 <h2 class="section-title">
                   คอนเสิร์ต
                 </h2>
@@ -596,13 +525,10 @@
                   class="concert-list"
                   style="margin-top:16px"
                 ></div>
-
               </div>
-
             </div>
 
             <div>
-
               <div class="panel-block">
 
                 <h2
@@ -616,7 +542,6 @@
                   id="concertForm"
                   onsubmit="saveConcert(event)"
                 >
-
                   <div class="form-grid">
 
                     <div class="field-full">
@@ -657,9 +582,16 @@
 
                     <div>
                       <label for="liveStartsAt">
-                        วันและเวลาเริ่ม Live
+                        เวลาเริ่มรวมของงาน
                       </label>
 
+                      <input
+                        id="liveStartsAt"
+                        type="datetime-local"
+                        required
+                      >
+                    </div>
+                                          <label for="liveStartsAt">เวลาเริ่มรวมของงาน</label>
                       <input
                         id="liveStartsAt"
                         type="datetime-local"
@@ -669,7 +601,7 @@
 
                     <div>
                       <label for="liveEndsAt">
-                        วันและเวลาจบ Live
+                        เวลาจบรวมของงาน
                       </label>
 
                       <input
@@ -677,6 +609,12 @@
                         type="datetime-local"
                         required
                       >
+                    </div>
+
+                    <div class="field-full">
+                      <div class="hint">
+                        ใช้สำหรับสร้างคอนเสิร์ตครั้งแรก เมื่อเพิ่มวันแสดงแล้ว ระบบจะปรับช่วงเวลาเริ่ม–จบรวมให้อัตโนมัติ
+                      </div>
                     </div>
 
                     <div class="field-full">
@@ -738,6 +676,134 @@
 
               </div>
 
+              <!-- วันแสดง -->
+              <div
+                id="sessionSection"
+                class="panel-block hidden"
+              >
+
+                <h2 class="section-title">
+                  วันแสดง / รอบถ่ายทอดสด
+                </h2>
+
+                <h3
+                  id="sessionConcertName"
+                  class="selected-concert-name"
+                ></h3>
+
+                <form
+                  id="sessionForm"
+                  onsubmit="saveSession(event)"
+                >
+
+                  <div class="form-grid">
+
+                    <div class="field-full">
+                      <label for="sessionName">
+                        ชื่อวันหรือรอบ
+                      </label>
+
+                      <input
+                        id="sessionName"
+                        type="text"
+                        maxlength="150"
+                        placeholder="เช่น Day 1, Day 2, รอบวันเสาร์"
+                        required
+                      >
+                    </div>
+
+                    <div>
+                      <label for="sessionStartsAt">
+                        วันและเวลาเริ่ม
+                      </label>
+
+                      <input
+                        id="sessionStartsAt"
+                        type="datetime-local"
+                        required
+                      >
+                    </div>
+
+                    <div>
+                      <label for="sessionEndsAt">
+                        วันและเวลาจบ
+                      </label>
+
+                      <input
+                        id="sessionEndsAt"
+                        type="datetime-local"
+                        required
+                      >
+                    </div>
+
+                    <div>
+                      <label for="sessionSortOrder">
+                        ลำดับการแสดง
+                      </label>
+
+                      <input
+                        id="sessionSortOrder"
+                        type="number"
+                        min="0"
+                        step="1"
+                        value="0"
+                      >
+                    </div>
+
+                    <div>
+                      <div class="checkbox-row">
+
+                        <input
+                          id="sessionActive"
+                          type="checkbox"
+                          checked
+                        >
+
+                        <label for="sessionActive">
+                          เปิดใช้งานวันแสดงนี้
+                        </label>
+
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="form-actions">
+
+                    <button
+                      id="saveSessionButton"
+                      class="primary-button"
+                      type="submit"
+                    >
+                      + เพิ่มวันแสดง
+                    </button>
+
+                    <button
+                      class="secondary-button"
+                      type="button"
+                      onclick="resetSessionForm()"
+                    >
+                      ล้างแบบฟอร์ม
+                    </button>
+
+                  </div>
+
+                </form>
+
+                <div
+                  id="sessionMessage"
+                  class="message"
+                ></div>
+
+                <div
+                  id="sessionList"
+                  class="session-list"
+                  style="margin-top:18px"
+                ></div>
+
+              </div>
+
+              <!-- แพ็กเกจ -->
               <div
                 id="packageSection"
                 class="panel-block hidden"
@@ -828,6 +894,23 @@
 
                     <div class="field-full">
 
+                      <label>
+                        เลือกวันแสดงที่แพ็กเกจนี้เข้าชมได้
+                      </label>
+
+                      <div
+                        id="packageSessionChoices"
+                        class="session-picker"
+                      >
+                        <div class="empty">
+                          กรุณาเพิ่มวันแสดงก่อน
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div class="field-full">
+
                       <div class="checkbox-row">
 
                         <input
@@ -882,15 +965,10 @@
               </div>
 
             </div>
-
           </div>
-
         </section>
-
       </div>
-
     </section>
-
   </main>
 
 <script>
@@ -901,32 +979,41 @@
   let currentTab = "payments";
 
   let concerts = [];
+  let sessions = [];
   let packages = [];
 
   let editingConcertId = "";
   let selectedConcertId = "";
+  let editingSessionId = "";
   let editingPackageId = "";
 
-  async function apiFetch(path, options = {}) {
-    const headers = new Headers(
-      options.headers || {}
-    );
+  async function apiFetch(
+    path,
+    options = {}
+  ) {
+    const headers =
+      new Headers(
+        options.headers || {}
+      );
 
     headers.set(
       "X-Admin-Token",
       adminToken
     );
 
-    const response = await fetch(
-      API + path,
-      {
-        ...options,
-        headers
-      }
-    );
+    const response =
+      await fetch(
+        API + path,
+        {
+          ...options,
+          headers
+        }
+      );
 
     const contentType =
-      response.headers.get("Content-Type") || "";
+      response.headers.get(
+        "Content-Type"
+      ) || "";
 
     let data = null;
 
@@ -935,7 +1022,8 @@
         "application/json"
       )
     ) {
-      data = await response.json();
+      data =
+        await response.json();
     }
 
     if (!response.ok) {
@@ -953,15 +1041,22 @@
 
   async function login() {
     const input =
-      document.getElementById("adminToken");
+      document.getElementById(
+        "adminToken"
+      );
 
     const button =
-      document.getElementById("loginButton");
+      document.getElementById(
+        "loginButton"
+      );
 
     const message =
-      document.getElementById("loginMessage");
+      document.getElementById(
+        "loginMessage"
+      );
 
-    adminToken = input.value.trim();
+    adminToken =
+      input.value.trim();
 
     if (!adminToken) {
       showMessage(
@@ -973,7 +1068,9 @@
     }
 
     button.disabled = true;
-    button.textContent = "กำลังตรวจสอบ...";
+
+    button.textContent =
+      "กำลังตรวจสอบ...";
 
     showMessage(
       message,
@@ -987,18 +1084,27 @@
       );
 
       document
-        .getElementById("loginSection")
+        .getElementById(
+          "loginSection"
+        )
         .classList.add("hidden");
 
       document
-        .getElementById("adminSection")
+        .getElementById(
+          "adminSection"
+        )
         .classList.remove("hidden");
 
-      showMessage(message, "", "");
+      showMessage(
+        message,
+        "",
+        ""
+      );
 
       await loadOrders();
 
     } catch (error) {
+
       adminToken = "";
 
       showMessage(
@@ -1008,7 +1114,9 @@
       );
 
     } finally {
+
       button.disabled = false;
+
       button.textContent =
         "เข้าสู่ระบบแอดมิน";
     }
@@ -1016,11 +1124,14 @@
 
   function logout() {
     adminToken = "";
+
     concerts = [];
+    sessions = [];
     packages = [];
 
     editingConcertId = "";
     selectedConcertId = "";
+    editingSessionId = "";
     editingPackageId = "";
 
     document.getElementById(
@@ -1028,11 +1139,15 @@
     ).value = "";
 
     document
-      .getElementById("adminSection")
+      .getElementById(
+        "adminSection"
+      )
       .classList.add("hidden");
 
     document
-      .getElementById("loginSection")
+      .getElementById(
+        "loginSection"
+      )
       .classList.remove("hidden");
 
     showTab("payments");
@@ -1041,44 +1156,44 @@
   function showTab(tabName) {
     currentTab = tabName;
 
-    const paymentsTab =
-      document.getElementById("paymentsTab");
-
-    const managementTab =
-      document.getElementById("managementTab");
-
-    const paymentsButton =
-      document.getElementById(
-        "paymentsTabButton"
-      );
-
-    const managementButton =
-      document.getElementById(
-        "managementTabButton"
-      );
-
     const showPayments =
       tabName === "payments";
 
-    paymentsTab.classList.toggle(
-      "hidden",
-      !showPayments
-    );
+    document
+      .getElementById(
+        "paymentsTab"
+      )
+      .classList.toggle(
+        "hidden",
+        !showPayments
+      );
 
-    managementTab.classList.toggle(
-      "hidden",
-      showPayments
-    );
+    document
+      .getElementById(
+        "managementTab"
+      )
+      .classList.toggle(
+        "hidden",
+        showPayments
+      );
 
-    paymentsButton.classList.toggle(
-      "active",
-      showPayments
-    );
+    document
+      .getElementById(
+        "paymentsTabButton"
+      )
+      .classList.toggle(
+        "active",
+        showPayments
+      );
 
-    managementButton.classList.toggle(
-      "active",
-      !showPayments
-    );
+    document
+      .getElementById(
+        "managementTabButton"
+      )
+      .classList.toggle(
+        "active",
+        !showPayments
+      );
 
     if (showPayments) {
       loadOrders();
@@ -1088,7 +1203,9 @@
   }
 
   async function refreshCurrentTab() {
-    if (currentTab === "payments") {
+    if (
+      currentTab === "payments"
+    ) {
       await loadOrders();
       return;
     }
@@ -1096,21 +1213,26 @@
     await loadConcerts();
 
     if (selectedConcertId) {
-      await loadPackages(
-        selectedConcertId
-      );
+      await Promise.all([
+        loadSessions(
+          selectedConcertId
+        ),
+        loadPackages(
+          selectedConcertId
+        )
+      ]);
     }
   }
 
   /*
-   * ============================================
    * ระบบตรวจสอบการชำระเงิน
-   * ============================================
    */
 
   async function loadOrders() {
     const container =
-      document.getElementById("orders");
+      document.getElementById(
+        "orders"
+      );
 
     const message =
       document.getElementById(
@@ -1120,24 +1242,36 @@
     container.innerHTML =
       '<div class="empty">กำลังโหลดรายการ...</div>';
 
-    showMessage(message, "", "");
+    showMessage(
+      message,
+      "",
+      ""
+    );
 
     try {
-      const { data } = await apiFetch(
-        "/api/admin/orders?status=pending"
-      );
 
-      const orders = data.orders || [];
+      const { data } =
+        await apiFetch(
+          "/api/admin/orders?status=pending"
+        );
 
-      if (orders.length === 0) {
+      const orders =
+        data.orders || [];
+
+      if (
+        orders.length === 0
+      ) {
         container.innerHTML =
           '<div class="empty">ไม่มีรายการรอตรวจสอบ</div>';
+
         return;
       }
 
       container.innerHTML = "";
 
-      for (const order of orders) {
+      for (
+        const order of orders
+      ) {
         container.appendChild(
           createOrderCard(order)
         );
@@ -1146,6 +1280,7 @@
       }
 
     } catch (error) {
+
       container.innerHTML = "";
 
       showMessage(
@@ -1158,37 +1293,55 @@
 
   function createOrderCard(order) {
     const card =
-      document.createElement("article");
+      document.createElement(
+        "article"
+      );
 
     card.className = "order";
-    card.id = "order-" + order.id;
+    card.id =
+      "order-" + order.id;
 
     const top =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
-    top.className = "order-top";
+    top.className =
+      "order-top";
 
     const id =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
-    id.className = "order-id";
-    id.textContent = order.id;
+    id.className =
+      "order-id";
+
+    id.textContent =
+      order.id;
 
     const status =
-      document.createElement("span");
+      document.createElement(
+        "span"
+      );
 
     status.className =
-      "status " + order.status;
+      "status " +
+      order.status;
 
-    status.textContent = order.status;
+    status.textContent =
+      order.status;
 
     top.appendChild(id);
     top.appendChild(status);
 
     const details =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
-    details.className = "details";
+    details.className =
+      "details";
 
     appendDetail(
       details,
@@ -1207,7 +1360,11 @@
     appendDetail(
       details,
       "ยอดชำระ",
-      order.price + " บาท"
+      Number(
+        order.price || 0
+      ).toLocaleString(
+        "th-TH"
+      ) + " บาท"
     );
 
     appendDetail(
@@ -1221,60 +1378,91 @@
     appendDetail(
       details,
       "จำนวนวัน Replay",
-      String(order.replay_days || 0)
+      String(
+        order.replay_days || 0
+      )
     );
 
     appendDetail(
       details,
       "ส่งเมื่อ",
-      formatDateTime(order.created_at)
+      formatDateTime(
+        order.created_at
+      )
     );
 
     const slip =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
-    slip.className = "slip";
+    slip.className =
+      "slip";
+
     slip.textContent =
       "กำลังโหลดสลิป...";
 
     const actions =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
-    actions.className = "actions";
+    actions.className =
+      "actions";
 
     const approve =
-      document.createElement("button");
-
-    approve.className = "green-button";
-    approve.textContent = "✓ อนุมัติ";
-
-    approve.onclick = function () {
-      updateStatus(
-        order.id,
-        "approved"
+      document.createElement(
+        "button"
       );
-    };
+
+    approve.className =
+      "green-button";
+
+    approve.textContent =
+      "✓ อนุมัติ";
+
+    approve.onclick =
+      () =>
+        updateStatus(
+          order.id,
+          "approved"
+        );
 
     const reject =
-      document.createElement("button");
-
-    reject.className = "red-button";
-    reject.textContent = "✕ ปฏิเสธ";
-
-    reject.onclick = function () {
-      updateStatus(
-        order.id,
-        "rejected"
+      document.createElement(
+        "button"
       );
-    };
 
-    actions.appendChild(approve);
-    actions.appendChild(reject);
+    reject.className =
+      "red-button";
+
+    reject.textContent =
+      "✕ ปฏิเสธ";
+
+    reject.onclick =
+      () =>
+        updateStatus(
+          order.id,
+          "rejected"
+        );
+
+    actions.appendChild(
+      approve
+    );
+
+    actions.appendChild(
+      reject
+    );
 
     card.appendChild(top);
-    card.appendChild(details);
+    card.appendChild(
+      details
+    );
+
     card.appendChild(slip);
-    card.appendChild(actions);
+    card.appendChild(
+      actions
+    );
 
     return card;
   }
@@ -1285,13 +1473,17 @@
     value
   ) {
     const line =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     line.textContent =
       label + ": " + value;
 
-    container.appendChild(line);
-  }
+    container.appendChild(
+      line
+    );
+      }
 
   async function loadSlip(order) {
     const card =
@@ -1307,10 +1499,13 @@
       card.querySelector(".slip");
 
     try {
-      const { response } = await apiFetch(
-        "/api/admin/slip/" +
-        encodeURIComponent(order.id)
-      );
+      const { response } =
+        await apiFetch(
+          "/api/admin/slip/" +
+          encodeURIComponent(
+            order.id
+          )
+        );
 
       const blob =
         await response.blob();
@@ -1322,14 +1517,20 @@
         document.createElement("img");
 
       image.src = imageUrl;
-      image.alt = "สลิป " + order.id;
+      image.alt =
+        "สลิป " + order.id;
 
       image.onload = function () {
-        URL.revokeObjectURL(imageUrl);
+        URL.revokeObjectURL(
+          imageUrl
+        );
       };
 
       slipContainer.innerHTML = "";
-      slipContainer.appendChild(image);
+
+      slipContainer.appendChild(
+        image
+      );
 
     } catch (error) {
       slipContainer.textContent =
@@ -1346,7 +1547,11 @@
         ? "อนุมัติรายการนี้?"
         : "ปฏิเสธรายการนี้?";
 
-    if (!confirm(confirmationText)) {
+    if (
+      !confirm(
+        confirmationText
+      )
+    ) {
       return;
     }
 
@@ -1356,23 +1561,27 @@
       );
 
     try {
-      const { data } = await apiFetch(
-        "/api/admin/orders/" +
-        encodeURIComponent(orderId) +
-        "/status",
-        {
-          method: "POST",
+      const { data } =
+        await apiFetch(
+          "/api/admin/orders/" +
+          encodeURIComponent(
+            orderId
+          ) +
+          "/status",
+          {
+            method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
 
-          body: JSON.stringify({
-            status: newStatus
-          })
-        }
-      );
+            body:
+              JSON.stringify({
+                status: newStatus
+              })
+          }
+        );
 
       const card =
         document.getElementById(
@@ -1390,10 +1599,13 @@
       );
 
       const ordersContainer =
-        document.getElementById("orders");
+        document.getElementById(
+          "orders"
+        );
 
       if (
-        ordersContainer.children.length === 0
+        ordersContainer
+          .children.length === 0
       ) {
         ordersContainer.innerHTML =
           '<div class="empty">ไม่มีรายการรอตรวจสอบ</div>';
@@ -1424,11 +1636,13 @@
       '<div class="empty">กำลังโหลดคอนเสิร์ต...</div>';
 
     try {
-      const { data } = await apiFetch(
-        "/api/admin/concerts"
-      );
+      const { data } =
+        await apiFetch(
+          "/api/admin/concerts"
+        );
 
-      concerts = data.concerts || [];
+      concerts =
+        data.concerts || [];
 
       renderConcerts();
 
@@ -1436,8 +1650,10 @@
       container.innerHTML =
         '<div class="message error"></div>';
 
-      container.firstElementChild.textContent =
-        error.message;
+      container
+        .firstElementChild
+        .textContent =
+          error.message;
     }
   }
 
@@ -1447,56 +1663,95 @@
         "concertList"
       );
 
-    if (concerts.length === 0) {
+    if (
+      concerts.length === 0
+    ) {
       container.innerHTML =
         '<div class="empty">ยังไม่มีคอนเสิร์ต</div>';
+
       return;
     }
 
     container.innerHTML = "";
 
-    for (const concert of concerts) {
+    for (
+      const concert of concerts
+    ) {
       const item =
-        document.createElement("article");
+        document.createElement(
+          "article"
+        );
 
       item.className =
         "concert-item" +
         (
-          selectedConcertId === concert.id
+          selectedConcertId ===
+          concert.id
             ? " selected"
             : ""
         );
 
       const top =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
-      top.className = "item-top";
+      top.className =
+        "item-top";
 
       const titleArea =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       const title =
-        document.createElement("h3");
+        document.createElement(
+          "h3"
+        );
 
-      title.className = "item-title";
-      title.textContent = concert.title;
+      title.className =
+        "item-title";
+
+      title.textContent =
+        concert.title;
 
       const subtitle =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       subtitle.className =
         "item-subtitle";
 
+      const sessionCount =
+        Number(
+          concert.session_count || 0
+        );
+
+      const packageCount =
+        Number(
+          concert.package_count || 0
+        );
+
       subtitle.textContent =
-        "แพ็กเกจ " +
-        (concert.package_count || 0) +
+        "วันแสดง " +
+        sessionCount +
+        " วัน • แพ็กเกจ " +
+        packageCount +
         " รายการ";
 
-      titleArea.appendChild(title);
-      titleArea.appendChild(subtitle);
+      titleArea.appendChild(
+        title
+      );
+
+      titleArea.appendChild(
+        subtitle
+      );
 
       const status =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
 
       status.className =
         "status " +
@@ -1509,11 +1764,18 @@
           concert.status
         );
 
-      top.appendChild(titleArea);
-      top.appendChild(status);
+      top.appendChild(
+        titleArea
+      );
+
+      top.appendChild(
+        status
+      );
 
       const details =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       details.className =
         "item-subtitle";
@@ -1528,13 +1790,17 @@
         );
 
       const buttons =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       buttons.className =
         "item-buttons";
 
       const editButton =
-        document.createElement("button");
+        document.createElement(
+          "button"
+        );
 
       editButton.className =
         "secondary-button small-button";
@@ -1542,32 +1808,51 @@
       editButton.textContent =
         "แก้ไขคอนเสิร์ต";
 
-      editButton.onclick = function () {
-        editConcert(concert.id);
-      };
-
-      const packageButton =
-        document.createElement("button");
-
-      packageButton.className =
-        "primary-button small-button";
-
-      packageButton.textContent =
-        "จัดการแพ็กเกจ";
-
-      packageButton.onclick =
+      editButton.onclick =
         function () {
-          selectConcert(concert.id);
+          editConcert(
+            concert.id
+          );
         };
 
-      buttons.appendChild(editButton);
-      buttons.appendChild(packageButton);
+      const manageButton =
+        document.createElement(
+          "button"
+        );
+
+      manageButton.className =
+        "primary-button small-button";
+
+      manageButton.textContent =
+        "จัดการวันแสดง / แพ็กเกจ";
+
+      manageButton.onclick =
+        function () {
+          selectConcert(
+            concert.id
+          );
+        };
+
+      buttons.appendChild(
+        editButton
+      );
+
+      buttons.appendChild(
+        manageButton
+      );
 
       item.appendChild(top);
-      item.appendChild(details);
-      item.appendChild(buttons);
+      item.appendChild(
+        details
+      );
 
-      container.appendChild(item);
+      item.appendChild(
+        buttons
+      );
+
+      container.appendChild(
+        item
+      );
     }
   }
 
@@ -1579,17 +1864,21 @@
     ).focus();
   }
 
-  function editConcert(concertId) {
+  function editConcert(
+    concertId
+  ) {
     const concert =
       concerts.find(
-        item => item.id === concertId
+        item =>
+          item.id === concertId
       );
 
     if (!concert) {
       return;
     }
 
-    editingConcertId = concert.id;
+    editingConcertId =
+      concert.id;
 
     document.getElementById(
       "concertFormTitle"
@@ -1633,7 +1922,8 @@
     document.getElementById(
       "concertStatus"
     ).value =
-      concert.status || "draft";
+      concert.status ||
+      "draft";
 
     window.scrollTo({
       top: 0,
@@ -1641,7 +1931,9 @@
     });
   }
 
-  async function saveConcert(event) {
+  async function saveConcert(
+    event
+  ) {
     event.preventDefault();
 
     const message =
@@ -1705,51 +1997,89 @@
         "กรุณากำหนดวันเวลาเริ่มและจบ",
         "error"
       );
+
+      return;
+    }
+
+    if (
+      new Date(
+        payload.liveEndsAt
+      ).getTime() <=
+      new Date(
+        payload.liveStartsAt
+      ).getTime()
+    ) {
+      showMessage(
+        message,
+        "เวลาจบต้องอยู่หลังเวลาเริ่ม",
+        "error"
+      );
+
       return;
     }
 
     saveButton.disabled = true;
+
     saveButton.textContent =
       "กำลังบันทึก...";
 
-    try {
-      const path = editingConcertId
-        ? "/api/admin/concerts/" +
-          encodeURIComponent(
-            editingConcertId
-          )
-        : "/api/admin/concerts";
-
-      const { data } = await apiFetch(
-        path,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify(payload)
-        }
+    const wasEditing =
+      Boolean(
+        editingConcertId
       );
+
+    const currentEditingId =
+      editingConcertId;
+
+    try {
+      const path =
+        currentEditingId
+          ? "/api/admin/concerts/" +
+            encodeURIComponent(
+              currentEditingId
+            )
+          : "/api/admin/concerts";
+
+      const { data } =
+        await apiFetch(
+          path,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify(
+                payload
+              )
+          }
+        );
+
+      const concertId =
+        data.concertId ||
+        currentEditingId;
 
       showMessage(
         message,
-        data.message,
+        data.message ||
+        (
+          wasEditing
+            ? "แก้ไขคอนเสิร์ตสำเร็จ"
+            : "เพิ่มคอนเสิร์ตสำเร็จ"
+        ),
         "success"
       );
 
-      const createdConcertId =
-        data.concertId ||
-        editingConcertId;
-
       resetConcertForm();
+
       await loadConcerts();
 
-      if (createdConcertId) {
+      if (concertId) {
         await selectConcert(
-          createdConcertId
+          concertId
         );
       }
 
@@ -1761,12 +2091,11 @@
       );
 
     } finally {
-      saveButton.disabled = false;
+      saveButton.disabled =
+        false;
 
       saveButton.textContent =
-        editingConcertId
-          ? "บันทึกการแก้ไข"
-          : "บันทึกคอนเสิร์ต";
+        "บันทึกคอนเสิร์ต";
     }
   }
 
@@ -1774,12 +2103,15 @@
     editingConcertId = "";
 
     document
-      .getElementById("concertForm")
+      .getElementById(
+        "concertForm"
+      )
       .reset();
 
     document.getElementById(
       "concertStatus"
-    ).value = "draft";
+    ).value =
+      "draft";
 
     document.getElementById(
       "concertFormTitle"
@@ -1800,25 +2132,29 @@
     );
   }
 
-  /*
-   * ============================================
-   * ระบบจัดการแพ็กเกจ
-   * ============================================
-   */
-
   async function selectConcert(
     concertId
   ) {
     const concert =
       concerts.find(
-        item => item.id === concertId
+        item =>
+          item.id === concertId
       );
 
     if (!concert) {
       return;
     }
 
-    selectedConcertId = concertId;
+    selectedConcertId =
+      concertId;
+
+    editingSessionId = "";
+    editingPackageId = "";
+
+    document.getElementById(
+      "sessionConcertName"
+    ).textContent =
+      concert.title;
 
     document.getElementById(
       "selectedConcertName"
@@ -1826,14 +2162,539 @@
       concert.title;
 
     document.getElementById(
-      "packageSection"
-    ).classList.remove("hidden");
+      "sessionSection"
+    ).classList.remove(
+      "hidden"
+    );
 
+    document.getElementById(
+      "packageSection"
+    ).classList.remove(
+      "hidden"
+    );
+
+    resetSessionForm();
     resetPackageForm();
+
     renderConcerts();
 
-    await loadPackages(concertId);
+    await loadSessions(
+      concertId
+    );
+
+    await loadPackages(
+      concertId
+    );
   }
+
+  /*
+   * ============================================
+   * ระบบวันแสดง
+   * เพิ่มได้ไม่จำกัดจำนวนวัน
+   * ============================================
+   */
+
+  async function loadSessions(
+    concertId
+  ) {
+    const container =
+      document.getElementById(
+        "sessionList"
+      );
+
+    container.innerHTML =
+      '<div class="empty">กำลังโหลดวันแสดง...</div>';
+
+    try {
+      const { data } =
+        await apiFetch(
+          "/api/admin/sessions?concertId=" +
+          encodeURIComponent(
+            concertId
+          )
+        );
+
+      sessions =
+        data.sessions || [];
+
+      sessions.sort(
+        (a, b) => {
+          const orderA =
+            Number(
+              a.sort_order || 0
+            );
+
+          const orderB =
+            Number(
+              b.sort_order || 0
+            );
+
+          if (
+            orderA !== orderB
+          ) {
+            return (
+              orderA -
+              orderB
+            );
+          }
+
+          return (
+            new Date(
+              a.live_starts_at
+            ).getTime() -
+            new Date(
+              b.live_starts_at
+            ).getTime()
+          );
+        }
+      );
+
+      renderSessions();
+
+      renderPackageSessionChoices();
+
+    } catch (error) {
+      container.innerHTML =
+        '<div class="message error"></div>';
+
+      container
+        .firstElementChild
+        .textContent =
+          error.message;
+    }
+  }
+
+  function renderSessions() {
+    const container =
+      document.getElementById(
+        "sessionList"
+      );
+
+    if (
+      sessions.length === 0
+    ) {
+      container.innerHTML =
+        '<div class="empty">ยังไม่มีวันแสดง กด + เพิ่มวันแสดงได้เลย</div>';
+
+      return;
+    }
+
+    container.innerHTML = "";
+
+    sessions.forEach(
+      (session, index) => {
+        const item =
+          document.createElement(
+            "article"
+          );
+
+        item.className =
+          "session-item";
+
+        const top =
+          document.createElement(
+            "div"
+          );
+
+        top.className =
+          "item-top";
+
+        const titleArea =
+          document.createElement(
+            "div"
+          );
+
+        const title =
+          document.createElement(
+            "h3"
+          );
+
+        title.className =
+          "item-title";
+
+        title.textContent =
+          session.name ||
+          "Day " +
+          (index + 1);
+
+        const subtitle =
+          document.createElement(
+            "div"
+          );
+
+        subtitle.className =
+          "item-subtitle";
+
+        subtitle.textContent =
+          formatDateTime(
+            session.live_starts_at
+          ) +
+          " – " +
+          formatDateTime(
+            session.live_ends_at
+          );
+
+        titleArea.appendChild(
+          title
+        );
+
+        titleArea.appendChild(
+          subtitle
+        );
+
+        const status =
+          document.createElement(
+            "span"
+          );
+
+        const isActive =
+          Number(
+            session.is_active
+          ) === 1;
+
+        status.className =
+          "status " +
+          (
+            isActive
+              ? "approved"
+              : "rejected"
+          );
+
+        status.textContent =
+          isActive
+            ? "เปิดใช้งาน"
+            : "ปิดใช้งาน";
+
+        top.appendChild(
+          titleArea
+        );
+
+        top.appendChild(
+          status
+        );
+
+        const details =
+          document.createElement(
+            "div"
+          );
+
+        details.className =
+          "item-subtitle";
+
+        details.textContent =
+          "ลำดับ " +
+          Number(
+            session.sort_order || 0
+          );
+
+        const buttons =
+          document.createElement(
+            "div"
+          );
+
+        buttons.className =
+          "item-buttons";
+
+        const editButton =
+          document.createElement(
+            "button"
+          );
+
+        editButton.className =
+          "secondary-button small-button";
+
+        editButton.textContent =
+          "แก้ไขวันแสดง";
+
+        editButton.onclick =
+          function () {
+            editSession(
+              session.id
+            );
+          };
+
+        buttons.appendChild(
+          editButton
+        );
+
+        item.appendChild(top);
+
+        item.appendChild(
+          details
+        );
+
+        item.appendChild(
+          buttons
+        );
+
+        container.appendChild(
+          item
+        );
+      }
+    );
+  }
+
+  function editSession(
+    sessionId
+  ) {
+    const session =
+      sessions.find(
+        item =>
+          item.id === sessionId
+      );
+
+    if (!session) {
+      return;
+    }
+
+    editingSessionId =
+      session.id;
+
+    document.getElementById(
+      "sessionName"
+    ).value =
+      session.name || "";
+
+    document.getElementById(
+      "sessionStartsAt"
+    ).value =
+      isoToLocalInput(
+        session.live_starts_at
+      );
+
+    document.getElementById(
+      "sessionEndsAt"
+    ).value =
+      isoToLocalInput(
+        session.live_ends_at
+      );
+
+    document.getElementById(
+      "sessionSortOrder"
+    ).value =
+      Number(
+        session.sort_order || 0
+      );
+
+    document.getElementById(
+      "sessionActive"
+    ).checked =
+      Number(
+        session.is_active
+      ) === 1;
+
+    document.getElementById(
+      "saveSessionButton"
+    ).textContent =
+      "บันทึกการแก้ไขวันแสดง";
+  }
+
+  async function saveSession(
+    event
+  ) {
+    event.preventDefault();
+
+    const message =
+      document.getElementById(
+        "sessionMessage"
+      );
+
+    const button =
+      document.getElementById(
+        "saveSessionButton"
+      );
+
+    if (!selectedConcertId) {
+      showMessage(
+        message,
+        "กรุณาเลือกคอนเสิร์ตก่อน",
+        "error"
+      );
+
+      return;
+    }
+
+    const startsAt =
+      localInputToIso(
+        document.getElementById(
+          "sessionStartsAt"
+        ).value
+      );
+
+    const endsAt =
+      localInputToIso(
+        document.getElementById(
+          "sessionEndsAt"
+        ).value
+      );
+
+    if (
+      !startsAt ||
+      !endsAt
+    ) {
+      showMessage(
+        message,
+        "กรุณากำหนดวันและเวลาเริ่ม–จบ",
+        "error"
+      );
+
+      return;
+    }
+
+    if (
+      new Date(
+        endsAt
+      ).getTime() <=
+      new Date(
+        startsAt
+      ).getTime()
+    ) {
+      showMessage(
+        message,
+        "เวลาจบต้องอยู่หลังเวลาเริ่ม",
+        "error"
+      );
+
+      return;
+    }
+
+    const payload = {
+      concertId:
+        selectedConcertId,
+
+      name:
+        document.getElementById(
+          "sessionName"
+        ).value.trim(),
+
+      liveStartsAt:
+        startsAt,
+
+      liveEndsAt:
+        endsAt,
+
+      sortOrder:
+        Number(
+          document.getElementById(
+            "sessionSortOrder"
+          ).value || 0
+        ),
+
+      isActive:
+        document.getElementById(
+          "sessionActive"
+        ).checked
+          ? 1
+          : 0
+    };
+
+    button.disabled = true;
+
+    button.textContent =
+      "กำลังบันทึก...";
+
+    const currentEditingId =
+      editingSessionId;
+
+    try {
+      const path =
+        currentEditingId
+          ? "/api/admin/sessions/" +
+            encodeURIComponent(
+              currentEditingId
+            )
+          : "/api/admin/sessions";
+
+      const { data } =
+        await apiFetch(
+          path,
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body:
+              JSON.stringify(
+                payload
+              )
+          }
+        );
+
+      showMessage(
+        message,
+        data.message ||
+        (
+          currentEditingId
+            ? "แก้ไขวันแสดงสำเร็จ"
+            : "เพิ่มวันแสดงสำเร็จ"
+        ),
+        "success"
+      );
+
+      resetSessionForm();
+
+      await loadSessions(
+        selectedConcertId
+      );
+
+      await loadConcerts();
+
+    } catch (error) {
+      showMessage(
+        message,
+        error.message,
+        "error"
+      );
+
+    } finally {
+      button.disabled =
+        false;
+
+      button.textContent =
+        " + เพิ่มวันแสดง";
+    }
+  }
+
+  function resetSessionForm() {
+    editingSessionId = "";
+
+    document
+      .getElementById(
+        "sessionForm"
+      )
+      .reset();
+
+    document.getElementById(
+      "sessionSortOrder"
+    ).value =
+      sessions.length + 1;
+
+    document.getElementById(
+      "sessionActive"
+    ).checked = true;
+
+    document.getElementById(
+      "saveSessionButton"
+    ).textContent =
+      "+ เพิ่มวันแสดง";
+
+    showMessage(
+      document.getElementById(
+        "sessionMessage"
+      ),
+      "",
+      ""
+    );
+  }
+
+  /*
+   * ============================================
+   * ระบบแพ็กเกจ
+   * ============================================
+   */
 
   async function loadPackages(
     concertId
@@ -1847,12 +2708,16 @@
       '<div class="empty">กำลังโหลดแพ็กเกจ...</div>';
 
     try {
-      const { data } = await apiFetch(
-        "/api/admin/packages?concertId=" +
-        encodeURIComponent(concertId)
-      );
+      const { data } =
+        await apiFetch(
+          "/api/admin/packages?concertId=" +
+          encodeURIComponent(
+            concertId
+          )
+        );
 
-      packages = data.packages || [];
+      packages =
+        data.packages || [];
 
       renderPackages();
 
@@ -1860,106 +2725,308 @@
       container.innerHTML =
         '<div class="message error"></div>';
 
-      container.firstElementChild.textContent =
-        error.message;
+      container
+        .firstElementChild
+        .textContent =
+          error.message;
     }
   }
 
-  function renderPackages() {
+  function renderPackageSessionChoices(
+    selectedIds = []
+  ) {
     const container =
       document.getElementById(
-        "packageList"
+        "packageSessionChoices"
       );
 
-    if (packages.length === 0) {
+    if (
+      sessions.length === 0
+    ) {
       container.innerHTML =
-        '<div class="empty">ยังไม่มีแพ็กเกจสำหรับคอนเสิร์ตนี้</div>';
+        '<div class="empty">ยังไม่มีวันแสดง กรุณาเพิ่มวันแสดงก่อนสร้างแพ็กเกจ</div>';
+
       return;
     }
 
     container.innerHTML = "";
 
-    for (const packageItem of packages) {
-      const item =
-        document.createElement("article");
+    const selectedSet =
+      new Set(
+        selectedIds.map(
+          String
+        )
+      );
 
-      item.className = "package-item";
+    for (
+      const session of sessions
+    ) {
+      const row =
+        document.createElement(
+          "label"
+        );
+
+      row.className =
+        "session-choice";
+
+      const checkbox =
+        document.createElement(
+          "input"
+        );
+
+      checkbox.type =
+        "checkbox";
+
+      checkbox.value =
+        session.id;
+
+      checkbox.className =
+        "package-session-checkbox";
+
+      checkbox.checked =
+        selectedSet.has(
+          String(
+            session.id
+          )
+        );
+
+      const text =
+        document.createElement(
+          "div"
+        );
+
+      const name =
+        document.createElement(
+          "strong"
+        );
+
+      name.textContent =
+        session.name;
+
+      const time =
+        document.createElement(
+          "div"
+        );
+
+      time.className =
+        "hint";
+
+      time.textContent =
+        formatDateTime(
+          session.live_starts_at
+        ) +
+        " – " +
+        formatDateTime(
+          session.live_ends_at
+        );
+
+      text.appendChild(
+        name
+      );
+
+      text.appendChild(
+        time
+      );
+
+      row.appendChild(
+        checkbox
+      );
+
+      row.appendChild(
+        text
+      );
+
+      container.appendChild(
+        row
+      );
+    }
+  }
+
+  function getSelectedSessionIds() {
+    return Array.from(
+      document.querySelectorAll(
+        ".package-session-checkbox:checked"
+      )
+    ).map(
+      checkbox =>
+        checkbox.value
+    );
+  }
+    function renderPackages() {
+    const container =
+      document.getElementById(
+        "packageList"
+      );
+
+    if (
+      packages.length === 0
+    ) {
+      container.innerHTML =
+        '<div class="empty">ยังไม่มีแพ็กเกจสำหรับคอนเสิร์ตนี้</div>';
+
+      return;
+    }
+
+    container.innerHTML = "";
+
+    for (
+      const packageItem of packages
+    ) {
+      const item =
+        document.createElement(
+          "article"
+        );
+
+      item.className =
+        "package-item";
 
       const top =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
-      top.className = "item-top";
+      top.className =
+        "item-top";
 
       const titleArea =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       const title =
-        document.createElement("h3");
+        document.createElement(
+          "h3"
+        );
 
-      title.className = "item-title";
+      title.className =
+        "item-title";
+
       title.textContent =
         packageItem.name;
 
       const subtitle =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       subtitle.className =
         "item-subtitle";
 
       subtitle.textContent =
-        Number(packageItem.price)
-          .toLocaleString("th-TH") +
+        Number(
+          packageItem.price || 0
+        ).toLocaleString(
+          "th-TH"
+        ) +
         " บาท";
 
-      titleArea.appendChild(title);
-      titleArea.appendChild(subtitle);
+      titleArea.appendChild(
+        title
+      );
+
+      titleArea.appendChild(
+        subtitle
+      );
 
       const status =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
+
+      const isActive =
+        Number(
+          packageItem.is_active
+        ) === 1;
 
       status.className =
         "status " +
         (
-          Number(packageItem.is_active) === 1
+          isActive
             ? "approved"
             : "rejected"
         );
 
       status.textContent =
-        Number(packageItem.is_active) === 1
+        isActive
           ? "เปิดขาย"
           : "ปิดขาย";
 
-      top.appendChild(titleArea);
-      top.appendChild(status);
+      top.appendChild(
+        titleArea
+      );
+
+      top.appendChild(
+        status
+      );
 
       const details =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       details.className =
         "item-subtitle";
 
-      details.textContent =
+      const selectedSessionIds =
+        Array.isArray(
+          packageItem.session_ids
+        )
+          ? packageItem.session_ids
+          : [];
+
+      const selectedSessionNames =
+        sessions
+          .filter(
+            session =>
+              selectedSessionIds.includes(
+                session.id
+              )
+          )
+          .map(
+            session =>
+              session.name
+          );
+
+      let accessDescription =
         formatAccessType(
           packageItem.access_type
-        ) +
+        );
+
+      if (
+        packageItem.access_type ===
+        "live_replay"
+      ) {
+        accessDescription +=
+          " • Replay " +
+          Number(
+            packageItem.replay_days || 0
+          ) +
+          " วัน";
+      }
+
+      details.textContent =
+        accessDescription +
+        " • วันแสดง: " +
         (
-          packageItem.access_type ===
-          "live_replay"
-            ? " • Replay " +
-              packageItem.replay_days +
-              " วัน"
-            : ""
+          selectedSessionNames.length
+            ? selectedSessionNames.join(
+                ", "
+              )
+            : "ยังไม่ได้เลือก"
         );
 
       const buttons =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       buttons.className =
         "item-buttons";
 
       const editButton =
-        document.createElement("button");
+        document.createElement(
+          "button"
+        );
 
       editButton.className =
         "secondary-button small-button";
@@ -1967,24 +3034,40 @@
       editButton.textContent =
         "แก้ไขแพ็กเกจ";
 
-      editButton.onclick = function () {
-        editPackage(packageItem.id);
-      };
+      editButton.onclick =
+        function () {
+          editPackage(
+            packageItem.id
+          );
+        };
 
-      buttons.appendChild(editButton);
+      buttons.appendChild(
+        editButton
+      );
 
       item.appendChild(top);
-      item.appendChild(details);
-      item.appendChild(buttons);
 
-      container.appendChild(item);
+      item.appendChild(
+        details
+      );
+
+      item.appendChild(
+        buttons
+      );
+
+      container.appendChild(
+        item
+      );
     }
   }
 
-  function editPackage(packageId) {
+  function editPackage(
+    packageId
+  ) {
     const packageItem =
       packages.find(
-        item => item.id === packageId
+        item =>
+          item.id === packageId
       );
 
     if (!packageItem) {
@@ -2013,12 +3096,16 @@
     document.getElementById(
       "replayDays"
     ).value =
-      packageItem.replay_days || 0;
+      Number(
+        packageItem.replay_days || 0
+      );
 
     document.getElementById(
       "packageActive"
     ).checked =
-      Number(packageItem.is_active) === 1;
+      Number(
+        packageItem.is_active
+      ) === 1;
 
     document.getElementById(
       "savePackageButton"
@@ -2026,9 +3113,15 @@
       "บันทึกการแก้ไขแพ็กเกจ";
 
     updateReplayField();
+
+    renderPackageSessionChoices(
+      packageItem.session_ids || []
+    );
   }
 
-  async function savePackage(event) {
+  async function savePackage(
+    event
+  ) {
     event.preventDefault();
 
     const message =
@@ -2047,6 +3140,34 @@
         "กรุณาเลือกคอนเสิร์ตก่อน",
         "error"
       );
+
+      return;
+    }
+
+    if (
+      sessions.length === 0
+    ) {
+      showMessage(
+        message,
+        "กรุณาเพิ่มวันแสดงก่อนสร้างแพ็กเกจ",
+        "error"
+      );
+
+      return;
+    }
+
+    const sessionIds =
+      getSelectedSessionIds();
+
+    if (
+      sessionIds.length === 0
+    ) {
+      showMessage(
+        message,
+        "กรุณาเลือกอย่างน้อย 1 วันแสดง",
+        "error"
+      );
+
       return;
     }
 
@@ -2055,70 +3176,141 @@
         "accessType"
       ).value;
 
+    const packageName =
+      document.getElementById(
+        "packageName"
+      ).value.trim();
+
+    const packagePrice =
+      Number(
+        document.getElementById(
+          "packagePrice"
+        ).value
+      );
+
+    const replayDays =
+      accessType === "live"
+        ? 0
+        : Number(
+            document.getElementById(
+              "replayDays"
+            ).value
+          );
+
+    if (!packageName) {
+      showMessage(
+        message,
+        "กรุณากรอกชื่อแพ็กเกจ",
+        "error"
+      );
+
+      return;
+    }
+
+    if (
+      !Number.isInteger(
+        packagePrice
+      ) ||
+      packagePrice < 0
+    ) {
+      showMessage(
+        message,
+        "ราคาแพ็กเกจไม่ถูกต้อง",
+        "error"
+      );
+
+      return;
+    }
+
+    if (
+      accessType ===
+        "live_replay" &&
+      (
+        !Number.isInteger(
+          replayDays
+        ) ||
+        replayDays < 1
+      )
+    ) {
+      showMessage(
+        message,
+        "จำนวนวัน Replay ต้องไม่น้อยกว่า 1 วัน",
+        "error"
+      );
+
+      return;
+    }
+
     const payload = {
       concertId:
         selectedConcertId,
 
       name:
-        document.getElementById(
-          "packageName"
-        ).value.trim(),
+        packageName,
 
       price:
-        Number(
-          document.getElementById(
-            "packagePrice"
-          ).value
-        ),
+        packagePrice,
 
-      accessType,
+      accessType:
+        accessType,
 
       replayDays:
-        accessType === "live"
-          ? 0
-          : Number(
-              document.getElementById(
-                "replayDays"
-              ).value
-            ),
+        replayDays,
 
       isActive:
         document.getElementById(
           "packageActive"
         ).checked
           ? 1
-          : 0
+          : 0,
+
+      sessionIds:
+        sessionIds
     };
 
     button.disabled = true;
+
     button.textContent =
       "กำลังบันทึก...";
 
+    const currentEditingId =
+      editingPackageId;
+
     try {
-      const path = editingPackageId
-        ? "/api/admin/packages/" +
-          encodeURIComponent(
-            editingPackageId
-          )
-        : "/api/admin/packages";
+      const path =
+        currentEditingId
+          ? "/api/admin/packages/" +
+            encodeURIComponent(
+              currentEditingId
+            )
+          : "/api/admin/packages";
 
-      const { data } = await apiFetch(
-        path,
-        {
-          method: "POST",
+      const { data } =
+        await apiFetch(
+          path,
+          {
+            method: "POST",
 
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
 
-          body: JSON.stringify(payload)
-        }
-      );
+            body:
+              JSON.stringify(
+                payload
+              )
+          }
+        );
 
       showMessage(
         message,
-        data.message,
+        data.message ||
+        (
+          currentEditingId
+            ? "แก้ไขแพ็กเกจสำเร็จ"
+            : "เพิ่มแพ็กเกจสำเร็จ"
+        ),
         "success"
       );
 
@@ -2138,12 +3330,11 @@
       );
 
     } finally {
-      button.disabled = false;
+      button.disabled =
+        false;
 
       button.textContent =
-        editingPackageId
-          ? "บันทึกการแก้ไขแพ็กเกจ"
-          : "เพิ่มแพ็กเกจ";
+        "เพิ่มแพ็กเกจ";
     }
   }
 
@@ -2151,20 +3342,25 @@
     editingPackageId = "";
 
     document
-      .getElementById("packageForm")
+      .getElementById(
+        "packageForm"
+      )
       .reset();
 
     document.getElementById(
       "accessType"
-    ).value = "live";
+    ).value =
+      "live";
 
     document.getElementById(
       "replayDays"
-    ).value = "0";
+    ).value =
+      "0";
 
     document.getElementById(
       "packageActive"
-    ).checked = true;
+    ).checked =
+      true;
 
     document.getElementById(
       "savePackageButton"
@@ -2172,6 +3368,8 @@
       "เพิ่มแพ็กเกจ";
 
     updateReplayField();
+
+    renderPackageSessionChoices();
 
     showMessage(
       document.getElementById(
@@ -2194,17 +3392,26 @@
       );
 
     const isReplay =
-      accessType === "live_replay";
+      accessType ===
+      "live_replay";
 
-    replayDays.disabled = !isReplay;
-    replayDays.required = isReplay;
+    replayDays.disabled =
+      !isReplay;
+
+    replayDays.required =
+      isReplay;
 
     if (!isReplay) {
-      replayDays.value = "0";
+      replayDays.value =
+        "0";
+
     } else if (
-      Number(replayDays.value) < 1
+      Number(
+        replayDays.value
+      ) < 1
     ) {
-      replayDays.value = "30";
+      replayDays.value =
+        "30";
     }
   }
 
@@ -2227,95 +3434,153 @@
           : ""
       );
 
-    element.textContent = text;
+    element.textContent =
+      text;
   }
 
-  function formatDateTime(value) {
+  function formatDateTime(
+    value
+  ) {
     if (!value) {
       return "-";
     }
 
-    const date = new Date(value);
+    const date =
+      new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
       return "-";
     }
 
     return date.toLocaleString(
       "th-TH",
       {
-        dateStyle: "medium",
-        timeStyle: "short"
+        dateStyle:
+          "medium",
+
+        timeStyle:
+          "short"
       }
     );
   }
 
-  function formatAccessType(value) {
-    if (value === "live") {
+  function formatAccessType(
+    value
+  ) {
+    if (
+      value === "live"
+    ) {
       return "LIVE เท่านั้น";
     }
 
-    if (value === "live_replay") {
+    if (
+      value ===
+      "live_replay"
+    ) {
       return "LIVE + REPLAY";
     }
 
     return "-";
   }
 
-  function formatConcertStatus(value) {
+  function formatConcertStatus(
+    value
+  ) {
     const labels = {
-      draft: "แบบร่าง",
-      on_sale: "เปิดขาย",
-      live: "กำลัง Live",
-      ended: "จบแล้ว",
-      hidden: "ซ่อน"
+      draft:
+        "แบบร่าง",
+
+      on_sale:
+        "เปิดขาย",
+
+      live:
+        "กำลัง Live",
+
+      ended:
+        "จบแล้ว",
+
+      hidden:
+        "ซ่อน"
     };
 
-    return labels[value] || value;
+    return (
+      labels[value] ||
+      value ||
+      "-"
+    );
   }
 
-  function getConcertStatusClass(value) {
-    if (value === "hidden") {
+  function getConcertStatusClass(
+    value
+  ) {
+    if (
+      value === "hidden"
+    ) {
       return "hidden-status";
     }
 
-    return value || "draft";
+    return (
+      value ||
+      "draft"
+    );
   }
 
-  function localInputToIso(value) {
+  function localInputToIso(
+    value
+  ) {
     if (!value) {
       return "";
     }
 
-    const date = new Date(value);
+    const date =
+      new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
       return "";
     }
 
     return date.toISOString();
   }
 
-  function isoToLocalInput(value) {
+  function isoToLocalInput(
+    value
+  ) {
     if (!value) {
       return "";
     }
 
-    const date = new Date(value);
+    const date =
+      new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
       return "";
     }
 
-    const localDate = new Date(
-      date.getTime() -
-      date.getTimezoneOffset() *
-      60000
-    );
+    const localDate =
+      new Date(
+        date.getTime() -
+        date.getTimezoneOffset() *
+        60000
+      );
 
     return localDate
       .toISOString()
-      .slice(0, 16);
+      .slice(
+        0,
+        16
+      );
   }
 </script>
 
