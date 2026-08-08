@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>ตรวจสอบการชำระเงิน | LIVEHUB TH</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at top,
+          #351025 0,
+          #10050c 35%,
+          #050505 75%
+        );
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      width: min(1100px, 94%);
+      margin: 0 auto;
+      padding: 35px 0 60px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      margin: 0;
+      color: #ff1493;
+      font-size: 36px;
+    }
+
+    .header p {
+      color: #cccccc;
+      margin-top: 10px;
+    }
+
+    .login-card,
+    .orders-card {
+      background: rgba(10, 10, 10, 0.96);
+      border: 1px solid #333333;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow:
+        0 0 35px rgba(255, 20, 147, 0.15);
+    }
+
+    .login-card {
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 9px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #444444;
+      border-radius: 12px;
+      background: #111111;
+      color: white;
+      font-size: 16px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 18px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .login-button {
+      width: 100%;
+      margin-top: 15px;
+      background:
+        linear-gradient(
+          135deg,
+          #ff1493,
+          #d90068
+        );
+      color: white;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .toolbar h2 {
+      margin: 0;
+    }
+
+    .refresh-button {
+      background: #ff1493;
+      color: white;
+    }
+
+    .logout-button {
+      background: #333333;
+      color: white;
+    }
+
+    .orders {
+      display: grid;
+      gap: 20px;
+    }
+
+    .order {
+      padding: 20px;
+      border: 1px solid #343434;
+      border-radius: 18px;
+      background: #090909;
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .order-id {
+      color: #ff4fa5;
+      font-weight: bold;
+      word-break: break-all;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .pending {
+      color: #ffd166;
+      background: rgba(255, 209, 102, 0.12);
+    }
+
+    .approved {
+      color: #4ade80;
+      background: rgba(74, 222, 128, 0.12);
+    }
+
+    .rejected {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.12);
+    }
+
+    .details {
+      margin-top: 15px;
+      line-height: 1.8;
+      color: #dddddd;
+    }
+
+    .slip {
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    .slip img {
+      max-width: 100%;
+      max-height: 650px;
+      border-radius: 14px;
+      border: 1px solid #333333;
+      background: white;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .approve {
+      flex: 1;
+      background: #18a957;
+      color: white;
+    }
+
+    .reject {
+      flex: 1;
+      background: #d9363e;
+      color: white;
+    }
+
+    .message {
+      margin-top: 15px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .error {
+      color: #ff7777;
+    }
+
+    .success {
+      color: #4ade80;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: #bbbbbb;
+    }
+
+    @media (max-width: 600px) {
+      .header h1 {
+        font-size: 29px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container">
+
+    <header class="header">
+      <h1>LIVEHUB TH</h1>
+      <p>ระบบตรวจสอบการชำระเงิน</p>
+    </header>
+
+    <section
+      id="loginSection"
+      class="login-card"
+    >
+      <label for="adminToken">
+        รหัสแอดมิน
+      </label>
+
+      <input
+        id="adminToken"
+        type="password"
+        placeholder="กรอก ADMIN TOKEN"
+        autocomplete="off"
+      >
+
+      <button
+        class="login-button"
+        onclick="login()"
+      >
+        เข้าสู่ระบบแอดมิน
+      </button>
+
+      <div
+        id="loginMessage"
+        class="message"
+      ></div>
+    </section>
+
+    <section
+      id="adminSection"
+      class="orders-card hidden"
+    >
+
+      <div class="toolbar">
+
+        <h2>รายการรอตรวจสอบ</h2>
+
+        <div>
+          <button
+            class="refresh-button"
+            onclick="loadOrders()"
+          >
+            รีเฟรช
+          </button>
+
+          <button
+            class="logout-button"
+            onclick="logout()"
+          >
+            ออกจากระบบ
+          </button>
+        </div>
+
+      </div>
+
+      <div id="orders" class="orders"></div>
+
+      <div
+        id="adminMessage"
+        class="message"
+      ></div>
+
+    </section>
+
+  </main>
+
+<script>
+  const API =
+    "https://livehub-payment-api.livehubth.workers.dev";
+
+  let adminToken = "";
+
+  async function login() {
+    const input =
+      document.getElementById("adminToken");
+
+    const message =
+      document.getElementById("loginMessage");
+
+    adminToken = input.value.trim();
+
+    if (!adminToken) {
+      message.className = "message error";
+      message.textContent =
+        "กรุณากรอกรหัสแอดมิน";
+      return;
+    }
+
+    message.className = "message";
+    message.textContent = "กำลังตรวจสอบ...";
+
+    try {
+      const response = await fetch(
+        API + "/api/admin/orders?status=pending",
+        {
+          headers: {
+            "X-Admin-Token": adminToken
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          "รหัสแอดมินไม่ถูกต้อง"
+        );
+      }
+
+      document
+        .getElementById("loginSection")
+        .classList.add("hidden");
+
+      document
+        .getElementById("adminSection")
+        .classList.remove("hidden");
+
+      await loadOrders();
+
+    } catch (error) {
+      adminToken = "";
+
+      message.className = "message error";
+      message.textContent =
+        "รหัสแอดมินไม่ถูกต้อง หรือเชื่อมต่อระบบไม่ได้";
+    }
+  }
+
+  async function loadOrders() {
+    const container =
+      document.getElementById("orders");
+
+    const message =
+      document.getElementById("adminMessage");
+
+    container.innerHTML =
+      '<div class="empty">กำลังโหลดรายการ...</div>';
+
+    message.textContent = "";
+
+    try {
+      const response = await fetch(
+        API + "/api/admin/orders?status=pending",
+        {
+          headers: {
+            "X-Admin-Token": adminToken
+          }
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message || "โหลดข้อมูลไม่สำเร็จ"
+        );
+      }
+
+      const orders = data.orders || [];
+
+      if (orders.length === 0) {
+        container.innerHTML =
+          '<div class="empty">ไม่มีรายการรอตรวจสอบ</div>';
+        return;
+      }
+
+      container.innerHTML = "";
+
+      for (const order of orders) {
+        container.appendChild(
+          createOrderCard(order)
+        );
+
+        loadSlip(order);
+      }
+
+    } catch (error) {
+      container.innerHTML = "";
+
+      message.className = "message error";
+      message.textContent = error.message;
+    }
+  }
+
+  function createOrderCard(order) {
+    const card = document.createElement("article");
+    card.className = "order";
+    card.id = "order-" + order.id;
+
+    const top = document.createElement("div");
+    top.className = "order-top";
+
+    const id = document.createElement("div");
+    id.className = "order-id";
+    id.textContent = order.id;
+
+    const status = document.createElement("span");
+    status.className =
+      "status " + order.status;
+    status.textContent = order.status;
+
+    top.appendChild(id);
+    top.appendChild(status);
+
+    const details =
+      document.createElement("div");
+
+    details.className = "details";
+
+    const packageLine =
+      document.createElement("div");
+
+    packageLine.textContent =
+      "แพ็กเกจ: " + order.package_number;
+
+    const priceLine =
+      document.createElement("div");
+
+    priceLine.textContent =
+      "ยอดชำระ: " + order.price + " บาท";
+
+    const dateLine =
+      document.createElement("div");
+
+    dateLine.textContent =
+      "ส่งเมื่อ: " +
+      new Date(order.created_at)
+        .toLocaleString("th-TH");
+
+    details.appendChild(packageLine);
+    details.appendChild(priceLine);
+    details.appendChild(dateLine);
+
+    const slip =
+      document.createElement("div");
+
+    slip.className = "slip";
+
+    const loading =
+      document.createElement("div");
+
+    loading.textContent =
+      "กำลังโหลดสลิป...";
+
+    slip.appendChild(loading);
+
+    const actions =
+      document.createElement("div");
+
+    actions.className = "actions";
+
+    const approve =
+      document.createElement("button");
+
+    approve.className = "approve";
+    approve.textContent = "✓ อนุมัติ";
+
+    approve.onclick = function () {
+      updateStatus(
+        order.id,
+        "approved"
+      );
+    };
+
+    const reject =
+      document.createElement("button");
+
+    reject.className = "reject";
+    reject.textContent = "✕ ปฏิเสธ";
+
+    reject.onclick = function () {
+      updateStatus(
+        order.id,
+        "rejected"
+      );
+    };
+
+    actions.appendChild(approve);
+    actions.appendChild(reject);
+
+    card.appendChild(top);
+    card.appendChild(details);
+    card.appendChild(slip);
+    card.appendChild(actions);
+
+    return card;
+  }
+
+  async function loadSlip(order) {
+    const card =
+      document.getElementById(
+        "order-" + order.id
+      );
+
+    if (!card) return;
+
+    const slipContainer =
+      card.querySelector(".slip");
+
+    try {
+      const response = await fetch(
+        API +
+        "/api/admin/slip/" +
+        encodeURIComponent(order.id),
+        {
+          headers: {
+            "X-Admin-Token": adminToken
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error();
+      }
+
+      const blob = await response.blob();
+      const imageUrl =
+        URL.createObjectURL(blob);
+
+      const image =
+        document.createElement("img");
+
+      image.src = imageUrl;
+      image.alt =
+        "สลิป " + order.id;
+
+      image.onload = function () {
+        URL.revokeObjectURL(imageUrl);
+      };
+
+      slipContainer.innerHTML = "";
+      slipContainer.appendChild(image);
+
+    } catch (error) {
+      slipContainer.textContent =
+        "ไม่สามารถโหลดภาพสลิปได้";
+    }
+  }
+
+  async function updateStatus(
+    orderId,
+    newStatus
+  ) {
+    const text =
+      newStatus === "approved"
+        ? "อนุมัติรายการนี้?"
+        : "ปฏิเสธรายการนี้?";
+
+    if (!confirm(text)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        API +
+        "/api/admin/orders/" +
+        encodeURIComponent(orderId) +
+        "/status",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            "X-Admin-Token":
+              adminToken
+          },
+
+          body: JSON.stringify({
+            status: newStatus
+          })
+        }
+      );
+
+      const data =
+        await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.message ||
+          "เปลี่ยนสถานะไม่สำเร็จ"
+        );
+      }
+
+      const card =
+        document.getElementById(
+          "order-" + orderId
+        );
+
+      if (card) {
+        card.remove();
+      }
+
+      const message =
+        document.getElementById(
+          "adminMessage"
+        );
+
+      message.className =
+        "message success";
+
+      message.textContent =
+        data.message;
+
+      if (
+        document.getElementById("orders")
+          .children.length === 0
+      ) {
+        document.getElementById(
+          "orders"
+        ).innerHTML =
+          '<div class="empty">ไม่มีรายการรอตรวจสอบ</div>';
+      }
+
+    } catch (error) {
+      const message =
+        document.getElementById(
+          "adminMessage"
+        );
+
+      message.className =
+        "message error";
+
+      message.textContent =
+        error.message;
+    }
+  }
+
+  function logout() {
+    adminToken = "";
+
+    document.getElementById(
+      "adminToken"
+    ).value = "";
+
+    document
+      .getElementById("adminSection")
+      .classList.add("hidden");
+
+    document
+      .getElementById("loginSection")
+      .classList.remove("hidden");
+  }
+</script>
+
+</body>
+</html>
