@@ -291,7 +291,8 @@ async function getPublicConcerts(
     `
   ).all();
 
-  const concerts = concertsResult.results || [];
+  const concerts =
+    concertsResult.results || [];
 
   for (const concert of concerts) {
     const sessionsResult = await env.DB.prepare(
@@ -318,7 +319,10 @@ async function getPublicConcerts(
         name,
         price,
         access_type,
-        replay_days
+        replay_days,
+        replay_months,
+        has_ecard,
+        video_quality
       FROM packages
       WHERE concert_id = ?
         AND is_active = 1
@@ -347,7 +351,23 @@ async function getPublicConcerts(
 
       packageItem.session_ids = (
         linkedResult.results || []
-      ).map(item => item.session_id);
+      ).map(
+        item => item.session_id
+      );
+
+      packageItem.has_ecard =
+        Number(packageItem.has_ecard) === 1
+          ? 1
+          : 0;
+
+      packageItem.replay_months =
+        Number(
+          packageItem.replay_months || 0
+        );
+
+      packageItem.video_quality =
+        packageItem.video_quality ||
+        "1080p";
     }
   }
 
@@ -404,7 +424,8 @@ async function getAdminConcerts(
   return jsonResponse(
     {
       success: true,
-      concerts: result.results || [],
+      concerts:
+        result.results || [],
     },
     200,
     corsHeaders
@@ -416,23 +437,36 @@ async function createConcert(
   env,
   corsHeaders
 ) {
-  const body = await readJson(request);
+  const body =
+    await readJson(request);
 
-  const title = cleanText(body.title);
+  const title =
+    cleanText(body.title);
+
   const description =
-    cleanOptionalText(body.description);
+    cleanOptionalText(
+      body.description
+    );
 
   const coverImageUrl =
-    cleanOptionalText(body.coverImageUrl);
+    cleanOptionalText(
+      body.coverImageUrl
+    );
 
   const liveStartsAt =
-    normalizeDate(body.liveStartsAt);
+    normalizeDate(
+      body.liveStartsAt
+    );
 
   const liveEndsAt =
-    normalizeDate(body.liveEndsAt);
+    normalizeDate(
+      body.liveEndsAt
+    );
 
   const status =
-    normalizeConcertStatus(body.status);
+    normalizeConcertStatus(
+      body.status
+    );
 
   if (!title) {
     return errorResponse(
@@ -442,7 +476,10 @@ async function createConcert(
     );
   }
 
-  if (!liveStartsAt || !liveEndsAt) {
+  if (
+    !liveStartsAt ||
+    !liveEndsAt
+  ) {
     return errorResponse(
       "กรุณากำหนดวันเวลาเริ่มและจบ",
       400,
@@ -469,8 +506,11 @@ async function createConcert(
     );
   }
 
-  const concertId = createId("CON");
-  const now = new Date().toISOString();
+  const concertId =
+    createId("CON");
+
+  const now =
+    new Date().toISOString();
 
   await env.DB.prepare(
     `
@@ -505,7 +545,8 @@ async function createConcert(
     {
       success: true,
       concertId,
-      message: "สร้างคอนเสิร์ตสำเร็จ",
+      message:
+        "สร้างคอนเสิร์ตสำเร็จ",
     },
     201,
     corsHeaders
@@ -526,16 +567,17 @@ async function updateConcert(
     );
   }
 
-  const existing = await env.DB.prepare(
-    `
-    SELECT id
-    FROM concerts
-    WHERE id = ?
-    LIMIT 1
-    `
-  )
-    .bind(concertId)
-    .first();
+  const existing =
+    await env.DB.prepare(
+      `
+      SELECT id
+      FROM concerts
+      WHERE id = ?
+      LIMIT 1
+      `
+    )
+      .bind(concertId)
+      .first();
 
   if (!existing) {
     return errorResponse(
@@ -545,23 +587,36 @@ async function updateConcert(
     );
   }
 
-  const body = await readJson(request);
+  const body =
+    await readJson(request);
 
-  const title = cleanText(body.title);
+  const title =
+    cleanText(body.title);
+
   const description =
-    cleanOptionalText(body.description);
+    cleanOptionalText(
+      body.description
+    );
 
   const coverImageUrl =
-    cleanOptionalText(body.coverImageUrl);
+    cleanOptionalText(
+      body.coverImageUrl
+    );
 
   const liveStartsAt =
-    normalizeDate(body.liveStartsAt);
+    normalizeDate(
+      body.liveStartsAt
+    );
 
   const liveEndsAt =
-    normalizeDate(body.liveEndsAt);
+    normalizeDate(
+      body.liveEndsAt
+    );
 
   const status =
-    normalizeConcertStatus(body.status);
+    normalizeConcertStatus(
+      body.status
+    );
 
   if (!title) {
     return errorResponse(
@@ -571,7 +626,10 @@ async function updateConcert(
     );
   }
 
-  if (!liveStartsAt || !liveEndsAt) {
+  if (
+    !liveStartsAt ||
+    !liveEndsAt
+  ) {
     return errorResponse(
       "กรุณากำหนดวันเวลาเริ่มและจบ",
       400,
@@ -628,7 +686,8 @@ async function updateConcert(
     {
       success: true,
       concertId,
-      message: "แก้ไขคอนเสิร์ตสำเร็จ",
+      message:
+        "แก้ไขคอนเสิร์ตสำเร็จ",
     },
     200,
     corsHeaders
@@ -646,9 +705,12 @@ async function getSessions(
   env,
   corsHeaders
 ) {
-  const concertId = cleanText(
-    url.searchParams.get("concertId")
-  );
+  const concertId =
+    cleanText(
+      url.searchParams.get(
+        "concertId"
+      )
+    );
 
   if (!concertId) {
     return errorResponse(
@@ -658,30 +720,32 @@ async function getSessions(
     );
   }
 
-  const result = await env.DB.prepare(
-    `
-    SELECT
-      id,
-      concert_id,
-      name,
-      live_starts_at,
-      live_ends_at,
-      sort_order,
-      is_active,
-      created_at,
-      updated_at
-    FROM concert_sessions
-    WHERE concert_id = ?
-    ORDER BY sort_order ASC, live_starts_at ASC
-    `
-  )
-    .bind(concertId)
-    .all();
+  const result =
+    await env.DB.prepare(
+      `
+      SELECT
+        id,
+        concert_id,
+        name,
+        live_starts_at,
+        live_ends_at,
+        sort_order,
+        is_active,
+        created_at,
+        updated_at
+      FROM concert_sessions
+      WHERE concert_id = ?
+      ORDER BY sort_order ASC, live_starts_at ASC
+      `
+    )
+      .bind(concertId)
+      .all();
 
   return jsonResponse(
     {
       success: true,
-      sessions: result.results || [],
+      sessions:
+        result.results || [],
     },
     200,
     corsHeaders
@@ -693,18 +757,24 @@ async function createSession(
   env,
   corsHeaders
 ) {
-  const body = await readJson(request);
+  const body =
+    await readJson(request);
 
   const concertId =
     cleanText(body.concertId);
 
-  const name = cleanText(body.name);
+  const name =
+    cleanText(body.name);
 
   const liveStartsAt =
-    normalizeDate(body.liveStartsAt);
+    normalizeDate(
+      body.liveStartsAt
+    );
 
   const liveEndsAt =
-    normalizeDate(body.liveEndsAt);
+    normalizeDate(
+      body.liveEndsAt
+    );
 
   const sortOrder =
     normalizeNonNegativeInteger(
@@ -718,7 +788,10 @@ async function createSession(
       1
     );
 
-  if (!concertId || !name) {
+  if (
+    !concertId ||
+    !name
+  ) {
     return errorResponse(
       "กรุณากรอกข้อมูลวันแสดงให้ครบ",
       400,
@@ -726,7 +799,10 @@ async function createSession(
     );
   }
 
-  if (!liveStartsAt || !liveEndsAt) {
+  if (
+    !liveStartsAt ||
+    !liveEndsAt
+  ) {
     return errorResponse(
       "กรุณากำหนดเวลาเริ่มและจบ",
       400,
@@ -745,16 +821,17 @@ async function createSession(
     );
   }
 
-  const concert = await env.DB.prepare(
-    `
-    SELECT id
-    FROM concerts
-    WHERE id = ?
-    LIMIT 1
-    `
-  )
-    .bind(concertId)
-    .first();
+  const concert =
+    await env.DB.prepare(
+      `
+      SELECT id
+      FROM concerts
+      WHERE id = ?
+      LIMIT 1
+      `
+    )
+      .bind(concertId)
+      .first();
 
   if (!concert) {
     return errorResponse(
@@ -764,8 +841,11 @@ async function createSession(
     );
   }
 
-  const sessionId = createId("DAY");
-  const now = new Date().toISOString();
+  const sessionId =
+    createId("DAY");
+
+  const now =
+    new Date().toISOString();
 
   await env.DB.prepare(
     `
@@ -805,7 +885,8 @@ async function createSession(
     {
       success: true,
       sessionId,
-      message: "เพิ่มวันแสดงสำเร็จ",
+      message:
+        "เพิ่มวันแสดงสำเร็จ",
     },
     201,
     corsHeaders
@@ -826,16 +907,17 @@ async function updateSession(
     );
   }
 
-  const existing = await env.DB.prepare(
-    `
-    SELECT id, concert_id
-    FROM concert_sessions
-    WHERE id = ?
-    LIMIT 1
-    `
-  )
-    .bind(sessionId)
-    .first();
+  const existing =
+    await env.DB.prepare(
+      `
+      SELECT id, concert_id
+      FROM concert_sessions
+      WHERE id = ?
+      LIMIT 1
+      `
+    )
+      .bind(sessionId)
+      .first();
 
   if (!existing) {
     return errorResponse(
@@ -845,15 +927,21 @@ async function updateSession(
     );
   }
 
-  const body = await readJson(request);
+  const body =
+    await readJson(request);
 
-  const name = cleanText(body.name);
+  const name =
+    cleanText(body.name);
 
   const liveStartsAt =
-    normalizeDate(body.liveStartsAt);
+    normalizeDate(
+      body.liveStartsAt
+    );
 
   const liveEndsAt =
-    normalizeDate(body.liveEndsAt);
+    normalizeDate(
+      body.liveEndsAt
+    );
 
   const sortOrder =
     normalizeNonNegativeInteger(
@@ -867,7 +955,11 @@ async function updateSession(
       1
     );
 
-  if (!name || !liveStartsAt || !liveEndsAt) {
+  if (
+    !name ||
+    !liveStartsAt ||
+    !liveEndsAt
+  ) {
     return errorResponse(
       "กรุณากรอกข้อมูลวันแสดงให้ครบ",
       400,
@@ -919,13 +1011,13 @@ async function updateSession(
     {
       success: true,
       sessionId,
-      message: "แก้ไขวันแสดงสำเร็จ",
+      message:
+        "แก้ไขวันแสดงสำเร็จ",
     },
     200,
     corsHeaders
   );
 }
-
 /*
  * =========================================
  * PACKAGES
@@ -953,6 +1045,9 @@ async function getPackages(
         price,
         access_type,
         replay_days,
+        replay_months,
+        has_ecard,
+        video_quality,
         is_active,
         created_at,
         updated_at
@@ -973,6 +1068,9 @@ async function getPackages(
         price,
         access_type,
         replay_days,
+        replay_months,
+        has_ecard,
+        video_quality,
         is_active,
         created_at,
         updated_at
@@ -999,6 +1097,18 @@ async function getPackages(
     packageItem.session_ids = (
       linkedResult.results || []
     ).map(item => item.session_id);
+
+    packageItem.replay_months = Number(
+      packageItem.replay_months || 0
+    );
+
+    packageItem.has_ecard =
+      Number(packageItem.has_ecard) === 1
+        ? 1
+        : 0;
+
+    packageItem.video_quality =
+      packageItem.video_quality || "1080p";
   }
 
   return jsonResponse(
@@ -1021,18 +1131,42 @@ async function createPackage(
   const concertId =
     cleanText(body.concertId);
 
-  const name = cleanText(body.name);
+  const name =
+    cleanText(body.name);
 
   const price =
     normalizePrice(body.price);
 
   const accessType =
-    normalizeAccessType(body.accessType);
+    normalizeAccessType(
+      body.accessType
+    );
+
+  /*
+   * รองรับระบบเดิม replayDays
+   * และระบบใหม่ replayMonths
+   */
+  const replayMonths =
+    normalizeReplayMonths(
+      body.replayMonths,
+      accessType
+    );
 
   const replayDays =
-    normalizeReplayDays(
+    normalizeLegacyReplayDays(
       body.replayDays,
       accessType
+    );
+
+  const hasEcard =
+    normalizeBooleanNumber(
+      body.hasEcard,
+      0
+    );
+
+  const videoQuality =
+    normalizeVideoQuality(
+      body.videoQuality
     );
 
   const isActive =
@@ -1042,7 +1176,9 @@ async function createPackage(
     );
 
   const sessionIds =
-    normalizeIdArray(body.sessionIds);
+    normalizeIdArray(
+      body.sessionIds
+    );
 
   const validationError =
     validatePackageInput(
@@ -1050,7 +1186,8 @@ async function createPackage(
       name,
       price,
       accessType,
-      replayDays
+      replayMonths,
+      videoQuality
     );
 
   if (validationError) {
@@ -1061,16 +1198,17 @@ async function createPackage(
     );
   }
 
-  const concert = await env.DB.prepare(
-    `
-    SELECT id
-    FROM concerts
-    WHERE id = ?
-    LIMIT 1
-    `
-  )
-    .bind(concertId)
-    .first();
+  const concert =
+    await env.DB.prepare(
+      `
+      SELECT id
+      FROM concerts
+      WHERE id = ?
+      LIMIT 1
+      `
+    )
+      .bind(concertId)
+      .first();
 
   if (!concert) {
     return errorResponse(
@@ -1095,8 +1233,19 @@ async function createPackage(
     );
   }
 
-  const packageId = createId("PKG");
-  const now = new Date().toISOString();
+  if (sessionIds.length === 0) {
+    return errorResponse(
+      "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
+      400,
+      corsHeaders
+    );
+  }
+
+  const packageId =
+    createId("PKG");
+
+  const now =
+    new Date().toISOString();
 
   await env.DB.prepare(
     `
@@ -1107,11 +1256,17 @@ async function createPackage(
       price,
       access_type,
       replay_days,
+      replay_months,
+      has_ecard,
+      video_quality,
       is_active,
       created_at,
       updated_at
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (
+      ?, ?, ?, ?, ?, ?,
+      ?, ?, ?, ?, ?, ?
+    )
     `
   )
     .bind(
@@ -1121,6 +1276,9 @@ async function createPackage(
       price,
       accessType,
       replayDays,
+      replayMonths,
+      hasEcard,
+      videoQuality,
       isActive,
       now,
       now
@@ -1137,7 +1295,20 @@ async function createPackage(
     {
       success: true,
       packageId,
-      message: "เพิ่มแพ็กเกจสำเร็จ",
+      package: {
+        id: packageId,
+        concertId,
+        name,
+        price,
+        accessType,
+        replayMonths,
+        hasEcard,
+        videoQuality,
+        sessionIds,
+        isActive,
+      },
+      message:
+        "เพิ่มแพ็กเกจสำเร็จ",
     },
     201,
     corsHeaders
@@ -1158,16 +1329,19 @@ async function updatePackage(
     );
   }
 
-  const existing = await env.DB.prepare(
-    `
-    SELECT id, concert_id
-    FROM packages
-    WHERE id = ?
-    LIMIT 1
-    `
-  )
-    .bind(packageId)
-    .first();
+  const existing =
+    await env.DB.prepare(
+      `
+      SELECT
+        id,
+        concert_id
+      FROM packages
+      WHERE id = ?
+      LIMIT 1
+      `
+    )
+      .bind(packageId)
+      .first();
 
   if (!existing) {
     return errorResponse(
@@ -1177,20 +1351,41 @@ async function updatePackage(
     );
   }
 
-  const body = await readJson(request);
+  const body =
+    await readJson(request);
 
-  const name = cleanText(body.name);
+  const name =
+    cleanText(body.name);
 
   const price =
     normalizePrice(body.price);
 
   const accessType =
-    normalizeAccessType(body.accessType);
+    normalizeAccessType(
+      body.accessType
+    );
+
+  const replayMonths =
+    normalizeReplayMonths(
+      body.replayMonths,
+      accessType
+    );
 
   const replayDays =
-    normalizeReplayDays(
+    normalizeLegacyReplayDays(
       body.replayDays,
       accessType
+    );
+
+  const hasEcard =
+    normalizeBooleanNumber(
+      body.hasEcard,
+      0
+    );
+
+  const videoQuality =
+    normalizeVideoQuality(
+      body.videoQuality
     );
 
   const isActive =
@@ -1200,7 +1395,9 @@ async function updatePackage(
     );
 
   const sessionIds =
-    normalizeIdArray(body.sessionIds);
+    normalizeIdArray(
+      body.sessionIds
+    );
 
   const validationError =
     validatePackageInput(
@@ -1208,7 +1405,8 @@ async function updatePackage(
       name,
       price,
       accessType,
-      replayDays
+      replayMonths,
+      videoQuality
     );
 
   if (validationError) {
@@ -1234,6 +1432,14 @@ async function updatePackage(
     );
   }
 
+  if (sessionIds.length === 0) {
+    return errorResponse(
+      "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
+      400,
+      corsHeaders
+    );
+  }
+
   await env.DB.prepare(
     `
     UPDATE packages
@@ -1242,6 +1448,9 @@ async function updatePackage(
       price = ?,
       access_type = ?,
       replay_days = ?,
+      replay_months = ?,
+      has_ecard = ?,
+      video_quality = ?,
       is_active = ?,
       updated_at = ?
     WHERE id = ?
@@ -1252,6 +1461,9 @@ async function updatePackage(
       price,
       accessType,
       replayDays,
+      replayMonths,
+      hasEcard,
+      videoQuality,
       isActive,
       new Date().toISOString(),
       packageId
@@ -1268,7 +1480,21 @@ async function updatePackage(
     {
       success: true,
       packageId,
-      message: "แก้ไขแพ็กเกจสำเร็จ",
+      package: {
+        id: packageId,
+        concertId:
+          existing.concert_id,
+        name,
+        price,
+        accessType,
+        replayMonths,
+        hasEcard,
+        videoQuality,
+        sessionIds,
+        isActive,
+      },
+      message:
+        "แก้ไขแพ็กเกจสำเร็จ",
     },
     200,
     corsHeaders
@@ -1286,51 +1512,69 @@ async function createPayment(
   env,
   corsHeaders
 ) {
-  const formData = await request.formData();
+  const formData =
+    await request.formData();
 
-  const packageId = cleanText(
-    formData.get("packageId")
-  );
+  const packageId =
+    cleanText(
+      formData.get("packageId")
+    );
 
-  const legacyPackageNumber = cleanText(
-    formData.get("packageNumber")
-  );
+  const legacyPackageNumber =
+    cleanText(
+      formData.get("packageNumber")
+    );
 
-  const submittedPrice = Number(
-    formData.get("price")
-  );
+  const submittedPrice =
+    Number(
+      formData.get("price")
+    );
 
-  const slip = formData.get("slip");
+  const slip =
+    formData.get("slip");
 
   let selectedPackage = null;
+
   let orderPackageNumber =
     legacyPackageNumber || "-";
 
+  /*
+   * =========================================
+   * PACKAGE FROM DATABASE
+   * =========================================
+   */
+
   if (packageId) {
-    selectedPackage = await env.DB.prepare(
-      `
-      SELECT
-        p.id,
-        p.concert_id,
-        p.name,
-        p.price,
-        p.access_type,
-        p.replay_days,
-        p.is_active,
-        c.status AS concert_status
-      FROM packages p
-      INNER JOIN concerts c
-        ON c.id = p.concert_id
-      WHERE p.id = ?
-      LIMIT 1
-      `
-    )
-      .bind(packageId)
-      .first();
+    selectedPackage =
+      await env.DB.prepare(
+        `
+        SELECT
+          p.id,
+          p.concert_id,
+          p.name,
+          p.price,
+          p.access_type,
+          p.replay_days,
+          p.replay_months,
+          p.has_ecard,
+          p.video_quality,
+          p.is_active,
+          c.status AS concert_status
+        FROM packages p
+        INNER JOIN concerts c
+          ON c.id = p.concert_id
+        WHERE p.id = ?
+        LIMIT 1
+        `
+      )
+        .bind(packageId)
+        .first();
 
     if (
       !selectedPackage ||
-      Number(selectedPackage.is_active) !== 1
+      Number(
+        selectedPackage.is_active
+      ) !== 1
     ) {
       return errorResponse(
         "แพ็กเกจนี้ไม่เปิดขาย",
@@ -1340,7 +1584,10 @@ async function createPayment(
     }
 
     if (
-      !["on_sale", "live"].includes(
+      ![
+        "on_sale",
+        "live",
+      ].includes(
         selectedPackage.concert_status
       )
     ) {
@@ -1351,8 +1598,17 @@ async function createPayment(
       );
     }
 
-    orderPackageNumber = packageId;
+    orderPackageNumber =
+      packageId;
   } else {
+    /*
+     * =========================================
+     * LEGACY PACKAGE SUPPORT
+     * =========================================
+     *
+     * เก็บไว้เพื่อไม่ให้หน้าเก่าเสีย
+     */
+
     const legacyPrices = {
       "1": 99,
       "2": 199,
@@ -1360,7 +1616,11 @@ async function createPayment(
       "4": 249,
     };
 
-    if (!legacyPrices[legacyPackageNumber]) {
+    if (
+      !legacyPrices[
+        legacyPackageNumber
+      ]
+    ) {
       return errorResponse(
         "ไม่พบข้อมูลแพ็กเกจ",
         400,
@@ -1368,21 +1628,59 @@ async function createPayment(
       );
     }
 
+    const legacyHasEcard =
+      ["3", "4"].includes(
+        legacyPackageNumber
+      )
+        ? 1
+        : 0;
+
+    const legacyReplayMonths =
+      ["3", "4"].includes(
+        legacyPackageNumber
+      )
+        ? 6
+        : 0;
+
     selectedPackage = {
       id: null,
       concert_id: null,
       name:
-        "แพ็กเกจ " + legacyPackageNumber,
+        "แพ็กเกจ " +
+        legacyPackageNumber,
       price:
-        legacyPrices[legacyPackageNumber],
-      access_type: null,
+        legacyPrices[
+          legacyPackageNumber
+        ],
+      access_type:
+        ["3", "4"].includes(
+          legacyPackageNumber
+        )
+          ? "live_replay"
+          : "live",
       replay_days: 0,
+      replay_months:
+        legacyReplayMonths,
+      has_ecard:
+        legacyHasEcard,
+      video_quality:
+        "1080p",
     };
   }
 
+  /*
+   * =========================================
+   * PRICE SECURITY CHECK
+   * =========================================
+   */
+
   if (
-    Number(selectedPackage.price) !==
-    submittedPrice
+    !Number.isFinite(
+      submittedPrice
+    ) ||
+    Number(
+      selectedPackage.price
+    ) !== submittedPrice
   ) {
     return errorResponse(
       "ราคาแพ็กเกจไม่ถูกต้อง",
@@ -1390,6 +1688,12 @@ async function createPayment(
       corsHeaders
     );
   }
+
+  /*
+   * =========================================
+   * SLIP VALIDATION
+   * =========================================
+   */
 
   const slipError =
     validateSlip(slip);
@@ -1402,31 +1706,81 @@ async function createPayment(
     );
   }
 
-  const orderId = createId("LH");
+  const orderId =
+    createId("LH");
 
   const extension =
-    getImageExtension(slip.type);
+    getImageExtension(
+      slip.type
+    );
 
   const slipKey =
     `slips/${orderId}.${extension}`;
+
+  /*
+   * =========================================
+   * SAVE SLIP TO R2
+   * =========================================
+   */
 
   await env.SLIPS.put(
     slipKey,
     await slip.arrayBuffer(),
     {
       httpMetadata: {
-        contentType: slip.type,
+        contentType:
+          slip.type,
       },
 
       customMetadata: {
         orderId,
+
         packageId:
-          selectedPackage.id || "",
+          selectedPackage.id ||
+          "",
+
         price:
-          String(selectedPackage.price),
+          String(
+            selectedPackage.price
+          ),
+
+        replayMonths:
+          String(
+            selectedPackage
+              .replay_months ||
+            0
+          ),
+
+        hasEcard:
+          String(
+            Number(
+              selectedPackage
+                .has_ecard ||
+              0
+            )
+          ),
+
+        videoQuality:
+          selectedPackage
+            .video_quality ||
+          "1080p",
       },
     }
   );
+
+  /*
+   * =========================================
+   * SAVE ORDER SNAPSHOT
+   * =========================================
+   *
+   * สำคัญ:
+   * เราบันทึก replay / e-card / quality
+   * ลง orders ด้วย
+   *
+   * ดังนั้นถ้าแอดมินแก้แพ็กเกจภายหลัง
+   * สิทธิ์ของลูกค้าที่ซื้อไปแล้ว
+   * จะไม่เปลี่ยนตาม
+   */
 
   try {
     await env.DB.prepare(
@@ -1442,11 +1796,14 @@ async function createPayment(
         package_id,
         package_name,
         access_type,
-        replay_days
+        replay_days,
+        replay_months,
+        has_ecard,
+        video_quality
       )
       VALUES (
         ?, ?, ?, ?, 'pending', ?,
-        ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?, ?
       )
       `
     )
@@ -1456,25 +1813,99 @@ async function createPayment(
         selectedPackage.price,
         slipKey,
         new Date().toISOString(),
-        selectedPackage.concert_id,
+
+        selectedPackage
+          .concert_id,
+
         selectedPackage.id,
+
         selectedPackage.name,
-        selectedPackage.access_type,
+
+        selectedPackage
+          .access_type,
+
         Number(
-          selectedPackage.replay_days || 0
-        )
+          selectedPackage
+            .replay_days ||
+          0
+        ),
+
+        Number(
+          selectedPackage
+            .replay_months ||
+          0
+        ),
+
+        Number(
+          selectedPackage
+            .has_ecard ||
+          0
+        ),
+
+        selectedPackage
+          .video_quality ||
+        "1080p"
       )
       .run();
   } catch (databaseError) {
-    await env.SLIPS.delete(slipKey);
+    /*
+     * ถ้าบันทึก D1 ไม่สำเร็จ
+     * ลบสลิปออกจาก R2
+     * ป้องกันไฟล์ค้าง
+     */
+
+    await env.SLIPS.delete(
+      slipKey
+    );
+
     throw databaseError;
   }
 
   return jsonResponse(
     {
       success: true,
+
       orderId,
-      status: "pending",
+
+      status:
+        "pending",
+
+      package: {
+        id:
+          selectedPackage.id,
+
+        name:
+          selectedPackage.name,
+
+        price:
+          Number(
+            selectedPackage.price
+          ),
+
+        accessType:
+          selectedPackage
+            .access_type,
+
+        replayMonths:
+          Number(
+            selectedPackage
+              .replay_months ||
+            0
+          ),
+
+        hasEcard:
+          Number(
+            selectedPackage
+              .has_ecard ||
+            0
+          ) === 1,
+
+        videoQuality:
+          selectedPackage
+            .video_quality ||
+          "1080p",
+      },
+
       message:
         "ส่งสลิปสำเร็จ กรุณารอการตรวจสอบการชำระเงิน",
     },
@@ -1482,7 +1913,6 @@ async function createPayment(
     corsHeaders
   );
 }
-
 /*
  * =========================================
  * ORDERS
@@ -1527,7 +1957,10 @@ async function getOrders(
     package_id,
     package_name,
     access_type,
-    replay_days
+    replay_days,
+    replay_months,
+    has_ecard,
+    video_quality
   `;
 
   let result;
@@ -1555,15 +1988,52 @@ async function getOrders(
       .all();
   }
 
+  const orders =
+    result.results || [];
+
+  /*
+   * แปลงค่าจาก D1
+   * ให้อยู่ในรูปแบบที่หน้าแอดมินใช้ง่าย
+   */
+  for (const order of orders) {
+    order.price =
+      Number(order.price || 0);
+
+    order.replay_days =
+      Number(
+        order.replay_days || 0
+      );
+
+    order.replay_months =
+      Number(
+        order.replay_months || 0
+      );
+
+    order.has_ecard =
+      Number(order.has_ecard) === 1
+        ? 1
+        : 0;
+
+    order.video_quality =
+      order.video_quality ||
+      "1080p";
+  }
+
   return jsonResponse(
     {
       success: true,
-      orders: result.results || [],
+      orders,
     },
     200,
     corsHeaders
   );
 }
+
+/*
+ * =========================================
+ * GET PAYMENT SLIP
+ * =========================================
+ */
 
 async function getSlip(
   orderId,
@@ -1578,16 +2048,17 @@ async function getSlip(
     );
   }
 
-  const order = await env.DB.prepare(
-    `
-    SELECT slip_key
-    FROM orders
-    WHERE id = ?
-    LIMIT 1
-    `
-  )
-    .bind(orderId)
-    .first();
+  const order =
+    await env.DB.prepare(
+      `
+      SELECT slip_key
+      FROM orders
+      WHERE id = ?
+      LIMIT 1
+      `
+    )
+      .bind(orderId)
+      .first();
 
   if (!order) {
     return errorResponse(
@@ -1597,8 +2068,18 @@ async function getSlip(
     );
   }
 
+  if (!order.slip_key) {
+    return errorResponse(
+      "คำสั่งซื้อนี้ไม่มีไฟล์สลิป",
+      404,
+      corsHeaders
+    );
+  }
+
   const object =
-    await env.SLIPS.get(order.slip_key);
+    await env.SLIPS.get(
+      order.slip_key
+    );
 
   if (!object) {
     return errorResponse(
@@ -1611,11 +2092,14 @@ async function getSlip(
   const headers =
     new Headers(corsHeaders);
 
-  object.writeHttpMetadata(headers);
+  object.writeHttpMetadata(
+    headers
+  );
 
   headers.set(
     "Content-Type",
-    object.httpMetadata?.contentType ||
+    object.httpMetadata
+      ?.contentType ||
       "image/jpeg"
   );
 
@@ -1624,11 +2108,20 @@ async function getSlip(
     "private, no-store"
   );
 
-  return new Response(object.body, {
-    status: 200,
-    headers,
-  });
+  return new Response(
+    object.body,
+    {
+      status: 200,
+      headers,
+    }
+  );
 }
+
+/*
+ * =========================================
+ * APPROVE / REJECT ORDER
+ * =========================================
+ */
 
 async function updateOrderStatus(
   orderId,
@@ -1644,7 +2137,8 @@ async function updateOrderStatus(
     );
   }
 
-  const body = await readJson(request);
+  const body =
+    await readJson(request);
 
   const newStatus =
     cleanText(body.status);
@@ -1660,22 +2154,37 @@ async function updateOrderStatus(
     );
   }
 
-  const order = await env.DB.prepare(
-    `
-    SELECT
-      id,
-      concert_id,
-      package_id,
-      access_type,
-      replay_days,
-      access_code
-    FROM orders
-    WHERE id = ?
-    LIMIT 1
-    `
-  )
-    .bind(orderId)
-    .first();
+  /*
+   * อ่านสิทธิ์จาก orders
+   *
+   * ไม่อ่านจาก packages โดยตรง
+   * เพราะ orders คือ snapshot
+   * ของสิทธิ์ตอนลูกค้าซื้อ
+   */
+  const order =
+    await env.DB.prepare(
+      `
+      SELECT
+        id,
+        status,
+        concert_id,
+        package_id,
+        package_name,
+        access_type,
+        replay_days,
+        replay_months,
+        has_ecard,
+        video_quality,
+        access_code,
+        approved_at,
+        access_expires_at
+      FROM orders
+      WHERE id = ?
+      LIMIT 1
+      `
+    )
+      .bind(orderId)
+      .first();
 
   if (!order) {
     return errorResponse(
@@ -1684,6 +2193,12 @@ async function updateOrderStatus(
       corsHeaders
     );
   }
+
+  /*
+   * =========================================
+   * REJECT PAYMENT
+   * =========================================
+   */
 
   if (newStatus === "rejected") {
     await env.DB.prepare(
@@ -1713,9 +2228,23 @@ async function updateOrderStatus(
     );
   }
 
+  /*
+   * =========================================
+   * APPROVE PAYMENT
+   * =========================================
+   */
+
   const approvedAt =
+    order.approved_at ||
     new Date().toISOString();
 
+  /*
+   * ถ้าเคยอนุมัติแล้ว
+   * ใช้ access code เดิม
+   *
+   * ป้องกันกดอนุมัติซ้ำแล้ว
+   * รหัสลูกค้าเปลี่ยน
+   */
   const accessCode =
     order.access_code ||
     createAccessCode();
@@ -1748,10 +2277,43 @@ async function updateOrderStatus(
   return jsonResponse(
     {
       success: true,
+
       orderId,
-      status: "approved",
+
+      status:
+        "approved",
+
       accessCode,
+
+      approvedAt,
+
       accessExpiresAt,
+
+      package: {
+        name:
+          order.package_name ||
+          "",
+
+        accessType:
+          order.access_type ||
+          "live",
+
+        replayMonths:
+          Number(
+            order.replay_months ||
+            0
+          ),
+
+        hasEcard:
+          Number(
+            order.has_ecard
+          ) === 1,
+
+        videoQuality:
+          order.video_quality ||
+          "1080p",
+      },
+
       message:
         "อนุมัติการชำระเงินสำเร็จ",
     },
@@ -1771,6 +2333,9 @@ async function replacePackageSessions(
   sessionIds,
   env
 ) {
+  /*
+   * ลบความสัมพันธ์เดิมก่อน
+   */
   await env.DB.prepare(
     `
     DELETE FROM package_sessions
@@ -1780,12 +2345,20 @@ async function replacePackageSessions(
     .bind(packageId)
     .run();
 
-  const now = new Date().toISOString();
+  const now =
+    new Date().toISOString();
 
-  for (const sessionId of sessionIds) {
+  /*
+   * เพิ่มวันแสดงที่เลือกใหม่
+   */
+  for (
+    const sessionId
+    of sessionIds
+  ) {
     await env.DB.prepare(
       `
-      INSERT OR IGNORE INTO package_sessions (
+      INSERT OR IGNORE
+      INTO package_sessions (
         package_id,
         session_id,
         created_at
@@ -1802,54 +2375,80 @@ async function replacePackageSessions(
   }
 }
 
+/*
+ * =========================================
+ * VALIDATE PACKAGE SESSIONS
+ * =========================================
+ */
+
 async function validateSessionsForConcert(
   concertId,
   sessionIds,
   env
 ) {
-  if (sessionIds.length === 0) {
+  if (
+    sessionIds.length === 0
+  ) {
     return true;
   }
 
   const placeholders =
-    sessionIds.map(() => "?").join(",");
+    sessionIds
+      .map(() => "?")
+      .join(",");
 
-  const result = await env.DB.prepare(
-    `
-    SELECT COUNT(*) AS total
-    FROM concert_sessions
-    WHERE concert_id = ?
-      AND id IN (${placeholders})
-    `
-  )
-    .bind(
-      concertId,
-      ...sessionIds
+  const result =
+    await env.DB.prepare(
+      `
+      SELECT
+        COUNT(*) AS total
+      FROM concert_sessions
+      WHERE concert_id = ?
+        AND id IN (${placeholders})
+      `
     )
-    .first();
+      .bind(
+        concertId,
+        ...sessionIds
+      )
+      .first();
 
   return (
-    Number(result?.total || 0) ===
+    Number(
+      result?.total || 0
+    ) ===
     sessionIds.length
   );
 }
+
+/*
+ * =========================================
+ * UPDATE CONCERT DATE RANGE
+ * =========================================
+ */
 
 async function updateConcertTimeRange(
   concertId,
   env
 ) {
-  const range = await env.DB.prepare(
-    `
-    SELECT
-      MIN(live_starts_at) AS first_start,
-      MAX(live_ends_at) AS last_end
-    FROM concert_sessions
-    WHERE concert_id = ?
-      AND is_active = 1
-    `
-  )
-    .bind(concertId)
-    .first();
+  const range =
+    await env.DB.prepare(
+      `
+      SELECT
+        MIN(live_starts_at)
+          AS first_start,
+
+        MAX(live_ends_at)
+          AS last_end
+
+      FROM concert_sessions
+
+      WHERE concert_id = ?
+        AND is_active = 1
+      `
+    )
+      .bind(concertId)
+      .first();
 
   if (
     !range?.first_start ||
@@ -1877,68 +2476,221 @@ async function updateConcertTimeRange(
     .run();
 }
 
+/*
+ * =========================================
+ * CALCULATE ACCESS EXPIRY
+ * =========================================
+ *
+ * LIVE:
+ * หมดสิทธิ์หลังวันแสดงสุดท้าย
+ *
+ * LIVE + REPLAY:
+ * วันแสดงสุดท้าย
+ * + จำนวนเดือน Replay
+ *
+ * เช่น:
+ * คอนเสิร์ตจบ 16 ส.ค.
+ * Replay 6 เดือน
+ * สิทธิ์หมดประมาณ 16 ก.พ.
+ * โดยใช้การบวกเดือนปฏิทิน
+ * =========================================
+ */
+
 async function calculateAccessExpiry(
   order,
   env
 ) {
   let finalSessionEnd = null;
 
+  /*
+   * หาเวลาจบของวันแสดงสุดท้าย
+   * ที่แพ็กเกจนี้มีสิทธิ์ดู
+   */
   if (order.package_id) {
-    const result = await env.DB.prepare(
-      `
-      SELECT
-        MAX(s.live_ends_at) AS final_end
-      FROM package_sessions ps
-      INNER JOIN concert_sessions s
-        ON s.id = ps.session_id
-      WHERE ps.package_id = ?
-        AND s.is_active = 1
-      `
-    )
-      .bind(order.package_id)
-      .first();
+    const result =
+      await env.DB.prepare(
+        `
+        SELECT
+          MAX(s.live_ends_at)
+            AS final_end
+
+        FROM package_sessions ps
+
+        INNER JOIN concert_sessions s
+          ON s.id = ps.session_id
+
+        WHERE ps.package_id = ?
+          AND s.is_active = 1
+        `
+      )
+        .bind(
+          order.package_id
+        )
+        .first();
 
     finalSessionEnd =
-      result?.final_end || null;
+      result?.final_end ||
+      null;
   }
 
-  if (!finalSessionEnd && order.concert_id) {
-    const concert = await env.DB.prepare(
-      `
-      SELECT live_ends_at
-      FROM concerts
-      WHERE id = ?
-      LIMIT 1
-      `
-    )
-      .bind(order.concert_id)
-      .first();
+  /*
+   * ถ้าเป็น order เก่า
+   * หรือไม่มี package session
+   *
+   * ใช้วันจบรวมของ concert
+   */
+  if (
+    !finalSessionEnd &&
+    order.concert_id
+  ) {
+    const concert =
+      await env.DB.prepare(
+        `
+        SELECT
+          live_ends_at
+        FROM concerts
+        WHERE id = ?
+        LIMIT 1
+        `
+      )
+        .bind(
+          order.concert_id
+        )
+        .first();
 
     finalSessionEnd =
-      concert?.live_ends_at || null;
+      concert?.live_ends_at ||
+      null;
   }
 
+  /*
+   * Legacy order บางรายการ
+   * อาจไม่มี concert_id
+   */
   if (!finalSessionEnd) {
     return null;
   }
 
   const expiry =
-    new Date(finalSessionEnd);
+    new Date(
+      finalSessionEnd
+    );
 
-  if (Number.isNaN(expiry.getTime())) {
+  if (
+    Number.isNaN(
+      expiry.getTime()
+    )
+  ) {
     return null;
   }
 
-  if (order.access_type === "live_replay") {
-    expiry.setUTCDate(
-      expiry.getUTCDate() +
-      Number(order.replay_days || 0)
-    );
+  /*
+   * =========================================
+   * LIVE + REPLAY
+   * =========================================
+   */
+
+  if (
+    order.access_type ===
+    "live_replay"
+  ) {
+    const replayMonths =
+      Number(
+        order.replay_months ||
+        0
+      );
+
+    /*
+     * ระบบใหม่:
+     * ใช้จำนวนเดือนก่อน
+     */
+    if (replayMonths > 0) {
+      addUtcCalendarMonths(
+        expiry,
+        replayMonths
+      );
+    } else {
+      /*
+       * ระบบเก่า:
+       * ถ้ายังไม่มี replay_months
+       * ใช้ replay_days
+       */
+      const replayDays =
+        Number(
+          order.replay_days ||
+          0
+        );
+
+      if (replayDays > 0) {
+        expiry.setUTCDate(
+          expiry.getUTCDate() +
+          replayDays
+        );
+      }
+    }
   }
 
   return expiry.toISOString();
 }
 
+/*
+ * =========================================
+ * ADD CALENDAR MONTHS
+ * =========================================
+ *
+ * ใช้เดือนจริง ไม่ใช้ 30 วันต่อเดือน
+ *
+ * ตัวอย่าง:
+ * 15 ส.ค. + 6 เดือน
+ * = 15 ก.พ.
+ *
+ * ถ้าวันปลายทางไม่มี เช่น
+ * 31 ส.ค. + 6 เดือน
+ * จะใช้วันสุดท้ายของเดือนปลายทาง
+ * =========================================
+ */
+
+function addUtcCalendarMonths(
+  date,
+  months
+) {
+  const originalDay =
+    date.getUTCDate();
+
+  /*
+   * ตั้งเป็นวันที่ 1 ก่อน
+   * เพื่อป้องกัน JavaScript
+   * กระโดดข้ามเดือน
+   */
+  date.setUTCDate(1);
+
+  date.setUTCMonth(
+    date.getUTCMonth() +
+    months
+  );
+
+  /*
+   * หาวันสุดท้าย
+   * ของเดือนปลายทาง
+   */
+  const lastDay =
+    new Date(
+      Date.UTC(
+        date.getUTCFullYear(),
+        date.getUTCMonth() + 1,
+        0
+      )
+    ).getUTCDate();
+
+  date.setUTCDate(
+    Math.min(
+      originalDay,
+      lastDay
+    )
+  );
+
+  return date;
+}
 /*
  * =========================================
  * VALIDATION AND UTILITIES
@@ -1950,7 +2702,8 @@ function validatePackageInput(
   name,
   price,
   accessType,
-  replayDays
+  replayMonths,
+  videoQuality
 ) {
   if (!concertId) {
     return "ไม่พบรหัสคอนเสิร์ต";
@@ -1968,8 +2721,12 @@ function validatePackageInput(
     return "ประเภทสิทธิ์ไม่ถูกต้อง";
   }
 
-  if (replayDays === null) {
-    return "จำนวนวัน Replay ไม่ถูกต้อง";
+  if (replayMonths === null) {
+    return "จำนวนเดือน Replay ไม่ถูกต้อง";
+  }
+
+  if (!videoQuality) {
+    return "ความคมชัดไม่ถูกต้อง";
   }
 
   return "";
@@ -1983,21 +2740,30 @@ function validateSlip(slip) {
     return "กรุณาแนบภาพสลิป";
   }
 
-  if (!slip.type.startsWith("image/")) {
+  if (
+    !slip.type.startsWith(
+      "image/"
+    )
+  ) {
     return "รองรับเฉพาะไฟล์รูปภาพ";
   }
 
   const maximumSize =
     5 * 1024 * 1024;
 
-  if (slip.size > maximumSize) {
+  if (
+    slip.size >
+    maximumSize
+  ) {
     return "ไฟล์สลิปต้องมีขนาดไม่เกิน 5 MB";
   }
 
   return "";
 }
 
-async function readJson(request) {
+async function readJson(
+  request
+) {
   try {
     return await request.json();
   } catch {
@@ -2005,43 +2771,68 @@ async function readJson(request) {
   }
 }
 
-function getPathId(path, prefix) {
+function getPathId(
+  path,
+  prefix
+) {
   return decodeURIComponent(
-    path.replace(prefix, "")
+    path.replace(
+      prefix,
+      ""
+    )
   ).trim();
 }
 
 function cleanText(value) {
-  return String(value || "").trim();
+  return String(
+    value || ""
+  ).trim();
 }
 
-function cleanOptionalText(value) {
+function cleanOptionalText(
+  value
+) {
   const text =
-    String(value || "").trim();
+    String(
+      value || ""
+    ).trim();
 
   return text || null;
 }
 
-function normalizeDate(value) {
+function normalizeDate(
+  value
+) {
   const text =
-    String(value || "").trim();
+    String(
+      value || ""
+    ).trim();
 
   if (!text) {
     return "";
   }
 
-  const date = new Date(text);
+  const date =
+    new Date(text);
 
-  if (Number.isNaN(date.getTime())) {
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
     return "";
   }
 
   return date.toISOString();
 }
 
-function normalizeConcertStatus(value) {
+function normalizeConcertStatus(
+  value
+) {
   const status =
-    String(value || "draft").trim();
+    String(
+      value || "draft"
+    ).trim();
 
   const allowed = [
     "draft",
@@ -2051,16 +2842,23 @@ function normalizeConcertStatus(value) {
     "hidden",
   ];
 
-  return allowed.includes(status)
+  return allowed.includes(
+    status
+  )
     ? status
     : "";
 }
 
-function normalizePrice(value) {
-  const price = Number(value);
+function normalizePrice(
+  value
+) {
+  const price =
+    Number(value);
 
   if (
-    !Number.isInteger(price) ||
+    !Number.isInteger(
+      price
+    ) ||
     price < 0 ||
     price > 1000000
   ) {
@@ -2070,37 +2868,129 @@ function normalizePrice(value) {
   return price;
 }
 
-function normalizeAccessType(value) {
+function normalizeAccessType(
+  value
+) {
   const accessType =
-    String(value || "live").trim();
+    String(
+      value || "live"
+    ).trim();
 
-  return [
+  const allowed = [
     "live",
     "live_replay",
-  ].includes(accessType)
+  ];
+
+  return allowed.includes(
+    accessType
+  )
     ? accessType
     : "";
 }
 
-function normalizeReplayDays(
+/*
+ * ระบบใหม่:
+ * Replay เป็นจำนวนเดือน
+ */
+
+function normalizeReplayMonths(
   value,
   accessType
 ) {
-  if (accessType === "live") {
+  if (
+    accessType === "live"
+  ) {
     return 0;
   }
 
-  const days = Number(value);
+  const months =
+    Number(value);
 
   if (
-    !Number.isInteger(days) ||
-    days < 1 ||
-    days > 3650
+    !Number.isInteger(
+      months
+    ) ||
+    months < 1 ||
+    months > 120
   ) {
     return null;
   }
 
+  return months;
+}
+
+/*
+ * ระบบเดิม:
+ * เก็บ replay_days ไว้
+ * เพื่อให้ข้อมูลเก่าไม่เสีย
+ */
+
+function normalizeLegacyReplayDays(
+  value,
+  accessType
+) {
+  if (
+    accessType === "live"
+  ) {
+    return 0;
+  }
+
+  if (
+    value === undefined ||
+    value === null ||
+    value === ""
+  ) {
+    return 0;
+  }
+
+  const days =
+    Number(value);
+
+  if (
+    !Number.isInteger(
+      days
+    ) ||
+    days < 0 ||
+    days > 3650
+  ) {
+    return 0;
+  }
+
   return days;
+}
+
+function normalizeVideoQuality(
+  value
+) {
+  const quality =
+    String(
+      value || "1080p"
+    ).trim();
+
+  const allowed = [
+    "720p",
+    "1080p",
+    "4k",
+  ];
+
+  const normalized =
+    quality.toLowerCase();
+
+  if (
+    !allowed.includes(
+      normalized
+    )
+  ) {
+    return "";
+  }
+
+  if (
+    normalized === "4k"
+  ) {
+    return "4K";
+  }
+
+  return normalized;
 }
 
 function normalizeNonNegativeInteger(
@@ -2115,10 +3005,13 @@ function normalizeNonNegativeInteger(
     return defaultValue;
   }
 
-  const number = Number(value);
+  const number =
+    Number(value);
 
   if (
-    !Number.isInteger(number) ||
+    !Number.isInteger(
+      number
+    ) ||
     number < 0
   ) {
     return defaultValue;
@@ -2142,7 +3035,9 @@ function normalizeBooleanNumber(
   if (
     value === true ||
     value === 1 ||
-    value === "1"
+    value === "1" ||
+    value === "true" ||
+    value === "on"
   ) {
     return 1;
   }
@@ -2150,16 +3045,23 @@ function normalizeBooleanNumber(
   return 0;
 }
 
-function normalizeIdArray(value) {
-  if (!Array.isArray(value)) {
+function normalizeIdArray(
+  value
+) {
+  if (
+    !Array.isArray(value)
+  ) {
     return [];
   }
 
   return [
     ...new Set(
       value
-        .map(item =>
-          String(item || "").trim()
+        .map(
+          item =>
+            String(
+              item || ""
+            ).trim()
         )
         .filter(Boolean)
     ),
@@ -2167,30 +3069,45 @@ function normalizeIdArray(value) {
 }
 
 function createId(prefix) {
-  const timePart = Date.now()
-    .toString(36)
-    .toUpperCase();
+  const timePart =
+    Date.now()
+      .toString(36)
+      .toUpperCase();
 
-  const randomPart = crypto
-    .randomUUID()
-    .replaceAll("-", "")
-    .slice(0, 8)
-    .toUpperCase();
+  const randomPart =
+    crypto
+      .randomUUID()
+      .replaceAll("-", "")
+      .slice(0, 8)
+      .toUpperCase();
 
-  return `${prefix}-${timePart}-${randomPart}`;
+  return (
+    prefix +
+    "-" +
+    timePart +
+    "-" +
+    randomPart
+  );
 }
 
 function createAccessCode() {
-  const randomPart = crypto
-    .randomUUID()
-    .replaceAll("-", "")
-    .slice(0, 10)
-    .toUpperCase();
+  const randomPart =
+    crypto
+      .randomUUID()
+      .replaceAll("-", "")
+      .slice(0, 10)
+      .toUpperCase();
 
-  return `LIVE-${randomPart}`;
+  return (
+    "LIVE-" +
+    randomPart
+  );
 }
 
-function isAdmin(request, env) {
+function isAdmin(
+  request,
+  env
+) {
   if (!env.ADMIN_TOKEN) {
     return false;
   }
@@ -2201,8 +3118,12 @@ function isAdmin(request, env) {
     ) || "";
 
   const bearerToken =
-    authorization.startsWith("Bearer ")
-      ? authorization.slice(7).trim()
+    authorization.startsWith(
+      "Bearer "
+    )
+      ? authorization
+          .slice(7)
+          .trim()
       : "";
 
   const headerToken =
@@ -2210,9 +3131,14 @@ function isAdmin(request, env) {
       "X-Admin-Token"
     ) || "";
 
+  const suppliedToken =
+    bearerToken ||
+    headerToken;
+
   return (
-    bearerToken || headerToken
-  ) === env.ADMIN_TOKEN;
+    suppliedToken ===
+    env.ADMIN_TOKEN
+  );
 }
 
 function jsonResponse(
@@ -2224,10 +3150,15 @@ function jsonResponse(
     JSON.stringify(data),
     {
       status,
+
       headers: {
         ...corsHeaders,
+
         "Content-Type":
           "application/json; charset=UTF-8",
+
+        "Cache-Control":
+          "no-store",
       },
     }
   );
@@ -2248,15 +3179,33 @@ function errorResponse(
   );
 }
 
-function getImageExtension(contentType) {
+function getImageExtension(
+  contentType
+) {
   const extensions = {
-    "image/jpeg": "jpg",
-    "image/png": "png",
-    "image/webp": "webp",
-    "image/gif": "gif",
-    "image/heic": "heic",
-    "image/heif": "heif",
+    "image/jpeg":
+      "jpg",
+
+    "image/png":
+      "png",
+
+    "image/webp":
+      "webp",
+
+    "image/gif":
+      "gif",
+
+    "image/heic":
+      "heic",
+
+    "image/heif":
+      "heif",
   };
 
-  return extensions[contentType] || "jpg";
+  return (
+    extensions[
+      contentType
+    ] ||
+    "jpg"
+  );
 }
