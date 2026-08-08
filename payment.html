@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>ชำระเงิน | LIVEHUB TH</title>
+
+  <link rel="stylesheet" href="style.css?v=12">
+
+  <style>
+    .payment-page {
+      width: min(760px, 92%);
+      margin: 40px auto;
+    }
+
+    .payment-card {
+      padding: 28px;
+      border: 1px solid #303030;
+      border-radius: 22px;
+      background: rgba(7, 7, 7, 0.96);
+      box-shadow: 0 0 35px rgba(255, 11, 114, 0.14);
+    }
+
+    .payment-title {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .payment-title h1 {
+      font-size: 34px;
+    }
+
+    .payment-title p {
+      margin-top: 7px;
+      color: #cfcfcf;
+    }
+
+    .selected-package {
+      padding: 20px;
+      border: 1px solid #ff0b72;
+      border-radius: 16px;
+      text-align: center;
+      background: #090909;
+    }
+
+    .selected-package h2 {
+      font-size: 26px;
+    }
+
+    .selected-price {
+      margin-top: 12px;
+      color: #ff0b72;
+      font-size: 48px;
+      font-weight: 800;
+    }
+
+    .selected-price span {
+      font-size: 20px;
+    }
+
+    .payment-section {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid #292929;
+    }
+
+    .payment-section h2 {
+      margin-bottom: 14px;
+      font-size: 23px;
+    }
+
+    .payment-qr {
+      width: 230px;
+      height: 230px;
+      margin: 0 auto;
+      padding: 10px;
+      border-radius: 14px;
+      background: #ffffff;
+    }
+
+    .payment-qr img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    .payment-note {
+      margin-top: 16px;
+      color: #d0d0d0;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .upload-label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 17px;
+    }
+
+    .upload-input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #444444;
+      border-radius: 12px;
+      background: #111111;
+      color: #ffffff;
+    }
+
+    .confirm-button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 15px;
+      border: 0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ff0b72, #e8005e);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 18px;
+      color: #ff4c9a;
+      text-align: center;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="payment-page">
+
+    <div class="payment-card">
+
+      <div class="payment-title">
+        <h1>ชำระเงิน</h1>
+        <p>ตรวจสอบแพ็กเกจและอัปโหลดหลักฐานการชำระเงิน</p>
+      </div>
+
+      <section class="selected-package">
+
+        <h2 id="packageName">
+          แพ็กเกจ LIVEHUB TH
+        </h2>
+
+        <div class="selected-price">
+          <span id="packagePrice">0</span>
+          <span>บาท</span>
+        </div>
+
+      </section>
+
+      <section class="payment-section">
+
+        <h2>สแกน QR เพื่อชำระเงิน</h2>
+
+        <div class="payment-qr">
+          <img
+            src="payment-qr.PNG"
+            alt="QR Code ชำระเงิน LIVEHUB TH"
+          >
+        </div>
+
+        <p class="payment-note">
+          กรุณาตรวจสอบยอดเงินให้ถูกต้องก่อนชำระ<br>
+          ชำระแล้วกรุณาอัปโหลดสลิปด้านล่าง
+        </p>
+
+      </section>
+
+      <section class="payment-section">
+
+        <label
+          for="slip"
+          class="upload-label"
+        >
+          อัปโหลดสลิปการโอน
+        </label>
+
+        <input
+          type="file"
+          id="slip"
+          class="upload-input"
+          accept="image/*"
+        >
+
+        <button
+          type="button"
+          class="confirm-button"
+          onclick="submitPayment()"
+        >
+          ยืนยันการชำระเงิน
+        </button>
+
+        <a href="index.html#packages" class="back-link">
+          ← กลับไปเลือกแพ็กเกจ
+        </a>
+
+      </section>
+
+    </div>
+
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+
+    const packageNumber = params.get("package") || "-";
+    const packagePrice = params.get("price") || "0";
+
+    document.getElementById("packageName").textContent =
+      `แพ็กเกจ ${packageNumber}`;
+
+    document.getElementById("packagePrice").textContent =
+      packagePrice;
+
+    function submitPayment() {
+      const slipInput = document.getElementById("slip");
+
+      if (!slipInput.files.length) {
+        alert("กรุณาเลือกภาพสลิปก่อนยืนยัน");
+        return;
+      }
+
+      alert(
+        "ได้รับข้อมูลเบื้องต้นแล้ว ระบบอัปโหลดจริงจะเชื่อมต่อในขั้นตอนถัดไป"
+      );
+    }
+  </script>
+
+</body>
+</html>
