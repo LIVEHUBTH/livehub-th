@@ -61,15 +61,6 @@ header {
   justify-content: space-between;
 }
 
-.logo-text {
-  font-size: 28px;
-  font-weight: 900;
-}
-
-.logo-text span {
-  color: #ff0b72;
-}
-
 nav {
   display: flex;
   gap: 28px;
@@ -632,7 +623,19 @@ nav a.active {
     gap: 14px;
     padding: 18px;
   }
+  .site-logo-image {
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+  }
 
+  .site-logo-name {
+    font-size: 21px;
+  }
+
+  .site-logo-subtitle {
+    font-size: 9px;
+  }
   .strip-divider {
     width: 80%;
     height: 1px;
@@ -671,7 +674,43 @@ nav a.active {
   header {
     padding: 13px 16px;
   }
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+  text-decoration: none;
+}
 
+.site-logo-image {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  display: block;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.site-logo-text {
+  line-height: 1.05;
+}
+
+.site-logo-name {
+  font-size: 27px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.site-logo-name span {
+  color: #ff0b72;
+}
+
+.site-logo-subtitle {
+  margin-top: 5px;
+  color: #ffffff;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+}
   nav {
     display: none;
   }
