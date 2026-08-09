@@ -374,11 +374,14 @@ async function getPublicConcerts(
           ? 1
           : 0;
 
-      packageItem.replay_months =
-        Number(
-          packageItem.replay_months || 0
-        );
-
+packageItem.replay_days =
+  Number(
+    packageItem.replay_days || 0
+  );
+packageItem.replay_months =
+  Number(
+    packageItem.replay_months || 0
+  );
       packageItem.video_quality =
         packageItem.video_quality ||
         "1080p";
@@ -1135,200 +1138,6 @@ async function getPackages(
   );
 }
 
-async function createPackage(
-  request,
-  env,
-  corsHeaders
-) {
-  const body = await readJson(request);
-
-  const concertId =
-    cleanText(body.concertId);
-
-  const name =
-    cleanText(body.name);
-
-  const price =
-    normalizePrice(body.price);
-
-  const accessType =
-    normalizeAccessType(
-      body.accessType
-    );
-
-  /*
-   * รองรับระบบเดิม replayDays
-   * และระบบใหม่ replayMonths
-   */
-  const replayMonths =
-    normalizeReplayMonths(
-      body.replayMonths,
-      accessType
-    );
-
-  const replayDays =
-    normalizeLegacyReplayDays(
-      body.replayDays,
-      accessType
-    );
-
-  const hasEcard =
-    normalizeBooleanNumber(
-      body.hasEcard,
-      0
-    );
-
-  const videoQuality =
-    normalizeVideoQuality(
-      body.videoQuality
-    );
-
-  const isActive =
-    normalizeBooleanNumber(
-      body.isActive,
-      1
-    );
-
-  const sessionIds =
-    normalizeIdArray(
-      body.sessionIds
-    );
-
-  const validationError =
-    validatePackageInput(
-      concertId,
-      name,
-      price,
-      accessType,
-      replayMonths,
-      videoQuality
-    );
-
-  if (validationError) {
-    return errorResponse(
-      validationError,
-      400,
-      corsHeaders
-    );
-  }
-
-  const concert =
-    await env.DB.prepare(
-      `
-      SELECT id
-      FROM concerts
-      WHERE id = ?
-      LIMIT 1
-      `
-    )
-      .bind(concertId)
-      .first();
-
-  if (!concert) {
-    return errorResponse(
-      "ไม่พบคอนเสิร์ต",
-      404,
-      corsHeaders
-    );
-  }
-
-  const sessionsValid =
-    await validateSessionsForConcert(
-      concertId,
-      sessionIds,
-      env
-    );
-
-  if (!sessionsValid) {
-    return errorResponse(
-      "มีวันแสดงที่ไม่ได้อยู่ในคอนเสิร์ตนี้",
-      400,
-      corsHeaders
-    );
-  }
-
-  if (sessionIds.length === 0) {
-    return errorResponse(
-      "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
-      400,
-      corsHeaders
-    );
-  }
-
-  const packageId =
-    createId("PKG");
-
-  const now =
-    new Date().toISOString();
-
-  await env.DB.prepare(
-    `
-    INSERT INTO packages (
-      id,
-      concert_id,
-      name,
-      price,
-      access_type,
-      replay_days,
-      replay_months,
-      has_ecard,
-      video_quality,
-      is_active,
-      created_at,
-      updated_at
-    )
-    VALUES (
-      ?, ?, ?, ?, ?, ?,
-      ?, ?, ?, ?, ?, ?
-    )
-    `
-  )
-    .bind(
-      packageId,
-      concertId,
-      name,
-      price,
-      accessType,
-      replayDays,
-      replayMonths,
-      hasEcard,
-      videoQuality,
-      isActive,
-      now,
-      now
-    )
-    .run();
-
-  await replacePackageSessions(
-    packageId,
-    sessionIds,
-    env
-  );
-
-  return jsonResponse(
-    {
-      success: true,
-      packageId,
-      package: {
-        id: packageId,
-        concertId,
-        name,
-        price,
-        accessType,
-        replayMonths,
-        hasEcard,
-        videoQuality,
-        sessionIds,
-        isActive,
-      },
-      message:
-        "เพิ่มแพ็กเกจสำเร็จ",
-    },
-    201,
-    corsHeaders
-  );
-}
-
 async function updatePackage(
   packageId,
   request,
@@ -1620,11 +1429,6 @@ async function createPayment(
       formData.get("packageId")
     );
 
-  const legacyPackageNumber =
-    cleanText(
-      formData.get("packageNumber")
-    );
-
   const submittedPrice =
     Number(
       formData.get("price")
@@ -1633,146 +1437,73 @@ async function createPayment(
   const slip =
     formData.get("slip");
 
-  let selectedPackage = null;
-
-  let orderPackageNumber =
-    legacyPackageNumber || "-";
-
-  /*
-   * =========================================
-   * PACKAGE FROM DATABASE
-   * =========================================
-   */
-
-  if (packageId) {
-    selectedPackage =
-      await env.DB.prepare(
-        `
-        SELECT
-          p.id,
-          p.concert_id,
-          p.name,
-          p.price,
-          p.access_type,
-          p.replay_days,
-          p.replay_months,
-          p.has_ecard,
-          p.video_quality,
-          p.is_active,
-          c.status AS concert_status
-        FROM packages p
-        INNER JOIN concerts c
-          ON c.id = p.concert_id
-        WHERE p.id = ?
-        LIMIT 1
-        `
-      )
-        .bind(packageId)
-        .first();
-
-    if (
-      !selectedPackage ||
-      Number(
-        selectedPackage.is_active
-      ) !== 1
-    ) {
-      return errorResponse(
-        "แพ็กเกจนี้ไม่เปิดขาย",
-        400,
-        corsHeaders
-      );
-    }
-
-    if (
-      ![
-        "on_sale",
-        "live",
-      ].includes(
-        selectedPackage.concert_status
-      )
-    ) {
-      return errorResponse(
-        "คอนเสิร์ตนี้ยังไม่เปิดขาย",
-        400,
-        corsHeaders
-      );
-    }
-
-    orderPackageNumber =
-      packageId;
-  } else {
-    /*
-     * =========================================
-     * LEGACY PACKAGE SUPPORT
-     * =========================================
-     *
-     * เก็บไว้เพื่อไม่ให้หน้าเก่าเสีย
-     */
-
-    const legacyPrices = {
-      "1": 99,
-      "2": 199,
-      "3": 149,
-      "4": 249,
-    };
-
-    if (
-      !legacyPrices[
-        legacyPackageNumber
-      ]
-    ) {
-      return errorResponse(
-        "ไม่พบข้อมูลแพ็กเกจ",
-        400,
-        corsHeaders
-      );
-    }
-
-    const legacyHasEcard =
-      ["3", "4"].includes(
-        legacyPackageNumber
-      )
-        ? 1
-        : 0;
-
-    const legacyReplayMonths =
-      ["3", "4"].includes(
-        legacyPackageNumber
-      )
-        ? 6
-        : 0;
-
-    selectedPackage = {
-      id: null,
-      concert_id: null,
-      name:
-        "แพ็กเกจ " +
-        legacyPackageNumber,
-      price:
-        legacyPrices[
-          legacyPackageNumber
-        ],
-      access_type:
-        ["3", "4"].includes(
-          legacyPackageNumber
-        )
-          ? "live_replay"
-          : "live",
-      replay_days: 0,
-      replay_months:
-        legacyReplayMonths,
-      has_ecard:
-        legacyHasEcard,
-      video_quality:
-        "1080p",
-    };
+  if (!packageId) {
+    return errorResponse(
+      "กรุณาเลือกแพ็กเกจ",
+      400,
+      corsHeaders
+    );
   }
 
-  /*
-   * =========================================
-   * PRICE SECURITY CHECK
-   * =========================================
-   */
+  const selectedPackage =
+    await env.DB.prepare(
+      `
+      SELECT
+        p.id,
+        p.concert_id,
+        p.name,
+        p.price,
+        p.access_type,
+        p.replay_days,
+        p.replay_months,
+        p.has_ecard,
+        p.video_quality,
+        p.is_active,
+        c.status AS concert_status
+      FROM packages p
+      INNER JOIN concerts c
+        ON c.id = p.concert_id
+      WHERE p.id = ?
+      LIMIT 1
+      `
+    )
+      .bind(packageId)
+      .first();
+
+  if (!selectedPackage) {
+    return errorResponse(
+      "ไม่พบแพ็กเกจที่เลือก",
+      404,
+      corsHeaders
+    );
+  }
+
+  if (
+    Number(
+      selectedPackage.is_active
+    ) !== 1
+  ) {
+    return errorResponse(
+      "แพ็กเกจนี้ไม่เปิดขาย",
+      400,
+      corsHeaders
+    );
+  }
+
+  if (
+    ![
+      "on_sale",
+      "live",
+    ].includes(
+      selectedPackage.concert_status
+    )
+  ) {
+    return errorResponse(
+      "คอนเสิร์ตนี้ยังไม่เปิดขาย",
+      400,
+      corsHeaders
+    );
+  }
 
   if (
     !Number.isFinite(
@@ -1788,12 +1519,6 @@ async function createPayment(
       corsHeaders
     );
   }
-
-  /*
-   * =========================================
-   * SLIP VALIDATION
-   * =========================================
-   */
 
   const slipError =
     validateSlip(slip);
@@ -1817,12 +1542,6 @@ async function createPayment(
   const slipKey =
     `slips/${orderId}.${extension}`;
 
-  /*
-   * =========================================
-   * SAVE SLIP TO R2
-   * =========================================
-   */
-
   await env.SLIPS.put(
     slipKey,
     await slip.arrayBuffer(),
@@ -1836,27 +1555,30 @@ async function createPayment(
         orderId,
 
         packageId:
-          selectedPackage.id ||
-          "",
+          selectedPackage.id,
 
         price:
           String(
             selectedPackage.price
           ),
 
+        replayDays:
+          String(
+            selectedPackage
+              .replay_days || 0
+          ),
+
         replayMonths:
           String(
             selectedPackage
-              .replay_months ||
-            0
+              .replay_months || 0
           ),
 
         hasEcard:
           String(
             Number(
               selectedPackage
-                .has_ecard ||
-              0
+                .has_ecard || 0
             )
           ),
 
@@ -1867,20 +1589,6 @@ async function createPayment(
       },
     }
   );
-
-  /*
-   * =========================================
-   * SAVE ORDER SNAPSHOT
-   * =========================================
-   *
-   * สำคัญ:
-   * เราบันทึก replay / e-card / quality
-   * ลง orders ด้วย
-   *
-   * ดังนั้นถ้าแอดมินแก้แพ็กเกจภายหลัง
-   * สิทธิ์ของลูกค้าที่ซื้อไปแล้ว
-   * จะไม่เปลี่ยนตาม
-   */
 
   try {
     await env.DB.prepare(
@@ -1909,8 +1617,10 @@ async function createPayment(
     )
       .bind(
         orderId,
-        orderPackageNumber,
-        selectedPackage.price,
+        packageId,
+        Number(
+          selectedPackage.price
+        ),
         slipKey,
         new Date().toISOString(),
 
@@ -1926,20 +1636,17 @@ async function createPayment(
 
         Number(
           selectedPackage
-            .replay_days ||
-          0
+            .replay_days || 0
         ),
 
         Number(
           selectedPackage
-            .replay_months ||
-          0
+            .replay_months || 0
         ),
 
         Number(
           selectedPackage
-            .has_ecard ||
-          0
+            .has_ecard || 0
         ),
 
         selectedPackage
@@ -1947,13 +1654,8 @@ async function createPayment(
         "1080p"
       )
       .run();
-  } catch (databaseError) {
-    /*
-     * ถ้าบันทึก D1 ไม่สำเร็จ
-     * ลบสลิปออกจาก R2
-     * ป้องกันไฟล์ค้าง
-     */
 
+  } catch (databaseError) {
     await env.SLIPS.delete(
       slipKey
     );
@@ -1986,18 +1688,22 @@ async function createPayment(
           selectedPackage
             .access_type,
 
+        replayDays:
+          Number(
+            selectedPackage
+              .replay_days || 0
+          ),
+
         replayMonths:
           Number(
             selectedPackage
-              .replay_months ||
-            0
+              .replay_months || 0
           ),
 
         hasEcard:
           Number(
             selectedPackage
-              .has_ecard ||
-            0
+              .has_ecard || 0
           ) === 1,
 
         videoQuality:
