@@ -91,7 +91,9 @@ export default {
       }
 
       if (
-        path.startsWith("/api/admin/concerts/") &&
+        path.startsWith(
+          "/api/admin/concerts/"
+        ) &&
         request.method === "POST"
       ) {
         const concertId = getPathId(
@@ -136,7 +138,9 @@ export default {
       }
 
       if (
-        path.startsWith("/api/admin/sessions/") &&
+        path.startsWith(
+          "/api/admin/sessions/"
+        ) &&
         request.method === "POST"
       ) {
         const sessionId = getPathId(
@@ -181,7 +185,9 @@ export default {
       }
 
       if (
-        path.startsWith("/api/admin/packages/") &&
+        path.startsWith(
+          "/api/admin/packages/"
+        ) &&
         request.method === "POST"
       ) {
         const packageId = getPathId(
@@ -198,7 +204,9 @@ export default {
       }
 
       if (
-        path.startsWith("/api/admin/packages/") &&
+        path.startsWith(
+          "/api/admin/packages/"
+        ) &&
         request.method === "DELETE"
       ) {
         const packageId = getPathId(
@@ -231,7 +239,9 @@ export default {
       }
 
       if (
-        path.startsWith("/api/admin/slip/") &&
+        path.startsWith(
+          "/api/admin/slip/"
+        ) &&
         request.method === "GET"
       ) {
         const orderId = getPathId(
@@ -247,22 +257,16 @@ export default {
       }
 
       if (
-        path.startsWith("/api/admin/orders/") &&
+        path.startsWith(
+          "/api/admin/orders/"
+        ) &&
         path.endsWith("/status") &&
         request.method === "POST"
       ) {
         const orderId =
-          decodeURIComponent(
+          getOrderIdFromStatusPath(
             path
-              .replace(
-                "/api/admin/orders/",
-                ""
-              )
-              .replace(
-                "/status",
-                ""
-              )
-          ).trim();
+          );
 
         return await updateOrderStatus(
           orderId,
@@ -473,11 +477,25 @@ async function getAdminConcerts(
       `
     ).all();
 
+  const concerts =
+    result.results || [];
+
+  for (const concert of concerts) {
+    concert.session_count =
+      Number(
+        concert.session_count || 0
+      );
+
+    concert.package_count =
+      Number(
+        concert.package_count || 0
+      );
+  }
+
   return jsonResponse(
     {
       success: true,
-      concerts:
-        result.results || [],
+      concerts,
     },
     200,
     corsHeaders
@@ -803,11 +821,27 @@ async function getSessions(
       .bind(concertId)
       .all();
 
+  const sessions =
+    result.results || [];
+
+  for (const session of sessions) {
+    session.sort_order =
+      Number(
+        session.sort_order || 0
+      );
+
+    session.is_active =
+      Number(
+        session.is_active
+      ) === 1
+        ? 1
+        : 0;
+  }
+
   return jsonResponse(
     {
       success: true,
-      sessions:
-        result.results || [],
+      sessions,
     },
     200,
     corsHeaders
@@ -1503,7 +1537,6 @@ async function updatePackage(
     );
 
   let replayDays;
-
   let replayMonths;
 
   if (accessType === "live") {
@@ -1547,11 +1580,9 @@ async function updatePackage(
           );
 
     /*
-     * หน้าแอดมินระบบใหม่จะส่ง replayMonths
-     * แต่ไม่ได้ส่ง replayDays
-     *
-     * ถ้าผู้ดูแลกำหนดเดือนมากกว่า 0
-     * ให้ล้างค่าจำนวนวันเดิม
+     * หน้าแอดมินระบบใหม่ใช้ Replay เป็นเดือน
+     * เมื่อส่งจำนวนเดือนมากกว่า 0
+     * ให้ล้างจำนวนวันเดิม
      */
     if (
       hasReplayMonths &&
@@ -1564,9 +1595,7 @@ async function updatePackage(
     }
 
     /*
-     * ถ้าหน้าแอดมินส่งเดือนเป็น 0
-     * และไม่ได้ส่งจำนวนวัน
-     * ให้เก็บจำนวนวันของแพ็กเกจเก่าไว้
+     * รองรับแพ็กเกจเก่าที่ Replay เป็นวัน
      */
     if (
       hasReplayMonths &&
@@ -1841,12 +1870,20 @@ async function createPayment(
       )
     );
 
-  const submittedPrice =
-    Number(
+  const sessionId =
+    cleanText(
       formData.get(
-        "price"
+        "sessionId"
       )
     );
+
+  const priceValue =
+    formData.get(
+      "price"
+    );
+
+  const submittedPrice =
+    Number(priceValue);
 
   const slip =
     formData.get(
@@ -1856,6 +1893,25 @@ async function createPayment(
   if (!packageId) {
     return errorResponse(
       "กรุณาเลือกแพ็กเกจ",
+      400,
+      corsHeaders
+    );
+  }
+
+  if (!sessionId) {
+    return errorResponse(
+      "กรุณาเลือกวันแสดง",
+      400,
+      corsHeaders
+    );
+  }
+
+  if (
+    priceValue === null ||
+    priceValue === ""
+  ) {
+    return errorResponse(
+      "ไม่พบราคาแพ็กเกจ",
       400,
       corsHeaders
     );
@@ -1936,6 +1992,44 @@ async function createPayment(
     );
   }
 
+  /*
+   * ตรวจสอบว่าวันแสดงที่ลูกค้าเลือก
+   * เป็นวันที่แพ็กเกจอนุญาตจริง
+   */
+  const selectedSession =
+    await env.DB.prepare(
+      `
+      SELECT
+        s.id,
+        s.concert_id,
+        s.name,
+        s.live_starts_at,
+        s.live_ends_at
+      FROM package_sessions ps
+      INNER JOIN concert_sessions s
+        ON s.id = ps.session_id
+      WHERE ps.package_id = ?
+        AND s.id = ?
+        AND s.concert_id = ?
+        AND s.is_active = 1
+      LIMIT 1
+      `
+    )
+      .bind(
+        packageId,
+        sessionId,
+        selectedPackage.concert_id
+      )
+      .first();
+
+  if (!selectedSession) {
+    return errorResponse(
+      "วันแสดงที่เลือกไม่อยู่ในสิทธิ์ของแพ็กเกจนี้",
+      400,
+      corsHeaders
+    );
+  }
+
   const slipError =
     validateSlip(slip);
 
@@ -1958,6 +2052,9 @@ async function createPayment(
   const slipKey =
     `slips/${orderId}.${extension}`;
 
+  /*
+   * อัปโหลดสลิปเข้า R2
+   */
   await env.SLIPS.put(
     slipKey,
     await slip.arrayBuffer(),
@@ -1972,6 +2069,12 @@ async function createPayment(
 
         packageId:
           selectedPackage.id,
+
+        sessionId:
+          selectedSession.id,
+
+        sessionName:
+          selectedSession.name,
 
         price:
           String(
@@ -2007,6 +2110,10 @@ async function createPayment(
   );
 
   try {
+    /*
+     * บันทึกออเดอร์พร้อม Snapshot
+     * ของแพ็กเกจและวันแสดงที่ลูกค้าเลือก
+     */
     await env.DB.prepare(
       `
       INSERT INTO orders (
@@ -2023,11 +2130,16 @@ async function createPayment(
         replay_days,
         replay_months,
         has_ecard,
-        video_quality
+        video_quality,
+        selected_session_id,
+        selected_session_name,
+        selected_session_starts_at,
+        selected_session_ends_at
       )
       VALUES (
         ?, ?, ?, ?, 'pending', ?,
-        ?, ?, ?, ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?
       )
       `
     )
@@ -2069,10 +2181,22 @@ async function createPayment(
 
         selectedPackage
           .video_quality ||
-        "1080p"
+        "1080p",
+
+        selectedSession.id,
+
+        selectedSession.name,
+
+        selectedSession.live_starts_at,
+
+        selectedSession.live_ends_at
       )
       .run();
   } catch (databaseError) {
+    /*
+     * ถ้าบันทึก D1 ไม่สำเร็จ
+     * ลบสลิปออกจาก R2
+     */
     await env.SLIPS.delete(
       slipKey
     );
@@ -2088,6 +2212,22 @@ async function createPayment(
 
       status:
         "pending",
+
+      selectedSession: {
+        id:
+          selectedSession.id,
+
+        name:
+          selectedSession.name,
+
+        liveStartsAt:
+          selectedSession
+            .live_starts_at,
+
+        liveEndsAt:
+          selectedSession
+            .live_ends_at,
+      },
 
       package: {
         id:
@@ -2189,7 +2329,11 @@ async function getOrders(
     replay_days,
     replay_months,
     has_ecard,
-    video_quality
+    video_quality,
+    selected_session_id,
+    selected_session_name,
+    selected_session_starts_at,
+    selected_session_ends_at
   `;
 
   let result;
@@ -2341,6 +2485,11 @@ async function getSlip(
     "private, no-store"
   );
 
+  headers.set(
+    "Content-Disposition",
+    "inline"
+  );
+
   return new Response(
     object.body,
     {
@@ -2352,7 +2501,7 @@ async function getSlip(
 
 /*
  * =========================================
- * APPROVE / REJECT
+ * APPROVE / REJECT ORDER
  * =========================================
  */
 
@@ -2387,6 +2536,10 @@ async function updateOrderStatus(
     );
   }
 
+  /*
+   * อ่านข้อมูลสิทธิ์จาก orders
+   * เพราะเป็น Snapshot ตอนลูกค้าซื้อ
+   */
   const order =
     await env.DB.prepare(
       `
@@ -2403,7 +2556,11 @@ async function updateOrderStatus(
         video_quality,
         access_code,
         approved_at,
-        access_expires_at
+        access_expires_at,
+        selected_session_id,
+        selected_session_name,
+        selected_session_starts_at,
+        selected_session_ends_at
       FROM orders
       WHERE id = ?
       LIMIT 1
@@ -2419,6 +2576,12 @@ async function updateOrderStatus(
       corsHeaders
     );
   }
+
+  /*
+   * =========================================
+   * REJECT
+   * =========================================
+   */
 
   if (
     newStatus === "rejected"
@@ -2454,10 +2617,20 @@ async function updateOrderStatus(
     );
   }
 
+  /*
+   * =========================================
+   * APPROVE
+   * =========================================
+   */
+
   const approvedAt =
     order.approved_at ||
     new Date().toISOString();
 
+  /*
+   * ถ้าเคยอนุมัติแล้ว
+   * ใช้รหัสเดิม
+   */
   const accessCode =
     order.access_code ||
     createAccessCode();
@@ -2467,6 +2640,14 @@ async function updateOrderStatus(
       order,
       env
     );
+
+  if (!accessExpiresAt) {
+    return errorResponse(
+      "ไม่สามารถคำนวณวันหมดอายุสิทธิ์ได้ กรุณาตรวจสอบวันแสดง",
+      400,
+      corsHeaders
+    );
+  }
 
   await env.DB.prepare(
     `
@@ -2501,6 +2682,26 @@ async function updateOrderStatus(
       approvedAt,
 
       accessExpiresAt,
+
+      selectedSession: {
+        id:
+          order.selected_session_id ||
+          "",
+
+        name:
+          order.selected_session_name ||
+          "",
+
+        liveStartsAt:
+          order
+            .selected_session_starts_at ||
+          null,
+
+        liveEndsAt:
+          order
+            .selected_session_ends_at ||
+          null,
+      },
 
       package: {
         name:
@@ -2628,7 +2829,7 @@ async function validateSessionsForConcert(
 
 /*
  * =========================================
- * UPDATE CONCERT TIME
+ * UPDATE CONCERT TIME RANGE
  * =========================================
  */
 
@@ -2655,6 +2856,10 @@ async function updateConcertTimeRange(
       .bind(concertId)
       .first();
 
+  /*
+   * ถ้าไม่มีวันแสดงที่เปิดใช้งาน
+   * ยังไม่เปลี่ยนเวลาของคอนเสิร์ต
+   */
   if (
     !range?.first_start ||
     !range?.last_end
@@ -2685,27 +2890,49 @@ async function updateConcertTimeRange(
  * =========================================
  * ACCESS EXPIRY
  * =========================================
+ *
+ * ออเดอร์ใหม่:
+ * ใช้วันจบของวันที่ลูกค้าเลือก
+ *
+ * LIVE:
+ * หมดสิทธิ์หลังวันแสดงที่เลือกจบ
+ *
+ * LIVE + REPLAY:
+ * วันแสดงที่เลือกจบ
+ * + จำนวนวันหรือจำนวนเดือน Replay
+ *
+ * ออเดอร์เก่า:
+ * ถ้าไม่มี selected_session_ends_at
+ * จะย้อนกลับไปใช้วันสุดท้ายของแพ็กเกจ
+ * หรือวันจบรวมของคอนเสิร์ต
+ * =========================================
  */
 
 async function calculateAccessExpiry(
   order,
   env
 ) {
-  let finalSessionEnd = null;
+  let finalSessionEnd =
+    order.selected_session_ends_at ||
+    null;
 
-  if (order.package_id) {
+  /*
+   * รองรับออเดอร์เก่า
+   * ที่ยังไม่มีข้อมูลวันที่ลูกค้าเลือก
+   */
+  if (
+    !finalSessionEnd &&
+    order.package_id
+  ) {
     const result =
       await env.DB.prepare(
         `
         SELECT
           MAX(s.live_ends_at)
             AS final_end
-
         FROM package_sessions ps
-
         INNER JOIN concert_sessions s
           ON s.id = ps.session_id
-
         WHERE ps.package_id = ?
           AND s.is_active = 1
         `
@@ -2720,6 +2947,9 @@ async function calculateAccessExpiry(
       null;
   }
 
+  /*
+   * สำรองสำหรับออเดอร์เก่ามาก
+   */
   if (
     !finalSessionEnd &&
     order.concert_id
@@ -2774,6 +3004,9 @@ async function calculateAccessExpiry(
         order.replay_days || 0
       );
 
+    /*
+     * ระบบใหม่ใช้เดือนก่อน
+     */
     if (replayMonths > 0) {
       addUtcCalendarMonths(
         expiry,
@@ -2782,6 +3015,9 @@ async function calculateAccessExpiry(
     } else if (
       replayDays > 0
     ) {
+      /*
+       * รองรับข้อมูลเก่าแบบวัน
+       */
       expiry.setUTCDate(
         expiry.getUTCDate() +
         replayDays
@@ -2791,6 +3027,23 @@ async function calculateAccessExpiry(
 
   return expiry.toISOString();
 }
+
+/*
+ * =========================================
+ * ADD UTC CALENDAR MONTHS
+ * =========================================
+ *
+ * บวกตามเดือนปฏิทินจริง
+ *
+ * ตัวอย่าง:
+ * 15 สิงหาคม + 6 เดือน
+ * = 15 กุมภาพันธ์
+ *
+ * ถ้าวันปลายทางไม่มี:
+ * 31 สิงหาคม + 6 เดือน
+ * = วันสุดท้ายของเดือนกุมภาพันธ์
+ * =========================================
+ */
 
 function addUtcCalendarMonths(
   date,
@@ -2827,7 +3080,7 @@ function addUtcCalendarMonths(
 
 /*
  * =========================================
- * VALIDATION
+ * PACKAGE VALIDATION
  * =========================================
  */
 
@@ -2879,6 +3132,12 @@ function validatePackageInput(
   return "";
 }
 
+/*
+ * =========================================
+ * SLIP VALIDATION
+ * =========================================
+ */
+
 function validateSlip(
   slip
 ) {
@@ -2921,7 +3180,7 @@ function validateSlip(
 
 /*
  * =========================================
- * UTILITIES
+ * REQUEST UTILITIES
  * =========================================
  */
 
@@ -2961,6 +3220,51 @@ function getPathId(
     return "";
   }
 }
+
+function getOrderIdFromStatusPath(
+  path
+) {
+  const prefix =
+    "/api/admin/orders/";
+
+  const suffix =
+    "/status";
+
+  if (
+    !path.startsWith(prefix) ||
+    !path.endsWith(suffix)
+  ) {
+    return "";
+  }
+
+  const encodedId =
+    path.slice(
+      prefix.length,
+      path.length -
+        suffix.length
+    );
+
+  if (
+    !encodedId ||
+    encodedId.includes("/")
+  ) {
+    return "";
+  }
+
+  try {
+    return decodeURIComponent(
+      encodedId
+    ).trim();
+  } catch {
+    return "";
+  }
+}
+
+/*
+ * =========================================
+ * NORMALIZATION
+ * =========================================
+ */
 
 function cleanText(
   value
@@ -3169,7 +3473,9 @@ function normalizeVideoQuality(
     return "";
   }
 
-  if (quality === "4k") {
+  if (
+    quality === "4k"
+  ) {
     return "4K";
   }
 
@@ -3251,6 +3557,12 @@ function normalizeIdArray(
   ];
 }
 
+/*
+ * =========================================
+ * ID GENERATORS
+ * =========================================
+ */
+
 function createId(
   prefix
 ) {
@@ -3289,6 +3601,12 @@ function createAccessCode() {
   );
 }
 
+/*
+ * =========================================
+ * ADMIN AUTH
+ * =========================================
+ */
+
 function isAdmin(
   request,
   env
@@ -3325,6 +3643,12 @@ function isAdmin(
     env.ADMIN_TOKEN
   );
 }
+
+/*
+ * =========================================
+ * RESPONSES
+ * =========================================
+ */
 
 function jsonResponse(
   data,
@@ -3363,6 +3687,12 @@ function errorResponse(
     corsHeaders
   );
 }
+
+/*
+ * =========================================
+ * IMAGE EXTENSION
+ * =========================================
+ */
 
 function getImageExtension(
   contentType
