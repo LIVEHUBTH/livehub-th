@@ -71,6 +71,10 @@
       max-width: 100%;
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     .page {
       width: min(1180px, 100%);
       margin: 0 auto;
@@ -500,11 +504,107 @@
       line-height: 1.55;
     }
 
+    .selected-session-summary {
+      color: #ffffff !important;
+      font-weight: 800;
+    }
+
     .selected-price {
       color: #ffffff;
       font-size: 32px;
       font-weight: 900;
       white-space: nowrap;
+    }
+
+    .session-selection {
+      display: none;
+      margin-bottom: 22px;
+      padding: 20px;
+      background: #0d0d0f;
+      border: 1px solid #38383e;
+      border-radius: 20px;
+    }
+
+    .session-selection.show {
+      display: block;
+    }
+
+    .session-selection-title {
+      margin: 0 0 8px;
+      color: var(--pink-light);
+      font-size: 22px;
+    }
+
+    .session-selection-description {
+      margin: 0 0 17px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .session-options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .session-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin: 0;
+      padding: 16px;
+      background: #111113;
+      border: 1px solid #3a3a40;
+      border-radius: 16px;
+      cursor: pointer;
+      transition:
+        border-color 0.2s,
+        box-shadow 0.2s,
+        background 0.2s;
+    }
+
+    .session-option:hover {
+      border-color: #7b2856;
+    }
+
+    .session-option.selected {
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 7, 131, 0.12),
+          #111113
+        );
+      border-color: var(--pink);
+      box-shadow:
+        0 0 0 2px
+        rgba(255, 7, 131, 0.12);
+    }
+
+    .session-option input {
+      width: 24px;
+      height: 24px;
+      margin: 2px 0 0;
+      accent-color: var(--pink);
+      flex: 0 0 auto;
+    }
+
+    .session-option-content {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .session-option-name {
+      display: block;
+      margin-bottom: 6px;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .session-option-time {
+      display: block;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
     }
 
     .payment-notice {
@@ -744,6 +844,10 @@
       .selected-price {
         font-size: 28px;
       }
+
+      .session-selection {
+        padding: 17px;
+      }
     }
   </style>
 </head>
@@ -789,8 +893,8 @@
       </h1>
 
       <p>
-        เลือกคอนเสิร์ตที่ต้องการรับชม
-        ตรวจสอบสิทธิ์ของแพ็กเกจ
+        เลือกคอนเสิร์ตและแพ็กเกจที่ต้องการ
+        เลือกวันแสดงที่ต้องการรับชม
         แล้วส่งหลักฐานการชำระเงิน
         เพื่อรอรับรหัสเข้าชม
       </p>
@@ -810,8 +914,8 @@
         </h2>
 
         <p>
-          ข้อมูลคอนเสิร์ต วันแสดง
-          ราคา และสิทธิ์แพ็กเกจ
+          ข้อมูลคอนเสิร์ต วันแสดง ราคา
+          และสิทธิ์แพ็กเกจ
           โหลดจากระบบ LIVEHUB TH โดยตรง
         </p>
       </div>
@@ -840,7 +944,8 @@
         </h2>
 
         <p>
-          ตรวจสอบแพ็กเกจที่เลือก
+          ตรวจสอบแพ็กเกจ
+          เลือกวันแสดง
           และแนบภาพสลิปให้เรียบร้อย
         </p>
       </div>
@@ -861,6 +966,13 @@
           <p id="selectedPackageFeatures">
             -
           </p>
+
+          <p
+            id="selectedSessionSummary"
+            class="selected-session-summary"
+          >
+            วันแสดงที่เลือก: ยังไม่ได้เลือก
+          </p>
         </div>
 
         <div
@@ -869,6 +981,25 @@
         >
           0 บาท
         </div>
+      </div>
+
+      <div
+        id="sessionSelection"
+        class="session-selection"
+      >
+        <h3 class="session-selection-title">
+          เลือกวันแสดงที่ต้องการรับชม
+        </h3>
+
+        <p class="session-selection-description">
+          กรุณาเลือก 1 วัน
+          สิทธิ์และรหัสเข้าชมจะใช้ได้เฉพาะวันแสดงที่เลือก
+        </p>
+
+        <div
+          id="sessionOptions"
+          class="session-options"
+        ></div>
       </div>
 
       <div class="payment-notice">
@@ -880,7 +1011,7 @@
 
         ชำระเงินตาม QR หรือบัญชีที่
         LIVEHUB TH แจ้งไว้
-        จากนั้นแนบภาพสลิปด้านล่าง
+        จากนั้นเลือกวันแสดงและแนบภาพสลิปด้านล่าง
         ระบบจะบันทึกคำสั่งซื้อเป็น
         “รอตรวจสอบ”
         และแอดมินจะตรวจสอบก่อนออกรหัสเข้าชม
@@ -942,7 +1073,7 @@
           ส่งสลิปสำเร็จ
         </h3>
 
-        <p>
+        <p id="orderSuccessText">
           ระบบได้รับคำสั่งซื้อแล้ว
           กรุณารอแอดมินตรวจสอบการชำระเงิน
           และแจ้งรหัสเข้าชม
@@ -966,6 +1097,7 @@
 
     let selectedConcert = null;
     let selectedPackage = null;
+    let selectedSession = null;
 
     const concertList =
       document.getElementById(
@@ -1010,6 +1142,16 @@
     const orderSuccess =
       document.getElementById(
         "orderSuccess"
+      );
+
+    const sessionSelection =
+      document.getElementById(
+        "sessionSelection"
+      );
+
+    const sessionOptions =
+      document.getElementById(
+        "sessionOptions"
       );
 
     /*
@@ -1075,15 +1217,21 @@
             }
           );
 
-        const data =
-          await response.json();
+        let data = null;
+
+        try {
+          data =
+            await response.json();
+        } catch {
+          data = null;
+        }
 
         if (
           !response.ok ||
-          !data.success
+          !data?.success
         ) {
           throw new Error(
-            data.message ||
+            data?.message ||
             "โหลดข้อมูลคอนเสิร์ตไม่สำเร็จ"
           );
         }
@@ -1270,7 +1418,7 @@
           "concert-date";
 
         date.textContent =
-          "วันแสดง: " +
+          "ช่วงเวลาจัดงาน: " +
           formatDateRange(
             concert.live_starts_at,
             concert.live_ends_at
@@ -1304,7 +1452,8 @@
             "session-badge";
 
           sessionBadge.textContent =
-            session.name || "รอบแสดง";
+            session.name ||
+            "รอบแสดง";
 
           sessionSummary.appendChild(
             sessionBadge
@@ -1508,14 +1657,21 @@
       sessionText.className =
         "package-session-text";
 
-      const sessionNames =
-        getPackageSessionNames(
+      const allowedSessions =
+        getAllowedSessions(
           concert,
           packageItem
         );
 
+      const sessionNames =
+        allowedSessions.map(
+          session =>
+            session.name ||
+            "วันแสดง"
+        );
+
       sessionText.textContent =
-        "วันแสดงที่รับชมได้: " +
+        "วันแสดงที่เลือกได้: " +
         (
           sessionNames.length > 0
             ? sessionNames.join(", ")
@@ -1635,7 +1791,7 @@
       return features;
     }
 
-    function getPackageSessionNames(
+    function getAllowedSessions(
       concert,
       packageItem
     ) {
@@ -1650,25 +1806,20 @@
         Array.isArray(
           packageItem.session_ids
         )
-          ? packageItem.session_ids
+          ? packageItem.session_ids.map(
+              id =>
+                String(id)
+            )
           : [];
 
-      return sessionIds
-        .map(
-          sessionId => {
-            const session =
-              sessions.find(
-                item =>
-                  item.id ===
-                  sessionId
-              );
-
-            return session
-              ? session.name
-              : "";
-          }
-        )
-        .filter(Boolean);
+      return sessions.filter(
+        session =>
+          sessionIds.includes(
+            String(
+              session.id
+            )
+          )
+      );
     }
 
     /*
@@ -1687,6 +1838,9 @@
       selectedPackage =
         packageItem;
 
+      selectedSession =
+        null;
+
       document
         .querySelectorAll(
           ".package-card"
@@ -1696,7 +1850,9 @@
             card.classList.toggle(
               "selected",
               card.dataset.packageId ===
-              packageItem.id
+              String(
+                packageItem.id
+              )
             );
           }
         );
@@ -1730,8 +1886,14 @@
         ) +
         " บาท";
 
-      paymentForm.classList.remove(
-        "hidden"
+      document.getElementById(
+        "selectedSessionSummary"
+      ).textContent =
+        "วันแสดงที่เลือก: ยังไม่ได้เลือก";
+
+      renderSessionOptions(
+        concert,
+        packageItem
       );
 
       paymentForm.style.display =
@@ -1765,6 +1927,175 @@
 
     /*
      * =========================================
+     * SESSION SELECTION
+     * =========================================
+     */
+
+    function renderSessionOptions(
+      concert,
+      packageItem
+    ) {
+      sessionOptions.innerHTML =
+        "";
+
+      selectedSession =
+        null;
+
+      const allowedSessions =
+        getAllowedSessions(
+          concert,
+          packageItem
+        );
+
+      if (
+        allowedSessions.length === 0
+      ) {
+        sessionSelection.classList.remove(
+          "show"
+        );
+
+        sessionOptions.innerHTML =
+          `
+            <div class="empty">
+              ไม่พบวันแสดงสำหรับแพ็กเกจนี้
+            </div>
+          `;
+
+        return;
+      }
+
+      sessionSelection.classList.add(
+        "show"
+      );
+
+      for (
+        const session
+        of allowedSessions
+      ) {
+        const option =
+          document.createElement(
+            "label"
+          );
+
+        option.className =
+          "session-option";
+
+        const radio =
+          document.createElement(
+            "input"
+          );
+
+        radio.type =
+          "radio";
+
+        radio.name =
+          "selectedSession";
+
+        radio.value =
+          session.id;
+
+        const content =
+          document.createElement(
+            "span"
+          );
+
+        content.className =
+          "session-option-content";
+
+        const name =
+          document.createElement(
+            "span"
+          );
+
+        name.className =
+          "session-option-name";
+
+        name.textContent =
+          session.name ||
+          "วันแสดง";
+
+        const time =
+          document.createElement(
+            "span"
+          );
+
+        time.className =
+          "session-option-time";
+
+        time.textContent =
+          formatDateRange(
+            session.live_starts_at,
+            session.live_ends_at
+          );
+
+        content.appendChild(
+          name
+        );
+
+        content.appendChild(
+          time
+        );
+
+        option.appendChild(
+          radio
+        );
+
+        option.appendChild(
+          content
+        );
+
+        radio.addEventListener(
+          "change",
+          () => {
+            if (!radio.checked) {
+              return;
+            }
+
+            selectedSession =
+              session;
+
+            document
+              .querySelectorAll(
+                ".session-option"
+              )
+              .forEach(
+                item => {
+                  item.classList.remove(
+                    "selected"
+                  );
+                }
+              );
+
+            option.classList.add(
+              "selected"
+            );
+
+            document.getElementById(
+              "selectedSessionSummary"
+            ).textContent =
+              "วันแสดงที่เลือก: " +
+              (
+                session.name ||
+                "วันแสดง"
+              ) +
+              " • " +
+              formatDateRange(
+                session.live_starts_at,
+                session.live_ends_at
+              );
+
+            clearMessage();
+          }
+        );
+
+        sessionOptions.appendChild(
+          option
+        );
+      }
+    }
+
+    /*
+     * =========================================
      * SLIP PREVIEW
      * =========================================
      */
@@ -1787,6 +2118,15 @@
           return;
         }
 
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "image/heic",
+          "image/heif"
+        ];
+
         const maximumSize =
           5 * 1024 * 1024;
 
@@ -1800,6 +2140,10 @@
             "show"
           );
 
+          slipPreviewImage.removeAttribute(
+            "src"
+          );
+
           showMessage(
             "ไฟล์สลิปต้องมีขนาดไม่เกิน 5 MB",
             "error"
@@ -1809,8 +2153,8 @@
         }
 
         if (
-          !file.type.startsWith(
-            "image/"
+          !allowedTypes.includes(
+            file.type
           )
         ) {
           slipInput.value = "";
@@ -1819,8 +2163,12 @@
             "show"
           );
 
+          slipPreviewImage.removeAttribute(
+            "src"
+          );
+
           showMessage(
-            "กรุณาเลือกไฟล์รูปภาพ",
+            "รองรับไฟล์ JPG, PNG, WEBP, GIF, HEIC และ HEIF เท่านั้น",
             "error"
           );
 
@@ -1873,6 +2221,58 @@
           return;
         }
 
+        if (!selectedSession) {
+          showMessage(
+            "กรุณาเลือกวันแสดงที่ต้องการรับชม",
+            "error"
+          );
+
+          sessionSelection.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+
+          return;
+        }
+
+        const allowedSessions =
+          getAllowedSessions(
+            selectedConcert,
+            selectedPackage
+          );
+
+        const sessionIsAllowed =
+          allowedSessions.some(
+            session =>
+              String(
+                session.id
+              ) ===
+              String(
+                selectedSession.id
+              )
+          );
+
+        if (!sessionIsAllowed) {
+          selectedSession = null;
+
+          document.getElementById(
+            "selectedSessionSummary"
+          ).textContent =
+            "วันแสดงที่เลือก: ยังไม่ได้เลือก";
+
+          showMessage(
+            "วันแสดงที่เลือกไม่อยู่ในสิทธิ์ของแพ็กเกจ กรุณาเลือกใหม่",
+            "error"
+          );
+
+          renderSessionOptions(
+            selectedConcert,
+            selectedPackage
+          );
+
+          return;
+        }
+
         const slip =
           slipInput.files?.[0];
 
@@ -1884,6 +2284,15 @@
 
           return;
         }
+
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "image/heic",
+          "image/heif"
+        ];
 
         const maximumSize =
           5 * 1024 * 1024;
@@ -1900,12 +2309,30 @@
           return;
         }
 
+        if (
+          !allowedTypes.includes(
+            slip.type
+          )
+        ) {
+          showMessage(
+            "รองรับไฟล์ JPG, PNG, WEBP, GIF, HEIC และ HEIF เท่านั้น",
+            "error"
+          );
+
+          return;
+        }
+
         const formData =
           new FormData();
 
         formData.append(
           "packageId",
           selectedPackage.id
+        );
+
+        formData.append(
+          "sessionId",
+          selectedSession.id
         );
 
         formData.append(
@@ -1962,6 +2389,23 @@
 
           paymentForm.style.display =
             "none";
+
+          const selectedSessionName =
+            data?.selectedSession?.name ||
+            selectedSession.name ||
+            "วันแสดง";
+
+          document.getElementById(
+            "orderSuccessText"
+          ).textContent =
+            "ระบบได้รับคำสั่งซื้อแพ็กเกจ " +
+            (
+              selectedPackage.name ||
+              ""
+            ) +
+            " สำหรับ " +
+            selectedSessionName +
+            " แล้ว กรุณารอแอดมินตรวจสอบการชำระเงินและแจ้งรหัสเข้าชม";
 
           document.getElementById(
             "orderNumber"
@@ -2028,6 +2472,14 @@
         return "-";
       }
 
+      if (start === "-") {
+        return end;
+      }
+
+      if (end === "-") {
+        return start;
+      }
+
       return (
         start +
         " – " +
@@ -2068,7 +2520,9 @@
       const quality =
         String(
           value || "1080p"
-        ).toLowerCase();
+        )
+          .trim()
+          .toLowerCase();
 
       if (quality === "4k") {
         return "Ultra HD 4K";
