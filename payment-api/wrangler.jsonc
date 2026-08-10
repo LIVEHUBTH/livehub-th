@@ -22,5 +22,14 @@
   "observability": {
     "enabled": true,
     "head_sampling_rate": 1
+  },
+
+  "secrets": {
+    "required": [
+      "ADMIN_TOKEN",
+      "EASYSLIP_API_KEY",
+      "LINE_CHANNEL_SECRET",
+      "LINE_CHANNEL_ACCESS_TOKEN"
+    ]
   }
 }
