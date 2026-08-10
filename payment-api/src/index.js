@@ -2409,8 +2409,6 @@ async function verifySlipWithEasySlip(
   "checkDuplicate",
   "false"
 );
-  );
-
   let response;
 
   try {
