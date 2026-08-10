@@ -3,6 +3,7 @@
   "name": "livehub-payment-api",
   "main": "src/index.js",
   "compatibility_date": "2026-08-08",
+
   "d1_databases": [
     {
       "binding": "DB",
@@ -10,10 +11,16 @@
       "database_id": "68e31c80-8b55-49fd-9fe3-0893b653d79b"
     }
   ],
+
   "r2_buckets": [
     {
       "binding": "SLIPS",
       "bucket_name": "livehubth-payment-slips"
     }
-  ]
+  ],
+
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
 }
