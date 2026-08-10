@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Test Viewing Session | LIVEHUB TH
+  </title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 30px 18px;
+      background: #050505;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .box {
+      width: min(100%, 700px);
+      margin: 0 auto;
+      padding: 28px;
+      background: #111116;
+      border: 1px solid #33333b;
+      border-radius: 24px;
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #ff1493;
+    }
+
+    input {
+      width: 100%;
+      padding: 16px;
+      margin-top: 10px;
+      border-radius: 14px;
+      border: 1px solid #444;
+      background: white;
+      color: black;
+      font-size: 18px;
+      text-transform: uppercase;
+    }
+
+    button {
+      width: 100%;
+      padding: 17px;
+      margin-top: 16px;
+      border: 0;
+      border-radius: 14px;
+      background: #ff1493;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    pre {
+      margin-top: 22px;
+      padding: 18px;
+      background: #080808;
+      border-radius: 14px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.5;
+    }
+
+    .device {
+      margin-top: 15px;
+      color: #aaa;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+
+    <h1>
+      ทดสอบ Viewing Session
+    </h1>
+
+    <p>
+      ทดสอบระบบ 1 สิทธิ์ / 1 อุปกรณ์
+    </p>
+
+    <input
+      id="accessCode"
+      type="text"
+      placeholder="LIVE-XXXXXXXXXX"
+    >
+
+    <button id="startButton">
+      เริ่ม Session
+    </button>
+
+    <button id="checkButton">
+      ตรวจ Session
+    </button>
+
+    <button id="endButton">
+      จบ Session
+    </button>
+
+    <div
+      id="deviceText"
+      class="device"
+    ></div>
+
+    <pre id="result">
+รอทดสอบ...
+    </pre>
+
+  </div>
+
+  <script>
+    const API =
+      "https://livehub-payment-api.livehubth.workers.dev";
+
+    let deviceId =
+      localStorage.getItem(
+        "livehub_device_id"
+      );
+
+    if (!deviceId) {
+      deviceId =
+        "DEVICE-" +
+        crypto.randomUUID();
+
+      localStorage.setItem(
+        "livehub_device_id",
+        deviceId
+      );
+    }
+
+    document.getElementById(
+      "deviceText"
+    ).textContent =
+      "Device ID: " +
+      deviceId;
+
+    const accessCodeInput =
+      document.getElementById(
+        "accessCode"
+      );
+
+    const resultBox =
+      document.getElementById(
+        "result"
+      );
+
+    function showResult(data) {
+      resultBox.textContent =
+        JSON.stringify(
+          data,
+          null,
+          2
+        );
+    }
+
+    async function post(
+      path,
+      body
+    ) {
+      try {
+        const response =
+          await fetch(
+            API + path,
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+
+              body:
+                JSON.stringify(
+                  body
+                ),
+            }
+          );
+
+        const data =
+          await response.json();
+
+        showResult(data);
+
+        return data;
+
+      } catch (error) {
+        showResult({
+          success: false,
+
+          message:
+            error.message ||
+            "เกิดข้อผิดพลาด",
+        });
+
+        return null;
+      }
+    }
+
+    document.getElementById(
+      "startButton"
+    ).addEventListener(
+      "click",
+      async () => {
+
+        const accessCode =
+          accessCodeInput
+            .value
+            .trim()
+            .toUpperCase();
+
+        if (!accessCode) {
+          showResult({
+            success: false,
+            message:
+              "กรุณากรอกรหัส",
+          });
+
+          return;
+        }
+
+        const data =
+          await post(
+            "/api/access/session/start",
+            {
+              accessCode,
+              deviceId,
+            }
+          );
+
+        if (
+          data?.success &&
+          data?.sessionToken
+        ) {
+          localStorage.setItem(
+            "livehub_session_token",
+            data.sessionToken
+          );
+        }
+      }
+    );
+
+    document.getElementById(
+      "checkButton"
+    ).addEventListener(
+      "click",
+      async () => {
+
+        const sessionToken =
+          localStorage.getItem(
+            "livehub_session_token"
+          );
+
+        if (!sessionToken) {
+          showResult({
+            success: false,
+            message:
+              "ยังไม่มี Session Token",
+          });
+
+          return;
+        }
+
+        await post(
+          "/api/access/session/check",
+          {
+            sessionToken,
+            deviceId,
+          }
+        );
+      }
+    );
+
+    document.getElementById(
+      "endButton"
+    ).addEventListener(
+      "click",
+      async () => {
+
+        const sessionToken =
+          localStorage.getItem(
+            "livehub_session_token"
+          );
+
+        if (!sessionToken) {
+          showResult({
+            success: false,
+            message:
+              "ยังไม่มี Session Token",
+          });
+
+          return;
+        }
+
+        const data =
+          await post(
+            "/api/access/session/end",
+            {
+              sessionToken,
+              deviceId,
+            }
+          );
+
+        if (data?.success) {
+          localStorage.removeItem(
+            "livehub_session_token"
+          );
+        }
+      }
+    );
+  </script>
+
+</body>
+</html>
