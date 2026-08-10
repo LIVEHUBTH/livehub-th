@@ -2406,8 +2406,9 @@ async function verifySlipWithEasySlip(
   );
 
   easySlipForm.append(
-    "checkDuplicate",
-    "true"
+  "checkDuplicate",
+  "false"
+);
   );
 
   let response;
