@@ -45,7 +45,16 @@ export default {
           corsHeaders
         );
       }
-
+if (
+  path === "/api/access/verify" &&
+  request.method === "POST"
+) {
+  return await verifyAccessCode(
+    request,
+    env,
+    corsHeaders
+  );
+}
       /*
        * =========================================
        * ADMIN AUTHENTICATION
@@ -2739,7 +2748,229 @@ function validateSlip(
  * ADMIN ORDERS
  * =========================================
  */
+/*
+ * =========================================
+ * PUBLIC ACCESS CODE VERIFICATION
+ * =========================================
+ */
 
+async function verifyAccessCode(
+  request,
+  env,
+  corsHeaders
+) {
+  const body =
+    await readJson(request);
+
+  const accessCode =
+    cleanText(
+      body.accessCode
+    ).toUpperCase();
+
+  if (!accessCode) {
+    return errorResponse(
+      "กรุณากรอกรหัสเข้าชม",
+      400,
+      corsHeaders
+    );
+  }
+
+  const order =
+    await env.DB.prepare(
+      `
+      SELECT
+        id,
+        status,
+        access_code,
+        access_expires_at,
+
+        concert_id,
+        package_id,
+        package_name,
+        access_type,
+        replay_days,
+        replay_months,
+        has_ecard,
+        video_quality,
+
+        selected_session_id,
+        selected_session_name,
+        selected_session_starts_at,
+        selected_session_ends_at
+
+      FROM orders
+      WHERE access_code = ?
+      LIMIT 1
+      `
+    )
+      .bind(accessCode)
+      .first();
+
+  if (!order) {
+    return errorResponse(
+      "ไม่พบรหัสเข้าชมนี้",
+      404,
+      corsHeaders
+    );
+  }
+
+  if (
+    order.status !== "approved"
+  ) {
+    return errorResponse(
+      "รหัสนี้ยังไม่ได้รับการอนุมัติ",
+      403,
+      corsHeaders
+    );
+  }
+
+  if (
+    !order.access_expires_at
+  ) {
+    return errorResponse(
+      "รหัสนี้ยังไม่มีข้อมูลวันหมดอายุ",
+      403,
+      corsHeaders
+    );
+  }
+
+  const expiresAt =
+    new Date(
+      order.access_expires_at
+    );
+
+  if (
+    Number.isNaN(
+      expiresAt.getTime()
+    )
+  ) {
+    return errorResponse(
+      "ข้อมูลวันหมดอายุของรหัสไม่ถูกต้อง",
+      500,
+      corsHeaders
+    );
+  }
+
+  if (
+    Date.now() >
+    expiresAt.getTime()
+  ) {
+    return errorResponse(
+      "รหัสเข้าชมนี้หมดอายุแล้ว",
+      403,
+      corsHeaders
+    );
+  }
+
+  const concert =
+    await env.DB.prepare(
+      `
+      SELECT
+        id,
+        title,
+        description,
+        cover_image_url,
+        live_starts_at,
+        live_ends_at,
+        status
+      FROM concerts
+      WHERE id = ?
+      LIMIT 1
+      `
+    )
+      .bind(
+        order.concert_id
+      )
+      .first();
+
+  return jsonResponse(
+    {
+      success: true,
+      valid: true,
+
+      orderId:
+        order.id,
+
+      accessCode:
+        order.access_code,
+
+      accessExpiresAt:
+        order.access_expires_at,
+
+      concert: {
+        id:
+          concert?.id || "",
+
+        title:
+          concert?.title || "",
+
+        description:
+          concert?.description || "",
+
+        coverImageUrl:
+          concert?.cover_image_url || "",
+
+        liveStartsAt:
+          concert?.live_starts_at || null,
+
+        liveEndsAt:
+          concert?.live_ends_at || null,
+
+        status:
+          concert?.status || "",
+      },
+
+      session: {
+        id:
+          order.selected_session_id || "",
+
+        name:
+          order.selected_session_name || "",
+
+        liveStartsAt:
+          order.selected_session_starts_at || null,
+
+        liveEndsAt:
+          order.selected_session_ends_at || null,
+      },
+
+      package: {
+        id:
+          order.package_id || "",
+
+        name:
+          order.package_name || "",
+
+        accessType:
+          order.access_type || "live",
+
+        replayDays:
+          Number(
+            order.replay_days || 0
+          ),
+
+        replayMonths:
+          Number(
+            order.replay_months || 0
+          ),
+
+        hasEcard:
+          Number(
+            order.has_ecard
+          ) === 1,
+
+        videoQuality:
+          order.video_quality ||
+          "1080p",
+      },
+
+      message:
+        "รหัสเข้าชมถูกต้อง",
+    },
+    200,
+    corsHeaders
+  );
+}
 async function getOrders(
   url,
   env,
