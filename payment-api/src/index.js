@@ -56,7 +56,21 @@ export default {
           corsHeaders
         );
       }
+/*
+ * =========================================
+ * LINE MESSAGING API WEBHOOK
+ * =========================================
+ */
 
+if (
+  path === "/api/line/webhook" &&
+  request.method === "POST"
+) {
+  return await handleLineWebhook(
+    request,
+    env
+  );
+}
       /*
        * =========================================
        * VIEWING SESSION API
@@ -5017,4 +5031,250 @@ function getImageExtension(
     ] ||
     "jpg"
   );
+}
+/*
+ * =========================================
+ * LINE MESSAGING API WEBHOOK
+ * =========================================
+ */
+
+async function handleLineWebhook(
+  request,
+  env
+) {
+  if (!env.LINE_CHANNEL_SECRET) {
+    return new Response(
+      "LINE_CHANNEL_SECRET is not configured",
+      {
+        status: 500,
+      }
+    );
+  }
+
+  const signature =
+    request.headers.get(
+      "x-line-signature"
+    );
+
+  if (!signature) {
+    return new Response(
+      "Missing LINE signature",
+      {
+        status: 401,
+      }
+    );
+  }
+
+  /*
+   * สำคัญ:
+   * ต้องใช้ raw body เดิมในการตรวจ signature
+   * ห้าม request.json() ก่อนตรวจ
+   */
+  const bodyText =
+    await request.text();
+
+  const signatureValid =
+    await verifyLineSignature(
+      bodyText,
+      signature,
+      env.LINE_CHANNEL_SECRET
+    );
+
+  if (!signatureValid) {
+    return new Response(
+      "Invalid LINE signature",
+      {
+        status: 401,
+      }
+    );
+  }
+
+  let payload;
+
+  try {
+    payload =
+      JSON.parse(
+        bodyText
+      );
+  } catch {
+    return new Response(
+      "Invalid JSON",
+      {
+        status: 400,
+      }
+    );
+  }
+
+  const events =
+    Array.isArray(
+      payload.events
+    )
+      ? payload.events
+      : [];
+
+  for (
+    const event
+    of events
+  ) {
+    /*
+     * ตอนนี้เรารับ event ไว้ก่อน
+     * ยังไม่ส่งข้อความอัตโนมัติ
+     *
+     * ขั้นถัดไปเราจะนำ userId
+     * ไปเชื่อมกับลูกค้า/คำสั่งซื้อ
+     */
+    const userId =
+      cleanText(
+        event?.source?.userId
+      );
+
+    if (userId) {
+      console.log(
+        "LINE webhook event:",
+        event.type,
+        userId
+      );
+    }
+  }
+
+  return new Response(
+    "OK",
+    {
+      status: 200,
+      headers: {
+        "Content-Type":
+          "text/plain; charset=UTF-8",
+      },
+    }
+  );
+}
+
+/*
+ * =========================================
+ * VERIFY LINE WEBHOOK SIGNATURE
+ * =========================================
+ */
+
+async function verifyLineSignature(
+  bodyText,
+  receivedSignature,
+  channelSecret
+) {
+  const encoder =
+    new TextEncoder();
+
+  const key =
+    await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(
+        channelSecret
+      ),
+      {
+        name:
+          "HMAC",
+        hash:
+          "SHA-256",
+      },
+      false,
+      [
+        "sign",
+      ]
+    );
+
+  const signatureBuffer =
+    await crypto.subtle.sign(
+      "HMAC",
+      key,
+      encoder.encode(
+        bodyText
+      )
+    );
+
+  const expectedSignature =
+    arrayBufferToBase64(
+      signatureBuffer
+    );
+
+  return constantTimeEqual(
+    expectedSignature,
+    receivedSignature
+  );
+}
+
+/*
+ * =========================================
+ * BASE64 HELPER
+ * =========================================
+ */
+
+function arrayBufferToBase64(
+  buffer
+) {
+  const bytes =
+    new Uint8Array(
+      buffer
+    );
+
+  let binary = "";
+
+  for (
+    let index = 0;
+    index < bytes.length;
+    index++
+  ) {
+    binary +=
+      String.fromCharCode(
+        bytes[index]
+      );
+  }
+
+  return btoa(
+    binary
+  );
+}
+
+/*
+ * =========================================
+ * CONSTANT TIME STRING COMPARE
+ * =========================================
+ */
+
+function constantTimeEqual(
+  firstValue,
+  secondValue
+) {
+  const first =
+    String(
+      firstValue || ""
+    );
+
+  const second =
+    String(
+      secondValue || ""
+    );
+
+  if (
+    first.length !==
+    second.length
+  ) {
+    return false;
+  }
+
+  let difference = 0;
+
+  for (
+    let index = 0;
+    index < first.length;
+    index++
+  ) {
+    difference |=
+      first.charCodeAt(
+        index
+      ) ^
+      second.charCodeAt(
+        index
+      );
+  }
+
+  return difference === 0;
 }
