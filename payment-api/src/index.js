@@ -1990,14 +1990,6 @@ async function createPayment(
     );
   }
 
-  if (!easySlip.matchedAccount) {
-    return errorResponse(
-      "บัญชีผู้รับในสลิปไม่ตรงกับบัญชีที่ลงทะเบียนใน EasySlip",
-      400,
-      corsHeaders
-    );
-  }
-
   if (!easySlip.transRef) {
     return errorResponse(
       "ไม่พบเลขอ้างอิงธุรกรรมในสลิป",
@@ -2396,9 +2388,9 @@ async function verifySlipWithEasySlip(
   );
 
   easySlipForm.append(
-    "matchAccount",
-    "true"
-  );
+  "matchAccount",
+  "false"
+);
 
   easySlipForm.append(
     "matchAmount",
