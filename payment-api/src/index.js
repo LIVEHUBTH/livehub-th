@@ -5043,8 +5043,25 @@ async function handleLineWebhook(
   env
 ) {
   if (!env.LINE_CHANNEL_SECRET) {
+    console.error(
+      "LINE_CHANNEL_SECRET is not configured"
+    );
+
     return new Response(
       "LINE_CHANNEL_SECRET is not configured",
+      {
+        status: 500,
+      }
+    );
+  }
+
+  if (!env.LINE_CHANNEL_ACCESS_TOKEN) {
+    console.error(
+      "LINE_CHANNEL_ACCESS_TOKEN is not configured"
+    );
+
+    return new Response(
+      "LINE_CHANNEL_ACCESS_TOKEN is not configured",
       {
         status: 500,
       }
@@ -5057,6 +5074,10 @@ async function handleLineWebhook(
     );
 
   if (!signature) {
+    console.error(
+      "Missing LINE signature"
+    );
+
     return new Response(
       "Missing LINE signature",
       {
@@ -5066,9 +5087,8 @@ async function handleLineWebhook(
   }
 
   /*
-   * สำคัญ:
-   * ต้องใช้ raw body เดิมในการตรวจ signature
-   * ห้าม request.json() ก่อนตรวจ
+   * ต้องใช้ raw body เดิม
+   * เพื่อตรวจ LINE signature
    */
   const bodyText =
     await request.text();
@@ -5081,6 +5101,10 @@ async function handleLineWebhook(
     );
 
   if (!signatureValid) {
+    console.error(
+      "Invalid LINE signature"
+    );
+
     return new Response(
       "Invalid LINE signature",
       {
@@ -5097,6 +5121,10 @@ async function handleLineWebhook(
         bodyText
       );
   } catch {
+    console.error(
+      "Invalid LINE JSON"
+    );
+
     return new Response(
       "Invalid JSON",
       {
@@ -5116,31 +5144,93 @@ async function handleLineWebhook(
     const event
     of events
   ) {
-    /*
-     * ตอนนี้เรารับ event ไว้ก่อน
-     * ยังไม่ส่งข้อความอัตโนมัติ
-     *
-     * ขั้นถัดไปเราจะนำ userId
-     * ไปเชื่อมกับลูกค้า/คำสั่งซื้อ
-     */
+    const eventType =
+      cleanText(
+        event?.type
+      );
+
     const userId =
       cleanText(
         event?.source?.userId
       );
 
-    if (userId) {
+    console.log(
+      "LINE webhook event:",
+      eventType,
+      userId
+    );
+
+    /*
+     * ตอบเฉพาะ message event
+     */
+    if (
+      eventType !== "message"
+    ) {
+      continue;
+    }
+
+    /*
+     * ช่วงทดสอบ
+     * ตอบเฉพาะข้อความตัวอักษร
+     */
+    if (
+      event?.message?.type !== "text"
+    ) {
+      continue;
+    }
+
+    const replyToken =
+      cleanText(
+        event?.replyToken
+      );
+
+    if (!replyToken) {
+      console.warn(
+        "LINE replyToken not found"
+      );
+
+      continue;
+    }
+
+    const userMessage =
+      cleanText(
+        event?.message?.text
+      );
+
+    const replyText =
+      buildLineReplyMessage(
+        userMessage
+      );
+
+    try {
+      await replyLineMessage(
+        replyToken,
+        replyText,
+        env
+      );
+
       console.log(
-        "LINE webhook event:",
-        event.type,
+        "LINE reply sent successfully:",
         userId
+      );
+
+    } catch (error) {
+      console.error(
+        "LINE reply failed:",
+        error?.message ||
+        String(error)
       );
     }
   }
 
+  /*
+   * LINE ต้องได้รับ HTTP 200
+   */
   return new Response(
     "OK",
     {
       status: 200,
+
       headers: {
         "Content-Type":
           "text/plain; charset=UTF-8",
@@ -5148,6 +5238,125 @@ async function handleLineWebhook(
     }
   );
 }
+
+
+/*
+ * =========================================
+ * BUILD LINE REPLY MESSAGE
+ * =========================================
+ */
+
+function buildLineReplyMessage(
+  userMessage
+) {
+  const normalized =
+    String(
+      userMessage || ""
+    )
+      .trim()
+      .toLowerCase();
+
+  if (
+    normalized === "ทดสอบ" ||
+    normalized === "ทดสอบ webhook" ||
+    normalized === "test"
+  ) {
+    return (
+      "LIVEHUB TH ✅\n\n" +
+      "ระบบ LINE Messaging API เชื่อมต่อสำเร็จแล้ว\n\n" +
+      "ข้อความของคุณถูกส่งถึงระบบ LIVEHUB TH เรียบร้อย"
+    );
+  }
+
+  return (
+    "LIVEHUB TH 🎵\n\n" +
+    "ได้รับข้อความของคุณเรียบร้อยแล้ว\n\n" +
+    "ระบบกำลังเชื่อมต่อบริการคอนเสิร์ตและสิทธิ์การรับชม"
+  );
+}
+
+
+/*
+ * =========================================
+ * SEND LINE REPLY MESSAGE
+ * =========================================
+ */
+
+async function replyLineMessage(
+  replyToken,
+  text,
+  env
+) {
+  if (!env.LINE_CHANNEL_ACCESS_TOKEN) {
+    throw new Error(
+      "LINE_CHANNEL_ACCESS_TOKEN is not configured"
+    );
+  }
+
+  const response =
+    await fetch(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+
+          Authorization:
+            "Bearer " +
+            env.LINE_CHANNEL_ACCESS_TOKEN,
+        },
+
+        body:
+          JSON.stringify(
+            {
+              replyToken,
+
+              messages: [
+                {
+                  type:
+                    "text",
+
+                  text:
+                    String(
+                      text || ""
+                    ).slice(
+                      0,
+                      5000
+                    ),
+                },
+              ],
+            }
+          ),
+      }
+    );
+
+  if (response.ok) {
+    return true;
+  }
+
+  let responseText = "";
+
+  try {
+    responseText =
+      await response.text();
+  } catch {
+    responseText = "";
+  }
+
+  throw new Error(
+    "LINE Messaging API error " +
+    response.status +
+    (
+      responseText
+        ? " - " +
+          responseText
+        : ""
+    )
+  );
+}
+
 
 /*
  * =========================================
@@ -5166,16 +5375,21 @@ async function verifyLineSignature(
   const key =
     await crypto.subtle.importKey(
       "raw",
+
       encoder.encode(
         channelSecret
       ),
+
       {
         name:
           "HMAC",
+
         hash:
           "SHA-256",
       },
+
       false,
+
       [
         "sign",
       ]
@@ -5184,7 +5398,9 @@ async function verifyLineSignature(
   const signatureBuffer =
     await crypto.subtle.sign(
       "HMAC",
+
       key,
+
       encoder.encode(
         bodyText
       )
@@ -5200,6 +5416,7 @@ async function verifyLineSignature(
     receivedSignature
   );
 }
+
 
 /*
  * =========================================
@@ -5232,6 +5449,7 @@ function arrayBufferToBase64(
     binary
   );
 }
+
 
 /*
  * =========================================
