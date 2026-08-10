@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#050505"
+  >
+
+  <title>รับชมคอนเสิร์ต | LIVEHUB TH</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(
+          circle at top,
+          #351025 0%,
+          #10050c 35%,
+          #050505 75%
+        );
+      color: #ffffff;
+    }
+
+    .page {
+      width: min(100%, 1100px);
+      margin: 0 auto;
+      padding: 24px 18px 60px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 20px 22px;
+      background: rgba(5, 5, 5, 0.94);
+      border: 1px solid #35353d;
+      border-radius: 24px;
+    }
+
+    .brand {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .brand span {
+      color: #ff1493;
+    }
+
+    .tagline {
+      margin-top: 5px;
+      color: #a9a9b2;
+      font-size: 13px;
+      letter-spacing: 2px;
+    }
+
+    .back-link {
+      text-decoration: none;
+      color: #ffffff;
+      border: 1px solid #ff1493;
+      border-radius: 16px;
+      padding: 12px 18px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-card {
+      margin-top: 28px;
+      padding: 32px 24px;
+      text-align: center;
+      background: #0d0d10;
+      border: 1px solid #393941;
+      border-radius: 28px;
+    }
+
+    .spinner {
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 18px;
+      border: 4px solid #33333a;
+      border-top-color: #ff1493;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .status-title {
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .status-text {
+      color: #a5a5ae;
+      line-height: 1.6;
+    }
+
+    .error-box {
+      display: none;
+      margin-top: 28px;
+      padding: 26px 22px;
+      background: rgba(130, 20, 40, 0.22);
+      border: 1px solid #92384a;
+      border-radius: 24px;
+    }
+
+    .error-box.show {
+      display: block;
+    }
+
+    .error-box h2 {
+      margin: 0 0 10px;
+      color: #ff9caf;
+    }
+
+    .error-box p {
+      margin: 0;
+      color: #ffc5d0;
+      line-height: 1.6;
+    }
+
+    .error-button {
+      display: block;
+      margin-top: 18px;
+      padding: 16px 18px;
+      text-align: center;
+      text-decoration: none;
+      background: #ff1493;
+      color: white;
+      border-radius: 15px;
+      font-weight: 900;
+    }
+
+    .content {
+      display: none;
+    }
+
+    .content.show {
+      display: block;
+    }
+
+    .hero {
+      margin-top: 28px;
+      padding: 32px 24px;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 20, 147, 0.17),
+          rgba(255, 20, 147, 0.03)
+        );
+      border: 1px solid #3b3941;
+      border-radius: 28px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 15px;
+      border-radius: 999px;
+      background: rgba(255, 20, 147, 0.13);
+      color: #ff72bd;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .hero h1 {
+      margin: 16px 0 8px;
+      font-size: clamp(34px, 7vw, 56px);
+      line-height: 1.08;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #b7b7bf;
+      line-height: 1.7;
+    }
+
+    .player-card {
+      margin-top: 28px;
+      padding: 22px;
+      background: #0d0d10;
+      border: 1px solid #393941;
+      border-radius: 26px;
+    }
+
+    .video-shell {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background:
+        radial-gradient(
+          circle at center,
+          #35001e,
+          #090909 65%
+        );
+      border: 1px solid #33333a;
+      border-radius: 20px;
+      overflow: hidden;
+      padding: 24px;
+    }
+
+    .video-placeholder {
+      max-width: 650px;
+    }
+
+    .video-placeholder h2 {
+      margin: 0 0 12px;
+      font-size: clamp(26px, 5vw, 42px);
+    }
+
+    .video-placeholder p {
+      margin: 0;
+      color: #aaaab3;
+      line-height: 1.7;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          auto-fit,
+          minmax(220px, 1fr)
+        );
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      padding: 17px 18px;
+      background: #121216;
+      border: 1px solid #34343b;
+      border-radius: 16px;
+    }
+
+    .info-label {
+      display: block;
+      color: #8f8f98;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .notice {
+      margin-top: 20px;
+      padding: 17px 18px;
+      border: 1px solid #3b3941;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      color: #aaaab3;
+      line-height: 1.7;
+    }
+
+    @media (max-width: 600px) {
+      .header {
+        align-items: flex-start;
+      }
+
+      .brand {
+        font-size: 24px;
+      }
+
+      .hero,
+      .player-card {
+        padding: 20px 17px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <header class="header">
+
+      <div>
+        <div class="brand">
+          LIVE <span>HUB TH</span>
+        </div>
+
+        <div class="tagline">
+          LIVE CONCERTS & EVENTS
+        </div>
+      </div>
+
+      <a
+        class="back-link"
+        href="watch.html"
+      >
+        กลับ
+      </a>
+
+    </header>
+
+    <section
+      id="loadingCard"
+      class="status-card"
+    >
+      <div class="spinner"></div>
+
+      <div class="status-title">
+        กำลังตรวจสอบสิทธิ์
+      </div>
+
+      <div class="status-text">
+        กรุณารอสักครู่
+        ระบบกำลังตรวจสอบรหัสเข้าชม
+        และวันหมดอายุของสิทธิ์
+      </div>
+    </section>
+
+    <section
+      id="errorBox"
+      class="error-box"
+    >
+      <h2>
+        ไม่สามารถเข้าชมได้
+      </h2>
+
+      <p id="errorMessage">
+        รหัสเข้าชมไม่ถูกต้อง
+      </p>
+
+      <a
+        class="error-button"
+        href="watch.html"
+      >
+        กลับไปกรอกรหัสใหม่
+      </a>
+    </section>
+
+    <div
+      id="content"
+      class="content"
+    >
+
+      <section class="hero">
+
+        <div
+          id="accessBadge"
+          class="badge"
+        >
+          LIVE CONCERT
+        </div>
+
+        <h1 id="concertTitle">
+          คอนเสิร์ต
+        </h1>
+
+        <p>
+          ระบบตรวจสอบสิทธิ์ของคุณแล้ว
+          กรุณาอย่าแชร์รหัสเข้าชมให้ผู้อื่น
+        </p>
+
+      </section>
+
+      <section class="player-card">
+
+        <div class="video-shell">
+
+          <div class="video-placeholder">
+
+            <h2>
+              พื้นที่สำหรับ LIVE STREAM
+            </h2>
+
+            <p>
+              หน้านี้ผ่านระบบตรวจรหัสแล้ว
+              ขั้นถัดไปเราจะนำลิงก์สตรีมจริง
+              มาเชื่อมในพื้นที่นี้
+            </p>
+
+          </div>
+
+        </div>
+
+        <div class="info-grid">
+
+          <div class="info-item">
+            <span class="info-label">
+              วันแสดง
+            </span>
+
+            <span
+              id="sessionName"
+              class="info-value"
+            >
+              -
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">
+              แพ็กเกจ
+            </span>
+
+            <span
+              id="packageName"
+              class="info-value"
+            >
+              -
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">
+              ประเภทสิทธิ์
+            </span>
+
+            <span
+              id="accessType"
+              class="info-value"
+            >
+              -
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">
+              ความคมชัด
+            </span>
+
+            <span
+              id="videoQuality"
+              class="info-value"
+            >
+              -
+            </span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">
+              สิทธิ์หมดอายุ
+            </span>
+
+            <span
+              id="expiresAt"
+              class="info-value"
+            >
+              -
+            </span>
+          </div>
+
+        </div>
+
+        <div class="notice">
+          หากสิทธิ์หมดอายุ
+          ระบบจะไม่อนุญาตให้เปิดหน้านี้
+          แม้จะมี URL เดิมอยู่ก็ตาม
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <script>
+    const API =
+      "https://livehub-payment-api.livehubth.workers.dev";
+
+    const loadingCard =
+      document.getElementById(
+        "loadingCard"
+      );
+
+    const errorBox =
+      document.getElementById(
+        "errorBox"
+      );
+
+    const errorMessage =
+      document.getElementById(
+        "errorMessage"
+      );
+
+    const content =
+      document.getElementById(
+        "content"
+      );
+
+    function showError(
+      message
+    ) {
+      loadingCard.style.display =
+        "none";
+
+      content.classList.remove(
+        "show"
+      );
+
+      errorMessage.textContent =
+        message;
+
+      errorBox.classList.add(
+        "show"
+      );
+    }
+
+    function formatDateTime(
+      value
+    ) {
+      if (!value) {
+        return "-";
+      }
+
+      const date =
+        new Date(value);
+
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+        return value;
+      }
+
+      return date.toLocaleString(
+        "th-TH",
+        {
+          dateStyle: "medium",
+          timeStyle: "short",
+          timeZone: "Asia/Bangkok",
+        }
+      );
+    }
+
+    function getAccessTypeText(
+      accessType
+    ) {
+      if (
+        accessType ===
+        "live_replay"
+      ) {
+        return "LIVE + REPLAY";
+      }
+
+      return "LIVE";
+    }
+
+    async function verifyAndLoad() {
+      const params =
+        new URLSearchParams(
+          window.location.search
+        );
+
+      const accessCode =
+        String(
+          params.get("code") || ""
+        )
+          .trim()
+          .toUpperCase();
+
+      if (!accessCode) {
+        showError(
+          "ไม่พบรหัสเข้าชม กรุณากลับไปกรอกรหัสใหม่"
+        );
+
+        return;
+      }
+
+      try {
+        const response =
+          await fetch(
+            API +
+            "/api/access/verify",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+
+              body:
+                JSON.stringify({
+                  accessCode,
+                }),
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (
+          !response.ok ||
+          !data.success ||
+          !data.valid
+        ) {
+          throw new Error(
+            data.message ||
+            "รหัสเข้าชมไม่ถูกต้องหรือหมดอายุ"
+          );
+        }
+
+        const expiresAt =
+          new Date(
+            data.accessExpiresAt
+          );
+
+        if (
+          !data.accessExpiresAt ||
+          Number.isNaN(
+            expiresAt.getTime()
+          ) ||
+          expiresAt.getTime() <=
+            Date.now()
+        ) {
+          throw new Error(
+            "สิทธิ์การรับชมหมดอายุแล้ว"
+          );
+        }
+
+        document
+          .getElementById(
+            "concertTitle"
+          )
+          .textContent =
+            data.concert
+              ?.title ||
+            "LIVEHUB TH";
+
+        document
+          .getElementById(
+            "sessionName"
+          )
+          .textContent =
+            data.session
+              ?.name ||
+            "-";
+
+        document
+          .getElementById(
+            "packageName"
+          )
+          .textContent =
+            data.package
+              ?.name ||
+            "-";
+
+        document
+          .getElementById(
+            "accessType"
+          )
+          .textContent =
+            getAccessTypeText(
+              data.package
+                ?.accessType
+            );
+
+        document
+          .getElementById(
+            "videoQuality"
+          )
+          .textContent =
+            data.package
+              ?.videoQuality ||
+            "-";
+
+        document
+          .getElementById(
+            "expiresAt"
+          )
+          .textContent =
+            formatDateTime(
+              data.accessExpiresAt
+            );
+
+        document
+          .getElementById(
+            "accessBadge"
+          )
+          .textContent =
+            data.package
+              ?.accessType ===
+              "live_replay"
+              ? "LIVE + REPLAY"
+              : "LIVE CONCERT";
+
+        loadingCard.style.display =
+          "none";
+
+        errorBox.classList.remove(
+          "show"
+        );
+
+        content.classList.add(
+          "show"
+        );
+
+      } catch (error) {
+        showError(
+          error?.message ||
+          "ไม่สามารถตรวจสอบสิทธิ์ได้"
+        );
+      }
+    }
+
+    verifyAndLoad();
+  </script>
+
+</body>
+</html>
