@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#050505"
+  >
+
+  <title>เข้าชมคอนเสิร์ต | LIVEHUB TH</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family:
+        Arial,
+        sans-serif;
+      background:
+        radial-gradient(
+          circle at top,
+          #3b001f 0%,
+          #15000d 35%,
+          #050505 75%
+        );
+      color: #ffffff;
+    }
+
+    .page {
+      width: min(
+        100%,
+        1000px
+      );
+      margin: 0 auto;
+      padding:
+        24px
+        18px
+        60px;
+    }
+
+    .header {
+      display: flex;
+      justify-content:
+        space-between;
+      align-items: center;
+      gap: 16px;
+      padding:
+        20px
+        22px;
+      background:
+        rgba(
+          5,
+          5,
+          5,
+          0.92
+        );
+      border:
+        1px solid
+        #35353d;
+      border-radius: 24px;
+    }
+
+    .brand {
+      font-size: 30px;
+      font-weight: 900;
+      letter-spacing:
+        -1px;
+    }
+
+    .brand span {
+      color: #ff1493;
+    }
+
+    .tagline {
+      margin-top: 5px;
+      color: #a9a9b2;
+      font-size: 13px;
+      letter-spacing: 2px;
+    }
+
+    .home-link {
+      text-decoration: none;
+      color: #ffffff;
+      border:
+        1px solid
+        #ff1493;
+      border-radius: 16px;
+      padding:
+        12px
+        18px;
+      font-weight: 700;
+      white-space:
+        nowrap;
+    }
+
+    .hero {
+      margin-top: 28px;
+      padding:
+        38px
+        24px;
+      text-align: center;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(
+            255,
+            20,
+            147,
+            0.18
+          ),
+          rgba(
+            255,
+            20,
+            147,
+            0.03
+          )
+        );
+      border:
+        1px solid
+        #3b3941;
+      border-radius: 28px;
+    }
+
+    .badge {
+      display:
+        inline-block;
+      padding:
+        9px
+        16px;
+      border-radius:
+        999px;
+      background:
+        rgba(
+          255,
+          20,
+          147,
+          0.13
+        );
+      color:
+        #ff72bd;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    h1 {
+      margin:
+        18px
+        0
+        12px;
+      font-size:
+        clamp(
+          34px,
+          7vw,
+          58px
+        );
+      line-height: 1.08;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #b7b7bf;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .card {
+      margin-top: 28px;
+      padding:
+        26px
+        22px;
+      background:
+        #0d0d10;
+      border:
+        1px solid
+        #393941;
+      border-radius: 26px;
+    }
+
+    .card h2 {
+      margin:
+        0
+        0
+        8px;
+      font-size: 28px;
+    }
+
+    .card-subtitle {
+      margin:
+        0
+        0
+        22px;
+      color: #9999a3;
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 9px;
+      font-weight: 800;
+    }
+
+    input {
+      width: 100%;
+      min-height: 58px;
+      padding:
+        0
+        18px;
+      border:
+        1px solid
+        #414149;
+      border-radius: 16px;
+      background: #151519;
+      color: #ffffff;
+      font-size: 19px;
+      outline: none;
+      text-transform:
+        uppercase;
+    }
+
+    input:focus {
+      border-color:
+        #ff1493;
+      box-shadow:
+        0
+        0
+        0
+        3px
+        rgba(
+          255,
+          20,
+          147,
+          0.12
+        );
+    }
+
+    .button {
+      width: 100%;
+      min-height: 58px;
+      margin-top: 16px;
+      border: 0;
+      border-radius: 16px;
+      background:
+        linear-gradient(
+          90deg,
+          #ff1493,
+          #e60073
+        );
+      color: white;
+      font-size: 19px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .button:disabled {
+      opacity: 0.55;
+      cursor:
+        not-allowed;
+    }
+
+    .message {
+      display: none;
+      margin-top: 18px;
+      padding:
+        16px
+        18px;
+      border-radius: 16px;
+      line-height: 1.6;
+    }
+
+    .message.error {
+      display: block;
+      background:
+        rgba(
+          160,
+          25,
+          50,
+          0.22
+        );
+      border:
+        1px solid
+        #943245;
+      color:
+        #ffb5c3;
+    }
+
+    .message.success {
+      display: block;
+      background:
+        rgba(
+          0,
+          145,
+          80,
+          0.18
+        );
+      border:
+        1px solid
+        #16834f;
+      color:
+        #68f3ad;
+    }
+
+    .result {
+      display: none;
+      margin-top: 28px;
+      padding:
+        26px
+        22px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(
+            0,
+            104,
+            57,
+            0.20
+          ),
+          rgba(
+            6,
+            19,
+            13,
+            0.95
+          )
+        );
+      border:
+        1px solid
+        #16834f;
+      border-radius: 26px;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result h2 {
+      margin:
+        0
+        0
+        8px;
+      color:
+        #42e997;
+      font-size: 30px;
+    }
+
+    .access-box {
+      margin-top: 22px;
+      padding:
+        24px
+        18px;
+      text-align: center;
+      background:
+        rgba(
+          0,
+          0,
+          0,
+          0.35
+        );
+      border:
+        1px dashed
+        #42e997;
+      border-radius: 20px;
+    }
+
+    .access-label {
+      color: #a7a7ae;
+    }
+
+    .access-code {
+      margin-top: 10px;
+      color:
+        #42e997;
+      font-size:
+        clamp(
+          25px,
+          6vw,
+          44px
+        );
+      font-weight: 900;
+      letter-spacing: 2px;
+      overflow-wrap:
+        anywhere;
+    }
+
+    .details {
+      display: grid;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .detail {
+      padding:
+        16px
+        18px;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.035
+        );
+      border:
+        1px solid
+        #294a39;
+      border-radius: 16px;
+    }
+
+    .detail-label {
+      display: block;
+      margin-bottom: 5px;
+      color: #8f9692;
+      font-size: 13px;
+    }
+
+    .detail-value {
+      font-size: 17px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    .watch-button {
+      display: block;
+      width: 100%;
+      margin-top: 20px;
+      padding:
+        18px
+        20px;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 16px;
+      background:
+        #16834f;
+      color: white;
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .note {
+      margin-top: 16px;
+      color:
+        #93939b;
+      text-align: center;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    @media (
+      max-width: 600px
+    ) {
+      .header {
+        align-items:
+          flex-start;
+      }
+
+      .brand {
+        font-size: 24px;
+      }
+
+      .hero {
+        padding:
+          30px
+          18px;
+      }
+
+      .card,
+      .result {
+        padding:
+          22px
+          17px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="page">
+
+    <header class="header">
+
+      <div>
+        <div class="brand">
+          LIVE <span>HUB TH</span>
+        </div>
+
+        <div class="tagline">
+          LIVE CONCERTS & EVENTS
+        </div>
+      </div>
+
+      <a
+        class="home-link"
+        href="index.html"
+      >
+        หน้าแรก
+      </a>
+
+    </header>
+
+    <section class="hero">
+
+      <div class="badge">
+        LIVE CONCERT & REPLAY
+      </div>
+
+      <h1>
+        เข้าสู่หน้ารับชม
+      </h1>
+
+      <p>
+        กรอกรหัสเข้าชมที่ได้รับหลังจาก
+        ชำระเงินสำเร็จ
+        ระบบจะตรวจสอบแพ็กเกจ
+        วันแสดง และวันหมดอายุของสิทธิ์
+        โดยอัตโนมัติ
+      </p>
+
+    </section>
+
+    <section class="card">
+
+      <h2>
+        กรอกรหัสเข้าชม
+      </h2>
+
+      <p class="card-subtitle">
+        ตัวอย่างรหัส:
+        LIVE-XXXXXXXXXX
+      </p>
+
+      <form id="accessForm">
+
+        <label for="accessCode">
+          รหัสเข้าชม
+        </label>
+
+        <input
+          id="accessCode"
+          name="accessCode"
+          type="text"
+          placeholder="LIVE-XXXXXXXXXX"
+          autocomplete="off"
+          autocapitalize="characters"
+          spellcheck="false"
+          required
+        >
+
+        <button
+          class="button"
+          id="submitButton"
+          type="submit"
+        >
+          ตรวจสอบรหัสและเข้าชม
+        </button>
+
+      </form>
+
+      <div
+        id="message"
+        class="message"
+      ></div>
+
+    </section>
+
+    <section
+      id="result"
+      class="result"
+    >
+
+      <h2>
+        รหัสผ่านการตรวจสอบ
+      </h2>
+
+      <div>
+        สิทธิ์ของคุณพร้อมใช้งาน
+      </div>
+
+      <div class="access-box">
+
+        <div class="access-label">
+          รหัสเข้าชมของคุณ
+        </div>
+
+        <div
+          id="resultAccessCode"
+          class="access-code"
+        ></div>
+
+      </div>
+
+      <div class="details">
+
+        <div class="detail">
+          <span class="detail-label">
+            คอนเสิร์ต
+          </span>
+
+          <span
+            id="concertTitle"
+            class="detail-value"
+          ></span>
+        </div>
+
+        <div class="detail">
+          <span class="detail-label">
+            วันแสดง
+          </span>
+
+          <span
+            id="sessionName"
+            class="detail-value"
+          ></span>
+        </div>
+
+        <div class="detail">
+          <span class="detail-label">
+            แพ็กเกจ
+          </span>
+
+          <span
+            id="packageName"
+            class="detail-value"
+          ></span>
+        </div>
+
+        <div class="detail">
+          <span class="detail-label">
+            ประเภทสิทธิ์
+          </span>
+
+          <span
+            id="accessType"
+            class="detail-value"
+          ></span>
+        </div>
+
+        <div class="detail">
+          <span class="detail-label">
+            ความคมชัด
+          </span>
+
+          <span
+            id="videoQuality"
+            class="detail-value"
+          ></span>
+        </div>
+
+        <div class="detail">
+          <span class="detail-label">
+            สิทธิ์หมดอายุ
+          </span>
+
+          <span
+            id="expiresAt"
+            class="detail-value"
+          ></span>
+        </div>
+
+      </div>
+
+      <a
+        id="watchButton"
+        class="watch-button"
+        href="#"
+      >
+        เข้าสู่หน้ารับชม
+      </a>
+
+      <div class="note">
+        ระบบจะตรวจสอบรหัสอีกครั้ง
+        ก่อนอนุญาตให้รับชม
+      </div>
+
+    </section>
+
+  </main>
+
+  <script>
+    const API =
+      "https://livehub-payment-api.livehubth.workers.dev";
+
+    const accessForm =
+      document.getElementById(
+        "accessForm"
+      );
+
+    const accessCodeInput =
+      document.getElementById(
+        "accessCode"
+      );
+
+    const submitButton =
+      document.getElementById(
+        "submitButton"
+      );
+
+    const message =
+      document.getElementById(
+        "message"
+      );
+
+    const result =
+      document.getElementById(
+        "result"
+      );
+
+    function showMessage(
+      text,
+      type
+    ) {
+      message.textContent =
+        text;
+
+      message.className =
+        "message " + type;
+    }
+
+    function clearMessage() {
+      message.textContent =
+        "";
+
+      message.className =
+        "message";
+    }
+
+    function formatDateTime(
+      value
+    ) {
+      if (!value) {
+        return "-";
+      }
+
+      const date =
+        new Date(value);
+
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+        return value;
+      }
+
+      return date.toLocaleString(
+        "th-TH",
+        {
+          dateStyle:
+            "medium",
+
+          timeStyle:
+            "short",
+
+          timeZone:
+            "Asia/Bangkok",
+        }
+      );
+    }
+
+    function getAccessTypeText(
+      accessType
+    ) {
+      if (
+        accessType ===
+        "live_replay"
+      ) {
+        return "LIVE + REPLAY";
+      }
+
+      return "LIVE";
+    }
+
+    accessForm.addEventListener(
+      "submit",
+      async event => {
+        event.preventDefault();
+
+        clearMessage();
+
+        result.classList.remove(
+          "show"
+        );
+
+        const accessCode =
+          accessCodeInput
+            .value
+            .trim()
+            .toUpperCase();
+
+        if (!accessCode) {
+          showMessage(
+            "กรุณากรอกรหัสเข้าชม",
+            "error"
+          );
+
+          return;
+        }
+
+        submitButton.disabled =
+          true;
+
+        submitButton.textContent =
+          "กำลังตรวจสอบ...";
+
+        try {
+          const response =
+            await fetch(
+              API +
+              "/api/access/verify",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json",
+                },
+
+                body:
+                  JSON.stringify({
+                    accessCode,
+                  }),
+              }
+            );
+
+          const data =
+            await response.json();
+
+          if (
+            !response.ok ||
+            !data.success ||
+            !data.valid
+          ) {
+            throw new Error(
+              data.message ||
+              "รหัสเข้าชมไม่ถูกต้อง"
+            );
+          }
+
+          showMessage(
+            "ตรวจสอบรหัสสำเร็จ",
+            "success"
+          );
+
+          document
+            .getElementById(
+              "resultAccessCode"
+            )
+            .textContent =
+              data.accessCode ||
+              accessCode;
+
+          document
+            .getElementById(
+              "concertTitle"
+            )
+            .textContent =
+              data.concert
+                ?.title ||
+              "-";
+
+          document
+            .getElementById(
+              "sessionName"
+            )
+            .textContent =
+              data.session
+                ?.name ||
+              "-";
+
+          document
+            .getElementById(
+              "packageName"
+            )
+            .textContent =
+              data.package
+                ?.name ||
+              "-";
+
+          document
+            .getElementById(
+              "accessType"
+            )
+            .textContent =
+              getAccessTypeText(
+                data.package
+                  ?.accessType
+              );
+
+          document
+            .getElementById(
+              "videoQuality"
+            )
+            .textContent =
+              data.package
+                ?.videoQuality ||
+              "-";
+
+          document
+            .getElementById(
+              "expiresAt"
+            )
+            .textContent =
+              formatDateTime(
+                data.accessExpiresAt
+              );
+
+          const watchButton =
+            document.getElementById(
+              "watchButton"
+            );
+
+          watchButton.href =
+            "player.html?code=" +
+            encodeURIComponent(
+              data.accessCode ||
+              accessCode
+            );
+
+          result.classList.add(
+            "show"
+          );
+
+          result.scrollIntoView({
+            behavior:
+              "smooth",
+
+            block:
+              "start",
+          });
+
+        } catch (error) {
+          showMessage(
+            error?.message ||
+            "ไม่สามารถตรวจสอบรหัสได้",
+            "error"
+          );
+
+        } finally {
+          submitButton.disabled =
+            false;
+
+          submitButton.textContent =
+            "ตรวจสอบรหัสและเข้าชม";
+        }
+      }
+    );
+  </script>
+
+</body>
+</html>
