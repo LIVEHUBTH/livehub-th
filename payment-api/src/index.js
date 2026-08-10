@@ -45,16 +45,57 @@ export default {
           corsHeaders
         );
       }
-if (
-  path === "/api/access/verify" &&
-  request.method === "POST"
-) {
-  return await verifyAccessCode(
-    request,
-    env,
-    corsHeaders
-  );
-}
+
+      if (
+        path === "/api/access/verify" &&
+        request.method === "POST"
+      ) {
+        return await verifyAccessCode(
+          request,
+          env,
+          corsHeaders
+        );
+      }
+
+      /*
+       * =========================================
+       * VIEWING SESSION API
+       * =========================================
+       */
+
+      if (
+        path === "/api/access/session/start" &&
+        request.method === "POST"
+      ) {
+        return await startViewingSession(
+          request,
+          env,
+          corsHeaders
+        );
+      }
+
+      if (
+        path === "/api/access/session/check" &&
+        request.method === "POST"
+      ) {
+        return await checkViewingSession(
+          request,
+          env,
+          corsHeaders
+        );
+      }
+
+      if (
+        path === "/api/access/session/end" &&
+        request.method === "POST"
+      ) {
+        return await endViewingSession(
+          request,
+          env,
+          corsHeaders
+        );
+      }
+
       /*
        * =========================================
        * ADMIN AUTHENTICATION
@@ -746,7 +787,7 @@ function validateConcertInput(
 
 /*
  * =========================================
- * SESSIONS
+ * CONCERT SESSIONS
  * =========================================
  */
 
@@ -1080,6 +1121,7 @@ function validateSessionInput(
 
   return "";
 }
+
 /*
  * =========================================
  * PACKAGES
@@ -1746,7 +1788,6 @@ async function deletePackage(
     corsHeaders
   );
 }
-
 /*
  * =========================================
  * PAYMENT + EASYSLIP AUTO APPROVAL
@@ -2185,63 +2226,37 @@ async function createPayment(
     )
       .bind(
         orderId,
-
         packageId,
-
         Number(
           selectedPackage.price
         ),
-
         slipKey,
-
         now,
-
         orderSnapshot.concert_id,
-
         orderSnapshot.package_id,
-
         orderSnapshot.package_name,
-
         orderSnapshot.access_type,
-
         orderSnapshot.replay_days,
-
         orderSnapshot.replay_months,
-
         orderSnapshot.has_ecard,
-
         orderSnapshot.video_quality,
-
         orderSnapshot
           .selected_session_id,
-
         orderSnapshot
           .selected_session_name,
-
         orderSnapshot
           .selected_session_starts_at,
-
         orderSnapshot
           .selected_session_ends_at,
-
         accessCode,
-
         now,
-
         accessExpiresAt,
-
         easySlip.transRef,
-
         now,
-
         easySlip.amountInSlip,
-
         easySlip.receiverName,
-
         easySlip.senderName,
-
         "verified",
-
         easySlip.message
       )
       .run();
@@ -2277,20 +2292,14 @@ async function createPayment(
   return jsonResponse(
     {
       success: true,
-
       orderId,
-
       status:
         "approved",
-
       automaticApproval:
         true,
-
       accessCode,
-
       approvedAt:
         now,
-
       accessExpiresAt,
 
       selectedSession: {
@@ -2370,6 +2379,7 @@ async function createPayment(
     corsHeaders
   );
 }
+
 /*
  * =========================================
  * EASYSLIP VERIFICATION
@@ -2397,9 +2407,9 @@ async function verifySlipWithEasySlip(
   );
 
   easySlipForm.append(
-  "matchAccount",
-  "false"
-);
+    "matchAccount",
+    "false"
+  );
 
   easySlipForm.append(
     "matchAmount",
@@ -2407,9 +2417,10 @@ async function verifySlipWithEasySlip(
   );
 
   easySlipForm.append(
-  "checkDuplicate",
-  "false"
-);
+    "checkDuplicate",
+    "false"
+  );
+
   let response;
 
   try {
@@ -2641,9 +2652,6 @@ function normalizeEasySlipHttpStatus(
       error?.status || 0
     );
 
-  /*
-   * Error ที่เกิดจากข้อมูลของลูกค้า
-   */
   if (
     status === 400 ||
     status === 404 ||
@@ -2653,9 +2661,6 @@ function normalizeEasySlipHttpStatus(
     return status;
   }
 
-  /*
-   * API Key / Permission
-   */
   if (
     status === 401 ||
     status === 403
@@ -2663,16 +2668,10 @@ function normalizeEasySlipHttpStatus(
     return 502;
   }
 
-  /*
-   * EasySlip rate limit
-   */
   if (status === 429) {
     return 503;
   }
 
-  /*
-   * EasySlip server error
-   */
   if (
     status >= 500
   ) {
@@ -2745,11 +2744,6 @@ function validateSlip(
 
 /*
  * =========================================
- * ADMIN ORDERS
- * =========================================
- */
-/*
- * =========================================
  * PUBLIC ACCESS CODE VERIFICATION
  * =========================================
  */
@@ -2771,6 +2765,438 @@ async function verifyAccessCode(
     return errorResponse(
       "กรุณากรอกรหัสเข้าชม",
       400,
+      corsHeaders
+    );
+  }
+
+  const result =
+    await getApprovedOrderByAccessCode(
+      accessCode,
+      env
+    );
+
+  if (!result.ok) {
+    return errorResponse(
+      result.message,
+      result.status,
+      corsHeaders
+    );
+  }
+
+  return buildAccessVerificationResponse(
+    result.order,
+    result.concert,
+    corsHeaders
+  );
+}
+
+/*
+ * =========================================
+ * VIEWING SESSION
+ * 1 ORDER = 1 ACTIVE DEVICE
+ * =========================================
+ */
+
+async function startViewingSession(
+  request,
+  env,
+  corsHeaders
+) {
+  const body =
+    await readJson(request);
+
+  const accessCode =
+    cleanText(
+      body.accessCode
+    ).toUpperCase();
+
+  const deviceId =
+    cleanText(
+      body.deviceId
+    );
+
+  if (!accessCode) {
+    return errorResponse(
+      "กรุณากรอกรหัสเข้าชม",
+      400,
+      corsHeaders
+    );
+  }
+
+  if (!deviceId) {
+    return errorResponse(
+      "ไม่พบข้อมูลอุปกรณ์",
+      400,
+      corsHeaders
+    );
+  }
+
+  if (
+    deviceId.length > 200
+  ) {
+    return errorResponse(
+      "ข้อมูลอุปกรณ์ไม่ถูกต้อง",
+      400,
+      corsHeaders
+    );
+  }
+
+  const result =
+    await getApprovedOrderByAccessCode(
+      accessCode,
+      env
+    );
+
+  if (!result.ok) {
+    return errorResponse(
+      result.message,
+      result.status,
+      corsHeaders
+    );
+  }
+
+  const order =
+    result.order;
+
+  const now =
+    new Date();
+
+  const nowIso =
+    now.toISOString();
+
+  /*
+   * session เก่าที่ไม่มี heartbeat
+   * เกิน 2 นาที ถือว่าหลุดแล้ว
+   */
+  const staleBefore =
+    new Date(
+      now.getTime() -
+      2 * 60 * 1000
+    ).toISOString();
+
+  await env.DB.prepare(
+    `
+    UPDATE viewing_sessions
+    SET is_active = 0
+    WHERE order_id = ?
+      AND is_active = 1
+      AND last_seen_at < ?
+    `
+  )
+    .bind(
+      order.id,
+      staleBefore
+    )
+    .run();
+
+  /*
+   * ถ้าเครื่องเดิมมี session อยู่แล้ว
+   * ให้ยกเลิก session เดิมก่อนสร้างใหม่
+   */
+  await env.DB.prepare(
+    `
+    UPDATE viewing_sessions
+    SET is_active = 0
+    WHERE order_id = ?
+      AND device_id = ?
+      AND is_active = 1
+    `
+  )
+    .bind(
+      order.id,
+      deviceId
+    )
+    .run();
+
+  /*
+   * ถ้ามีเครื่องอื่นกำลังใช้อยู่
+   * ไม่อนุญาตให้เปิดพร้อมกัน
+   */
+  const activeOtherDevice =
+    await env.DB.prepare(
+      `
+      SELECT
+        id,
+        device_id,
+        last_seen_at
+      FROM viewing_sessions
+      WHERE order_id = ?
+        AND is_active = 1
+        AND device_id <> ?
+      ORDER BY last_seen_at DESC
+      LIMIT 1
+      `
+    )
+      .bind(
+        order.id,
+        deviceId
+      )
+      .first();
+
+  if (activeOtherDevice) {
+    return errorResponse(
+      "สิทธิ์นี้กำลังถูกใช้งานอยู่บนอุปกรณ์อื่น กรุณาปิดการรับชมจากอุปกรณ์เดิมก่อน",
+      409,
+      corsHeaders
+    );
+  }
+
+  const viewingSessionId =
+    createId("VS");
+
+  const sessionToken =
+    createViewingSessionToken();
+
+  const sessionExpiresAt =
+    order.access_expires_at;
+
+  await env.DB.prepare(
+    `
+    INSERT INTO viewing_sessions (
+      id,
+      order_id,
+      access_code,
+      device_id,
+      session_token,
+      created_at,
+      last_seen_at,
+      expires_at,
+      is_active
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
+    `
+  )
+    .bind(
+      viewingSessionId,
+      order.id,
+      order.access_code,
+      deviceId,
+      sessionToken,
+      nowIso,
+      nowIso,
+      sessionExpiresAt
+    )
+    .run();
+
+  return jsonResponse(
+    {
+      success: true,
+      valid: true,
+      sessionToken,
+      sessionId:
+        viewingSessionId,
+      accessCode:
+        order.access_code,
+      accessExpiresAt:
+        order.access_expires_at,
+
+      concert: {
+        id:
+          result.concert?.id ||
+          "",
+
+        title:
+          result.concert?.title ||
+          "",
+
+        description:
+          result.concert
+            ?.description ||
+          "",
+
+        coverImageUrl:
+          result.concert
+            ?.cover_image_url ||
+          "",
+
+        liveStartsAt:
+          result.concert
+            ?.live_starts_at ||
+          null,
+
+        liveEndsAt:
+          result.concert
+            ?.live_ends_at ||
+          null,
+
+        status:
+          result.concert?.status ||
+          "",
+      },
+
+      session: {
+        id:
+          order.selected_session_id ||
+          "",
+
+        name:
+          order.selected_session_name ||
+          "",
+
+        liveStartsAt:
+          order
+            .selected_session_starts_at ||
+          null,
+
+        liveEndsAt:
+          order
+            .selected_session_ends_at ||
+          null,
+      },
+
+      package: {
+        id:
+          order.package_id ||
+          "",
+
+        name:
+          order.package_name ||
+          "",
+
+        accessType:
+          order.access_type ||
+          "live",
+
+        replayDays:
+          Number(
+            order.replay_days ||
+            0
+          ),
+
+        replayMonths:
+          Number(
+            order.replay_months ||
+            0
+          ),
+
+        hasEcard:
+          Number(
+            order.has_ecard
+          ) === 1,
+
+        videoQuality:
+          order.video_quality ||
+          "1080p",
+      },
+
+      message:
+        "เริ่มเซสชันรับชมสำเร็จ",
+    },
+    200,
+    corsHeaders
+  );
+}
+
+async function checkViewingSession(
+  request,
+  env,
+  corsHeaders
+) {
+  const body =
+    await readJson(request);
+
+  const sessionToken =
+    cleanText(
+      body.sessionToken
+    );
+
+  const deviceId =
+    cleanText(
+      body.deviceId
+    );
+
+  if (
+    !sessionToken ||
+    !deviceId
+  ) {
+    return errorResponse(
+      "ข้อมูลเซสชันไม่ครบ",
+      400,
+      corsHeaders
+    );
+  }
+
+  const viewingSession =
+    await env.DB.prepare(
+      `
+      SELECT
+        id,
+        order_id,
+        access_code,
+        device_id,
+        session_token,
+        created_at,
+        last_seen_at,
+        expires_at,
+        is_active
+      FROM viewing_sessions
+      WHERE session_token = ?
+      LIMIT 1
+      `
+    )
+      .bind(
+        sessionToken
+      )
+      .first();
+
+  if (!viewingSession) {
+    return errorResponse(
+      "ไม่พบเซสชันรับชม",
+      404,
+      corsHeaders
+    );
+  }
+
+  if (
+    Number(
+      viewingSession.is_active
+    ) !== 1
+  ) {
+    return errorResponse(
+      "เซสชันนี้ถูกยกเลิกแล้ว",
+      403,
+      corsHeaders
+    );
+  }
+
+  if (
+    viewingSession.device_id !==
+    deviceId
+  ) {
+    return errorResponse(
+      "เซสชันนี้ไม่ตรงกับอุปกรณ์",
+      403,
+      corsHeaders
+    );
+  }
+
+  const expiresAt =
+    new Date(
+      viewingSession.expires_at
+    );
+
+  if (
+    Number.isNaN(
+      expiresAt.getTime()
+    ) ||
+    Date.now() >
+      expiresAt.getTime()
+  ) {
+    await env.DB.prepare(
+      `
+      UPDATE viewing_sessions
+      SET is_active = 0
+      WHERE id = ?
+      `
+    )
+      .bind(
+        viewingSession.id
+      )
+      .run();
+
+    return errorResponse(
+      "สิทธิ์การรับชมหมดอายุแล้ว",
+      403,
       corsHeaders
     );
   }
@@ -2799,39 +3225,225 @@ async function verifyAccessCode(
         selected_session_ends_at
 
       FROM orders
+      WHERE id = ?
+      LIMIT 1
+      `
+    )
+      .bind(
+        viewingSession.order_id
+      )
+      .first();
+
+  if (
+    !order ||
+    order.status !== "approved"
+  ) {
+    await env.DB.prepare(
+      `
+      UPDATE viewing_sessions
+      SET is_active = 0
+      WHERE id = ?
+      `
+    )
+      .bind(
+        viewingSession.id
+      )
+      .run();
+
+    return errorResponse(
+      "สิทธิ์การรับชมถูกยกเลิก",
+      403,
+      corsHeaders
+    );
+  }
+
+  const orderExpiresAt =
+    new Date(
+      order.access_expires_at
+    );
+
+  if (
+    !order.access_expires_at ||
+    Number.isNaN(
+      orderExpiresAt.getTime()
+    ) ||
+    Date.now() >
+      orderExpiresAt.getTime()
+  ) {
+    await env.DB.prepare(
+      `
+      UPDATE viewing_sessions
+      SET is_active = 0
+      WHERE id = ?
+      `
+    )
+      .bind(
+        viewingSession.id
+      )
+      .run();
+
+    return errorResponse(
+      "สิทธิ์การรับชมหมดอายุแล้ว",
+      403,
+      corsHeaders
+    );
+  }
+
+  const now =
+    new Date().toISOString();
+
+  await env.DB.prepare(
+    `
+    UPDATE viewing_sessions
+    SET last_seen_at = ?
+    WHERE id = ?
+      AND is_active = 1
+    `
+  )
+    .bind(
+      now,
+      viewingSession.id
+    )
+    .run();
+
+  return jsonResponse(
+    {
+      success: true,
+      valid: true,
+      sessionToken:
+        viewingSession.session_token,
+      accessCode:
+        order.access_code,
+      accessExpiresAt:
+        order.access_expires_at,
+      message:
+        "เซสชันรับชมยังใช้งานได้",
+    },
+    200,
+    corsHeaders
+  );
+}
+
+async function endViewingSession(
+  request,
+  env,
+  corsHeaders
+) {
+  const body =
+    await readJson(request);
+
+  const sessionToken =
+    cleanText(
+      body.sessionToken
+    );
+
+  const deviceId =
+    cleanText(
+      body.deviceId
+    );
+
+  if (
+    !sessionToken ||
+    !deviceId
+  ) {
+    return errorResponse(
+      "ข้อมูลเซสชันไม่ครบ",
+      400,
+      corsHeaders
+    );
+  }
+
+  await env.DB.prepare(
+    `
+    UPDATE viewing_sessions
+    SET is_active = 0
+    WHERE session_token = ?
+      AND device_id = ?
+    `
+  )
+    .bind(
+      sessionToken,
+      deviceId
+    )
+    .run();
+
+  return jsonResponse(
+    {
+      success: true,
+      message:
+        "สิ้นสุดเซสชันรับชมแล้ว",
+    },
+    200,
+    corsHeaders
+  );
+}
+
+async function getApprovedOrderByAccessCode(
+  accessCode,
+  env
+) {
+  const order =
+    await env.DB.prepare(
+      `
+      SELECT
+        id,
+        status,
+        access_code,
+        access_expires_at,
+
+        concert_id,
+        package_id,
+        package_name,
+        access_type,
+        replay_days,
+        replay_months,
+        has_ecard,
+        video_quality,
+
+        selected_session_id,
+        selected_session_name,
+        selected_session_starts_at,
+        selected_session_ends_at
+
+      FROM orders
       WHERE access_code = ?
       LIMIT 1
       `
     )
-      .bind(accessCode)
+      .bind(
+        accessCode
+      )
       .first();
 
   if (!order) {
-    return errorResponse(
-      "ไม่พบรหัสเข้าชมนี้",
-      404,
-      corsHeaders
-    );
+    return {
+      ok: false,
+      status: 404,
+      message:
+        "ไม่พบรหัสเข้าชมนี้",
+    };
   }
 
   if (
     order.status !== "approved"
   ) {
-    return errorResponse(
-      "รหัสนี้ยังไม่ได้รับการอนุมัติ",
-      403,
-      corsHeaders
-    );
+    return {
+      ok: false,
+      status: 403,
+      message:
+        "รหัสนี้ยังไม่ได้รับการอนุมัติ",
+    };
   }
 
   if (
     !order.access_expires_at
   ) {
-    return errorResponse(
-      "รหัสนี้ยังไม่มีข้อมูลวันหมดอายุ",
-      403,
-      corsHeaders
-    );
+    return {
+      ok: false,
+      status: 403,
+      message:
+        "รหัสนี้ยังไม่มีข้อมูลวันหมดอายุ",
+    };
   }
 
   const expiresAt =
@@ -2844,22 +3456,24 @@ async function verifyAccessCode(
       expiresAt.getTime()
     )
   ) {
-    return errorResponse(
-      "ข้อมูลวันหมดอายุของรหัสไม่ถูกต้อง",
-      500,
-      corsHeaders
-    );
+    return {
+      ok: false,
+      status: 500,
+      message:
+        "ข้อมูลวันหมดอายุของรหัสไม่ถูกต้อง",
+    };
   }
 
   if (
     Date.now() >
     expiresAt.getTime()
   ) {
-    return errorResponse(
-      "รหัสเข้าชมนี้หมดอายุแล้ว",
-      403,
-      corsHeaders
-    );
+    return {
+      ok: false,
+      status: 403,
+      message:
+        "รหัสเข้าชมนี้หมดอายุแล้ว",
+    };
   }
 
   const concert =
@@ -2883,6 +3497,18 @@ async function verifyAccessCode(
       )
       .first();
 
+  return {
+    ok: true,
+    order,
+    concert,
+  };
+}
+
+function buildAccessVerificationResponse(
+  order,
+  concert,
+  corsHeaders
+) {
   return jsonResponse(
     {
       success: true,
@@ -2899,59 +3525,77 @@ async function verifyAccessCode(
 
       concert: {
         id:
-          concert?.id || "",
+          concert?.id ||
+          "",
 
         title:
-          concert?.title || "",
+          concert?.title ||
+          "",
 
         description:
-          concert?.description || "",
+          concert?.description ||
+          "",
 
         coverImageUrl:
-          concert?.cover_image_url || "",
+          concert?.cover_image_url ||
+          "",
 
         liveStartsAt:
-          concert?.live_starts_at || null,
+          concert?.live_starts_at ||
+          null,
 
         liveEndsAt:
-          concert?.live_ends_at || null,
+          concert?.live_ends_at ||
+          null,
 
         status:
-          concert?.status || "",
+          concert?.status ||
+          "",
       },
 
       session: {
         id:
-          order.selected_session_id || "",
+          order.selected_session_id ||
+          "",
 
         name:
-          order.selected_session_name || "",
+          order.selected_session_name ||
+          "",
 
         liveStartsAt:
-          order.selected_session_starts_at || null,
+          order
+            .selected_session_starts_at ||
+          null,
 
         liveEndsAt:
-          order.selected_session_ends_at || null,
+          order
+            .selected_session_ends_at ||
+          null,
       },
 
       package: {
         id:
-          order.package_id || "",
+          order.package_id ||
+          "",
 
         name:
-          order.package_name || "",
+          order.package_name ||
+          "",
 
         accessType:
-          order.access_type || "live",
+          order.access_type ||
+          "live",
 
         replayDays:
           Number(
-            order.replay_days || 0
+            order.replay_days ||
+            0
           ),
 
         replayMonths:
           Number(
-            order.replay_months || 0
+            order.replay_months ||
+            0
           ),
 
         hasEcard:
@@ -2971,6 +3615,13 @@ async function verifyAccessCode(
     corsHeaders
   );
 }
+
+/*
+ * =========================================
+ * ADMIN ORDERS
+ * =========================================
+ */
+
 async function getOrders(
   url,
   env,
@@ -3291,12 +3942,6 @@ async function updateOrderStatus(
     );
   }
 
-  /*
-   * =========================================
-   * REJECT
-   * =========================================
-   */
-
   if (
     newStatus === "rejected"
   ) {
@@ -3314,15 +3959,23 @@ async function updateOrderStatus(
       .bind(orderId)
       .run();
 
+    await env.DB.prepare(
+      `
+      UPDATE viewing_sessions
+      SET is_active = 0
+      WHERE order_id = ?
+        AND is_active = 1
+      `
+    )
+      .bind(orderId)
+      .run();
+
     return jsonResponse(
       {
         success: true,
-
         orderId,
-
         status:
           "rejected",
-
         message:
           "ปฏิเสธการชำระเงินสำเร็จ",
       },
@@ -3330,12 +3983,6 @@ async function updateOrderStatus(
       corsHeaders
     );
   }
-
-  /*
-   * =========================================
-   * APPROVE
-   * =========================================
-   */
 
   const approvedAt =
     order.approved_at ||
@@ -3382,16 +4029,11 @@ async function updateOrderStatus(
   return jsonResponse(
     {
       success: true,
-
       orderId,
-
       status:
         "approved",
-
       accessCode,
-
       approvedAt,
-
       accessExpiresAt,
 
       selectedSession: {
@@ -3454,7 +4096,6 @@ async function updateOrderStatus(
     corsHeaders
   );
 }
-
 /*
  * =========================================
  * PACKAGE SESSION HELPERS
@@ -3613,9 +4254,6 @@ async function calculateAccessExpiry(
     order.selected_session_ends_at ||
     null;
 
-  /*
-   * รองรับออเดอร์เก่า
-   */
   if (
     !finalSessionEnd &&
     order.package_id
@@ -3643,9 +4281,6 @@ async function calculateAccessExpiry(
       null;
   }
 
-  /*
-   * สำรองสำหรับออเดอร์เก่ามาก
-   */
   if (
     !finalSessionEnd &&
     order.concert_id
@@ -3761,6 +4396,7 @@ function addUtcCalendarMonths(
 
   return date;
 }
+
 /*
  * =========================================
  * PACKAGE VALIDATION
@@ -4244,6 +4880,24 @@ function createAccessCode() {
   return (
     "LIVE-" +
     randomPart
+  );
+}
+
+function createViewingSessionToken() {
+  const part1 =
+    crypto
+      .randomUUID()
+      .replaceAll("-", "");
+
+  const part2 =
+    crypto
+      .randomUUID()
+      .replaceAll("-", "");
+
+  return (
+    "VS_" +
+    part1 +
+    part2
   );
 }
 
