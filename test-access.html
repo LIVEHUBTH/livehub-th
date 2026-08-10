@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>Test Access Code</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #050505;
+      color: white;
+      padding: 30px;
+    }
+
+    input,
+    button {
+      width: 100%;
+      padding: 16px;
+      margin-top: 12px;
+      font-size: 18px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: #ff1493;
+      color: white;
+      border: 0;
+      border-radius: 10px;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      background: #111;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>ทดสอบรหัสเข้าชม LIVEHUB TH</h1>
+
+  <input
+    id="accessCode"
+    value="LIVE-A1689F80FB"
+  >
+
+  <button id="testButton">
+    ตรวจสอบรหัส
+  </button>
+
+  <pre id="result">
+รอทดสอบ...
+  </pre>
+
+  <script>
+    const API =
+      "https://livehub-payment-api.livehubth.workers.dev";
+
+    const accessCodeInput =
+      document.getElementById(
+        "accessCode"
+      );
+
+    const resultElement =
+      document.getElementById(
+        "result"
+      );
+
+    document
+      .getElementById("testButton")
+      .addEventListener(
+        "click",
+        async () => {
+          resultElement.textContent =
+            "กำลังตรวจสอบ...";
+
+          try {
+            const response =
+              await fetch(
+                API +
+                "/api/access/verify",
+                {
+                  method: "POST",
+
+                  headers: {
+                    "Content-Type":
+                      "application/json",
+                  },
+
+                  body:
+                    JSON.stringify({
+                      accessCode:
+                        accessCodeInput
+                          .value
+                          .trim(),
+                    }),
+                }
+              );
+
+            const data =
+              await response.json();
+
+            resultElement.textContent =
+              JSON.stringify(
+                data,
+                null,
+                2
+              );
+
+          } catch (error) {
+            resultElement.textContent =
+              "ERROR: " +
+              error.message;
+          }
+        }
+      );
+  </script>
+
+</body>
+</html>
