@@ -56,21 +56,23 @@ export default {
           corsHeaders
         );
       }
-/*
- * =========================================
- * LINE MESSAGING API WEBHOOK
- * =========================================
- */
 
-if (
-  path === "/api/line/webhook" &&
-  request.method === "POST"
-) {
-  return await handleLineWebhook(
-    request,
-    env
-  );
-}
+      /*
+       * =========================================
+       * LINE MESSAGING API WEBHOOK
+       * =========================================
+       */
+
+      if (
+        path === "/api/line/webhook" &&
+        request.method === "POST"
+      ) {
+        return await handleLineWebhook(
+          request,
+          env
+        );
+      }
+
       /*
        * =========================================
        * VIEWING SESSION API
@@ -1507,7 +1509,6 @@ async function updatePackage(
   const input =
     normalizePackageInput({
       ...body,
-
       concertId:
         existing.concert_id,
     });
@@ -1802,6 +1803,7 @@ async function deletePackage(
     corsHeaders
   );
 }
+
 /*
  * =========================================
  * PAYMENT + EASYSLIP AUTO APPROVAL
@@ -2454,7 +2456,7 @@ async function verifySlipWithEasySlip(
             easySlipForm,
         }
       );
-  } catch (error) {
+  } catch {
     const networkError =
       new Error(
         "ไม่สามารถเชื่อมต่อ EasySlip ได้ กรุณาลองใหม่อีกครั้ง"
@@ -2807,7 +2809,6 @@ async function verifyAccessCode(
 /*
  * =========================================
  * VIEWING SESSION
- * 1 ORDER = 1 ACTIVE DEVICE
  * =========================================
  */
 
@@ -2878,10 +2879,6 @@ async function startViewingSession(
   const nowIso =
     now.toISOString();
 
-  /*
-   * session เก่าที่ไม่มี heartbeat
-   * เกิน 2 นาที ถือว่าหลุดแล้ว
-   */
   const staleBefore =
     new Date(
       now.getTime() -
@@ -2903,10 +2900,6 @@ async function startViewingSession(
     )
     .run();
 
-  /*
-   * ถ้าเครื่องเดิมมี session อยู่แล้ว
-   * ให้ยกเลิก session เดิมก่อนสร้างใหม่
-   */
   await env.DB.prepare(
     `
     UPDATE viewing_sessions
@@ -2922,10 +2915,6 @@ async function startViewingSession(
     )
     .run();
 
-  /*
-   * ถ้ามีเครื่องอื่นกำลังใช้อยู่
-   * ไม่อนุญาตให้เปิดพร้อมกัน
-   */
   const activeOtherDevice =
     await env.DB.prepare(
       `
@@ -4110,6 +4099,7 @@ async function updateOrderStatus(
     corsHeaders
   );
 }
+
 /*
  * =========================================
  * PACKAGE SESSION HELPERS
@@ -4371,12 +4361,6 @@ async function calculateAccessExpiry(
 
   return expiry.toISOString();
 }
-
-/*
- * =========================================
- * ADD UTC CALENDAR MONTHS
- * =========================================
- */
 
 function addUtcCalendarMonths(
   date,
@@ -5032,6 +5016,7 @@ function getImageExtension(
     "jpg"
   );
 }
+
 /*
  * =========================================
  * LINE MESSAGING API WEBHOOK
@@ -5068,6 +5053,19 @@ async function handleLineWebhook(
     );
   }
 
+  if (!env.DB) {
+    console.error(
+      "DB binding is not configured"
+    );
+
+    return new Response(
+      "DB binding is not configured",
+      {
+        status: 500,
+      }
+    );
+  }
+
   const signature =
     request.headers.get(
       "x-line-signature"
@@ -5087,8 +5085,9 @@ async function handleLineWebhook(
   }
 
   /*
+   * สำคัญ:
    * ต้องใช้ raw body เดิม
-   * เพื่อตรวจ LINE signature
+   * ก่อน JSON.parse()
    */
   const bodyText =
     await request.text();
@@ -5161,6 +5160,53 @@ async function handleLineWebhook(
     );
 
     /*
+     * =========================================
+     * SAVE LINE USER ID TO D1
+     * =========================================
+     */
+
+    if (userId) {
+      const now =
+        new Date().toISOString();
+
+      try {
+        await env.DB.prepare(
+          `
+          INSERT INTO line_users (
+            line_user_id,
+            order_id,
+            created_at,
+            updated_at
+          )
+          VALUES (?, NULL, ?, ?)
+
+          ON CONFLICT(line_user_id)
+          DO UPDATE SET
+            updated_at = excluded.updated_at
+          `
+        )
+          .bind(
+            userId,
+            now,
+            now
+          )
+          .run();
+
+        console.log(
+          "LINE user saved:",
+          userId
+        );
+
+      } catch (error) {
+        console.error(
+          "Save LINE user failed:",
+          error?.message ||
+          String(error)
+        );
+      }
+    }
+
+    /*
      * ตอบเฉพาะ message event
      */
     if (
@@ -5169,10 +5215,6 @@ async function handleLineWebhook(
       continue;
     }
 
-    /*
-     * ช่วงทดสอบ
-     * ตอบเฉพาะข้อความตัวอักษร
-     */
     if (
       event?.message?.type !== "text"
     ) {
@@ -5223,9 +5265,6 @@ async function handleLineWebhook(
     }
   }
 
-  /*
-   * LINE ต้องได้รับ HTTP 200
-   */
   return new Response(
     "OK",
     {
@@ -5238,7 +5277,6 @@ async function handleLineWebhook(
     }
   );
 }
-
 
 /*
  * =========================================
@@ -5264,17 +5302,16 @@ function buildLineReplyMessage(
     return (
       "LIVEHUB TH ✅\n\n" +
       "ระบบ LINE Messaging API เชื่อมต่อสำเร็จแล้ว\n\n" +
-      "ข้อความของคุณถูกส่งถึงระบบ LIVEHUB TH เรียบร้อย"
+      "ข้อมูล LINE ของคุณถูกบันทึกเข้าระบบเรียบร้อยแล้ว"
     );
   }
 
   return (
     "LIVEHUB TH 🎵\n\n" +
     "ได้รับข้อความของคุณเรียบร้อยแล้ว\n\n" +
-    "ระบบกำลังเชื่อมต่อบริการคอนเสิร์ตและสิทธิ์การรับชม"
+    "ระบบบันทึกบัญชี LINE สำหรับเชื่อมต่อสิทธิ์การรับชมเรียบร้อยแล้ว"
   );
 }
-
 
 /*
  * =========================================
@@ -5357,7 +5394,6 @@ async function replyLineMessage(
   );
 }
 
-
 /*
  * =========================================
  * VERIFY LINE WEBHOOK SIGNATURE
@@ -5417,7 +5453,6 @@ async function verifyLineSignature(
   );
 }
 
-
 /*
  * =========================================
  * BASE64 HELPER
@@ -5449,7 +5484,6 @@ function arrayBufferToBase64(
     binary
   );
 }
-
 
 /*
  * =========================================
