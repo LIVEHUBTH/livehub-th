@@ -134,7 +134,7 @@
 
     .hero {
       padding: 38px 25px;
-      margin-bottom: 34px;
+      margin-bottom: 24px;
       text-align: center;
       background:
         linear-gradient(
@@ -170,6 +170,31 @@
       color: #c4c4ca;
       font-size: 17px;
       line-height: 1.75;
+    }
+
+    .line-status {
+      display: none;
+      margin-bottom: 24px;
+      padding: 17px 19px;
+      border-radius: 17px;
+      line-height: 1.6;
+      font-weight: 800;
+    }
+
+    .line-status.show {
+      display: block;
+    }
+
+    .line-status.connected {
+      color: #75efab;
+      background: #082618;
+      border: 1px solid #197142;
+    }
+
+    .line-status.not-connected {
+      color: #ffe68b;
+      background: #26210b;
+      border: 1px solid #75651f;
     }
 
     .section {
@@ -942,6 +967,11 @@
     </section>
 
     <div
+      id="lineStatus"
+      class="line-status"
+    ></div>
+
+    <div
       id="globalMessage"
       class="status-message"
     ></div>
@@ -1118,6 +1148,11 @@
         5. เมื่อตรวจสอบผ่าน
         ระบบจะอนุมัติและสร้างรหัสเข้าชมทันที
 
+        <br>
+
+        6. หากเข้าหน้านี้จาก LINE
+        ระบบจะส่งรหัสเข้าชมกลับไปยัง LINE ของผู้ซื้ออัตโนมัติ
+
       </div>
 
       <form
@@ -1140,6 +1175,12 @@
         <input
           id="price"
           name="price"
+          type="hidden"
+        >
+
+        <input
+          id="lineLinkToken"
+          name="lineLinkToken"
           type="hidden"
         >
 
@@ -1348,6 +1389,52 @@
 const API =
   "https://livehub-payment-api.livehubth.workers.dev";
 
+/*
+ * =========================================
+ * LINE LINK TOKEN
+ * =========================================
+ */
+
+const urlParams =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const lineLinkToken =
+  (
+    urlParams.get(
+      "lineLinkToken"
+    ) || ""
+  ).trim();
+
+const lineStatus =
+  document.getElementById(
+    "lineStatus"
+  );
+
+const lineLinkTokenInput =
+  document.getElementById(
+    "lineLinkToken"
+  );
+
+lineLinkTokenInput.value =
+  lineLinkToken;
+
+if (lineLinkToken) {
+  lineStatus.className =
+    "line-status show connected";
+
+  lineStatus.textContent =
+    "✅ เชื่อมต่อบัญชี LINE แล้ว เมื่อการชำระเงินผ่าน ระบบจะส่งรหัสเข้าชมกลับไปยัง LINE ของคุณอัตโนมัติ";
+
+} else {
+  lineStatus.className =
+    "line-status show not-connected";
+
+  lineStatus.textContent =
+    "ยังไม่ได้เชื่อมต่อบัญชี LINE หากต้องการรับรหัสเข้าชมทาง LINE กรุณาเปิดหน้าซื้อผ่านลิงก์ที่ได้รับจาก LINE OA LIVEHUB TH";
+}
+
 let concerts = [];
 
 let selectedConcert = null;
@@ -1425,6 +1512,12 @@ function clearMessage() {
   globalMessage.textContent =
     "";
 }
+
+/*
+ * =========================================
+ * LOAD CONCERTS
+ * =========================================
+ */
 
 async function loadConcerts() {
   concertList.innerHTML =
@@ -1688,11 +1781,6 @@ function createConcertCard(
   packageList.className =
     "package-list";
 
-  /*
-   * สำคัญ:
-   * เรียงแพ็กเกจตามเลขในชื่อ
-   * แพ็กเกจ 1 → 2 → 3 → 4
-   */
   const packages =
     Array.isArray(
       concert.packages
@@ -1760,7 +1848,7 @@ function createConcertCard(
 
 /*
  * =========================================
- * PACKAGE SORT
+ * PACKAGE SORT 1 → 2 → 3 → 4
  * =========================================
  */
 
@@ -1997,6 +2085,10 @@ function selectPackage(
     "show"
   );
 
+  paymentForm.classList.remove(
+    "hidden"
+  );
+
   document
     .querySelectorAll(
       ".package-card"
@@ -2050,6 +2142,11 @@ function selectPackage(
     Number(
       packageItem.price || 0
     );
+
+  document.getElementById(
+    "lineLinkToken"
+  ).value =
+    lineLinkToken;
 
   document.getElementById(
     "selectedPackageName"
@@ -2131,14 +2228,27 @@ function renderSessionOptions(
     Array.isArray(
       concert.sessions
     )
-      ? concert.sessions.filter(
-          session =>
-            allowedIds.includes(
-              String(
-                session.id
+      ? concert.sessions
+          .filter(
+            session =>
+              allowedIds.includes(
+                String(
+                  session.id
+                )
               )
-            )
-        )
+          )
+          .sort(
+            (
+              a,
+              b
+            ) =>
+              new Date(
+                a.live_starts_at
+              ).getTime() -
+              new Date(
+                b.live_starts_at
+              ).getTime()
+          )
       : [];
 
   if (
@@ -2293,6 +2403,12 @@ function chooseSession(
     );
 }
 
+/*
+ * =========================================
+ * SLIP PREVIEW
+ * =========================================
+ */
+
 slipInput.addEventListener(
   "change",
   () => {
@@ -2356,6 +2472,12 @@ slipInput.addEventListener(
     );
   }
 );
+
+/*
+ * =========================================
+ * PAYMENT
+ * =========================================
+ */
 
 paymentForm.addEventListener(
   "submit",
@@ -2447,6 +2569,20 @@ async function submitPayment(
     )
   );
 
+  /*
+   * สำคัญ:
+   * ส่ง LINE token ไป backend
+   * เพื่อผูก order กับ LINE คนที่ซื้อ
+   */
+  if (
+    lineLinkToken
+  ) {
+    formData.append(
+      "lineLinkToken",
+      lineLinkToken
+    );
+  }
+
   formData.append(
     "slip",
     file,
@@ -2481,10 +2617,13 @@ async function submitPayment(
       );
     }
 
-    if (
-      data?.status !==
-      "approved"
-    ) {
+    const approved =
+      data?.status ===
+        "approved" ||
+      data?.success ===
+        true;
+
+    if (!approved) {
       throw new Error(
         data?.message ||
         "ระบบยังไม่สามารถอนุมัติรายการนี้ได้"
@@ -2495,9 +2634,30 @@ async function submitPayment(
       data
     );
 
-    showMessage(
+    let successMessage =
       data?.message ||
-      "ตรวจสอบสลิปและอนุมัติสำเร็จ",
+      "ตรวจสอบสลิปและอนุมัติสำเร็จ";
+
+    if (
+      data?.lineLinked ===
+        true &&
+      data?.lineNotificationSent ===
+        true
+    ) {
+      successMessage +=
+        " และส่งรหัสเข้าชมไปยัง LINE ของคุณแล้ว";
+
+    } else if (
+      lineLinkToken &&
+      data?.lineLinked === true &&
+      data?.lineNotificationSent === false
+    ) {
+      successMessage +=
+        " แต่การส่งข้อความเข้า LINE ยังไม่สำเร็จ กรุณาเก็บรหัสที่แสดงบนหน้านี้ไว้";
+    }
+
+    showMessage(
+      successMessage,
       "success"
     );
 
@@ -2537,7 +2697,8 @@ function displayApprovedResult(
   document.getElementById(
     "resultStatus"
   ).textContent =
-    data.status === "approved"
+    data.status === "approved" ||
+    data.success === true
       ? "อนุมัติแล้ว"
       : data.status || "-";
 
@@ -2589,11 +2750,22 @@ function displayApprovedResult(
       ?.receiverName ||
     "-";
 
+  let description =
+    data.message ||
+    "ระบบตรวจสอบสลิปเรียบร้อยแล้ว กรุณาเก็บรหัสเข้าชมไว้";
+
+  if (
+    data.lineNotificationSent ===
+    true
+  ) {
+    description +=
+      " ระบบได้ส่งรหัสเข้าชมไปยัง LINE ของคุณแล้ว";
+  }
+
   document.getElementById(
     "resultDescription"
   ).textContent =
-    data.message ||
-    "ระบบตรวจสอบสลิปเรียบร้อยแล้ว กรุณาเก็บรหัสเข้าชมไว้";
+    description;
 
   resultCard.classList.add(
     "show"
@@ -2604,6 +2776,12 @@ function displayApprovedResult(
     block: "start"
   });
 }
+
+/*
+ * =========================================
+ * COPY ACCESS CODE
+ * =========================================
+ */
 
 document
   .getElementById(
@@ -2649,6 +2827,12 @@ document
       }
     }
   );
+
+/*
+ * =========================================
+ * PACKAGE FEATURES
+ * =========================================
+ */
 
 function getPackageFeatures(
   packageItem
@@ -2734,7 +2918,19 @@ function getPackageSessionNames(
     Array.isArray(
       concert.sessions
     )
-      ? concert.sessions
+      ? [...concert.sessions]
+          .sort(
+            (
+              a,
+              b
+            ) =>
+              new Date(
+                a.live_starts_at
+              ).getTime() -
+              new Date(
+                b.live_starts_at
+              ).getTime()
+          )
       : [];
 
   return sessions
@@ -2801,7 +2997,10 @@ function formatDateTime(
         "medium",
 
       timeStyle:
-        "short"
+        "short",
+
+      timeZone:
+        "Asia/Bangkok"
     }
   );
 }
@@ -2877,6 +3076,7 @@ async function readResponseJson(
     return JSON.parse(
       text
     );
+
   } catch {
     return {
       message:
