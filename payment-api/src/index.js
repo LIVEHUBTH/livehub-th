@@ -40,10 +40,6 @@ export default {
         );
       }
 
-      /*
-       * PUBLIC CONCERT COVER
-       */
-
       if (
         path.startsWith(
           "/api/concert-cover/"
@@ -491,8 +487,7 @@ async function getPublicConcerts(
   const allConcerts =
     concertsResult.results || [];
 
-  const concerts =
-    [];
+  const concerts = [];
 
   for (
     const concert
@@ -702,24 +697,12 @@ async function uploadConcertCover(
   }
 
   const file =
-    formData.get(
-      "cover"
-    ) ||
-    formData.get(
-      "image"
-    ) ||
-    formData.get(
-      "file"
-    ) ||
-    formData.get(
-      "coverFile"
-    ) ||
-    formData.get(
-      "concertCover"
-    ) ||
-    formData.get(
-      "concertCoverFile"
-    );
+    formData.get("cover") ||
+    formData.get("image") ||
+    formData.get("file") ||
+    formData.get("coverFile") ||
+    formData.get("concertCover") ||
+    formData.get("concertCoverFile");
 
   if (
     !(file instanceof File) ||
@@ -776,14 +759,8 @@ async function uploadConcertCover(
     "-" +
     crypto
       .randomUUID()
-      .replaceAll(
-        "-",
-        ""
-      )
-      .slice(
-        0,
-        12
-      )
+      .replaceAll("-", "")
+      .slice(0, 12)
       .toLowerCase() +
     "." +
     extension;
@@ -860,15 +837,11 @@ async function uploadConcertCover(
   return jsonResponse(
     {
       success: true,
-
       coverKey,
-
       coverImageUrl:
         coverUrl,
-
       url:
         coverUrl,
-
       message:
         "อัปโหลดรูปหน้าปกสำเร็จ",
     },
@@ -876,13 +849,6 @@ async function uploadConcertCover(
     corsHeaders
   );
 }
-
-
-/*
- * =========================================
- * PUBLIC CONCERT COVER
- * =========================================
- */
 
 async function getConcertCover(
   coverKey,
@@ -991,17 +957,10 @@ function getConcertCoverExtension(
   contentType
 ) {
   const extensions = {
-    "image/jpeg":
-      "jpg",
-
-    "image/png":
-      "png",
-
-    "image/webp":
-      "webp",
-
-    "image/gif":
-      "gif",
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
   };
 
   return (
@@ -1153,7 +1112,6 @@ async function createConcert(
     {
       success: true,
       concertId,
-
       message:
         "สร้างคอนเสิร์ตสำเร็จ",
     },
@@ -1255,7 +1213,6 @@ async function updateConcert(
     {
       success: true,
       concertId,
-
       message:
         "แก้ไขคอนเสิร์ตสำเร็จ",
     },
@@ -1519,7 +1476,6 @@ async function createSession(
     {
       success: true,
       sessionId,
-
       message:
         "เพิ่มวันแสดงสำเร็จ",
     },
@@ -1632,7 +1588,6 @@ async function updateSession(
     {
       success: true,
       sessionId,
-
       message:
         "แก้ไขวันแสดงสำเร็จ",
     },
@@ -1709,6 +1664,8 @@ function validateSessionInput(
 
   return "";
 }
+
+
 /*
  * =========================================
  * PACKAGES
@@ -1870,18 +1827,6 @@ async function createPackage(
       )
     );
 
-  /*
-   * REPLAY อย่างเดียว
-   * ไม่ผูกกับวันแสดงสด
-   */
-  if (
-    input.accessType ===
-    "replay"
-  ) {
-    input.sessionIds =
-      [];
-  }
-
   const validationError =
     validatePackageInput(
       input.concertId,
@@ -1903,14 +1848,24 @@ async function createPackage(
     );
   }
 
+  /*
+   * ทุกประเภทต้องมี sessionIds
+   *
+   * REPLAY สามารถผูก:
+   * - 1 วัน
+   * - หลายวัน
+   * - ทุกวัน
+   */
+
   if (
-    input.accessType !==
-      "replay" &&
     input.sessionIds.length ===
-      0
+    0
   ) {
     return errorResponse(
-      "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
+      input.accessType ===
+        "replay"
+        ? "กรุณาเลือกวันของ REPLAY อย่างน้อย 1 วัน"
+        : "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
       400,
       corsHeaders
     );
@@ -1940,26 +1895,21 @@ async function createPackage(
     );
   }
 
-  if (
-    input.accessType !==
-    "replay"
-  ) {
-    const sessionsValid =
-      await validateSessionsForConcert(
-        input.concertId,
-        input.sessionIds,
-        env
-      );
+  const sessionsValid =
+    await validateSessionsForConcert(
+      input.concertId,
+      input.sessionIds,
+      env
+    );
 
-    if (
-      !sessionsValid
-    ) {
-      return errorResponse(
-        "มีวันแสดงที่ไม่ได้อยู่ในคอนเสิร์ตนี้",
-        400,
-        corsHeaders
-      );
-    }
+  if (
+    !sessionsValid
+  ) {
+    return errorResponse(
+      "มีวันแสดงที่ไม่ได้อยู่ในคอนเสิร์ตนี้",
+      400,
+      corsHeaders
+    );
   }
 
   const packageId =
@@ -2149,14 +2099,6 @@ async function updatePackage(
       0;
   }
 
-  if (
-    input.accessType ===
-    "replay"
-  ) {
-    input.sessionIds =
-      [];
-  }
-
   const validationError =
     validatePackageInput(
       existing.concert_id,
@@ -2179,38 +2121,34 @@ async function updatePackage(
   }
 
   if (
-    input.accessType !==
-      "replay" &&
     input.sessionIds.length ===
-      0
+    0
   ) {
     return errorResponse(
-      "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
+      input.accessType ===
+        "replay"
+        ? "กรุณาเลือกวันของ REPLAY อย่างน้อย 1 วัน"
+        : "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
       400,
       corsHeaders
     );
   }
 
-  if (
-    input.accessType !==
-    "replay"
-  ) {
-    const sessionsValid =
-      await validateSessionsForConcert(
-        existing.concert_id,
-        input.sessionIds,
-        env
-      );
+  const sessionsValid =
+    await validateSessionsForConcert(
+      existing.concert_id,
+      input.sessionIds,
+      env
+    );
 
-    if (
-      !sessionsValid
-    ) {
-      return errorResponse(
-        "มีวันแสดงที่ไม่ได้อยู่ในคอนเสิร์ตนี้",
-        400,
-        corsHeaders
-      );
-    }
+  if (
+    !sessionsValid
+  ) {
+    return errorResponse(
+      "มีวันแสดงที่ไม่ได้อยู่ในคอนเสิร์ตนี้",
+      400,
+      corsHeaders
+    );
   }
 
   await env.DB.prepare(
@@ -2298,69 +2236,6 @@ async function updatePackage(
     corsHeaders
   );
 }
-
-function normalizePackageInput(
-  body
-) {
-  const accessType =
-    normalizeAccessType(
-      body.accessType
-    );
-
-  return {
-    concertId:
-      cleanText(
-        body.concertId
-      ),
-
-    name:
-      cleanText(
-        body.name
-      ),
-
-    price:
-      normalizePrice(
-        body.price
-      ),
-
-    accessType,
-
-    replayDays:
-      normalizeReplayDays(
-        body.replayDays,
-        accessType
-      ),
-
-    replayMonths:
-      normalizeReplayMonths(
-        body.replayMonths,
-        accessType
-      ),
-
-    hasEcard:
-      normalizeBooleanNumber(
-        body.hasEcard,
-        0
-      ),
-
-    videoQuality:
-      normalizeVideoQuality(
-        body.videoQuality
-      ),
-
-    isActive:
-      normalizeBooleanNumber(
-        body.isActive,
-        1
-      ),
-
-    sessionIds:
-      normalizeIdArray(
-        body.sessionIds
-      ),
-  };
-}
-
 async function deletePackage(
   packageId,
   env,
@@ -2489,6 +2364,16 @@ async function createPayment(
     );
   }
 
+  if (
+    !env.SLIPS
+  ) {
+    return errorResponse(
+      "ไม่พบระบบจัดเก็บสลิป",
+      500,
+      corsHeaders
+    );
+  }
+
   const formData =
     await request.formData();
 
@@ -2531,6 +2416,12 @@ async function createPayment(
   let lineUserId =
     "";
 
+  /*
+   * =========================================
+   * VERIFY LINE LINK TOKEN
+   * =========================================
+   */
+
   if (
     lineLinkToken
   ) {
@@ -2553,6 +2444,12 @@ async function createPayment(
     lineUserId =
       lineLinkResult.lineUserId;
   }
+
+  /*
+   * =========================================
+   * BASIC VALIDATION
+   * =========================================
+   */
 
   if (
     !packageId
@@ -2590,6 +2487,12 @@ async function createPayment(
     );
   }
 
+  /*
+   * =========================================
+   * GET PACKAGE
+   * =========================================
+   */
+
   const selectedPackage =
     await env.DB.prepare(
       `
@@ -2604,10 +2507,16 @@ async function createPayment(
         p.has_ecard,
         p.video_quality,
         p.is_active,
-        c.status AS concert_status
+
+        c.status
+          AS concert_status
+
       FROM packages p
+
       INNER JOIN concerts c
-        ON c.id = p.concert_id
+        ON c.id =
+          p.concert_id
+
       WHERE p.id = ?
       LIMIT 1
       `
@@ -2643,6 +2552,12 @@ async function createPayment(
     selectedPackage
       .access_type ===
     "replay";
+
+  /*
+   * =========================================
+   * CONCERT STATUS
+   * =========================================
+   */
 
   if (
     isReplayOnly
@@ -2682,13 +2597,20 @@ async function createPayment(
     }
   }
 
+  /*
+   * =========================================
+   * VERIFY PRICE
+   * =========================================
+   */
+
   if (
     !Number.isFinite(
       submittedPrice
     ) ||
     Number(
       selectedPackage.price
-    ) !== submittedPrice
+    ) !==
+      submittedPrice
   ) {
     return errorResponse(
       "ราคาแพ็กเกจไม่ถูกต้อง",
@@ -2697,12 +2619,48 @@ async function createPayment(
     );
   }
 
+  /*
+   * =========================================
+   * SESSION RIGHTS
+   * =========================================
+   *
+   * LIVE / LIVE + REPLAY
+   * ลูกค้าเลือกวันเดียวตอนซื้อ
+   *
+   * REPLAY
+   * ลูกค้าไม่ต้องเลือกวัน
+   * ระบบใช้ทุก session ที่ผูกกับ package
+   */
+
   let selectedSession =
     null;
 
+  let entitledSessions =
+    [];
+
   if (
-    !isReplayOnly
+    isReplayOnly
   ) {
+    entitledSessions =
+      await getPackageEntitledSessions(
+        packageId,
+        selectedPackage
+          .concert_id,
+        env
+      );
+
+    if (
+      entitledSessions.length ===
+      0
+    ) {
+      return errorResponse(
+        "แพ็กเกจ REPLAY นี้ยังไม่ได้กำหนดวันที่รับชม",
+        400,
+        corsHeaders
+      );
+    }
+
+  } else {
     if (
       !sessionId
     ) {
@@ -2721,21 +2679,28 @@ async function createPayment(
           s.concert_id,
           s.name,
           s.live_starts_at,
-          s.live_ends_at
+          s.live_ends_at,
+          s.sort_order
+
         FROM package_sessions ps
+
         INNER JOIN concert_sessions s
-          ON s.id = ps.session_id
+          ON s.id =
+            ps.session_id
+
         WHERE ps.package_id = ?
           AND s.id = ?
           AND s.concert_id = ?
           AND s.is_active = 1
+
         LIMIT 1
         `
       )
         .bind(
           packageId,
           sessionId,
-          selectedPackage.concert_id
+          selectedPackage
+            .concert_id
         )
         .first();
 
@@ -2748,12 +2713,28 @@ async function createPayment(
         corsHeaders
       );
     }
+
+    entitledSessions = [
+      selectedSession,
+    ];
   }
+
+  /*
+   * =========================================
+   * CREATE ORDER ID
+   * =========================================
+   */
 
   const orderId =
     createId(
       "LH"
     );
+
+  /*
+   * =========================================
+   * VERIFY EASYSLIP
+   * =========================================
+   */
 
   let easySlip;
 
@@ -2823,6 +2804,12 @@ async function createPayment(
     );
   }
 
+  /*
+   * =========================================
+   * DUPLICATE SLIP CHECK
+   * =========================================
+   */
+
   const usedSlip =
     await env.DB.prepare(
       `
@@ -2846,6 +2833,12 @@ async function createPayment(
       corsHeaders
     );
   }
+
+  /*
+   * =========================================
+   * PREPARE ORDER
+   * =========================================
+   */
 
   const extension =
     getImageExtension(
@@ -2900,6 +2893,14 @@ async function createPayment(
         .video_quality ||
       "1080p",
 
+    /*
+     * สำหรับ REPLAY หลายวัน
+     * ช่อง selected_session_* เดิม
+     * จะไม่ใช้เป็นตัวกำหนดสิทธิ์
+     *
+     * สิทธิ์จริงจะอยู่ใน order_sessions
+     */
+
     selected_session_id:
       selectedSession?.id ||
       null,
@@ -2922,6 +2923,12 @@ async function createPayment(
       now,
   };
 
+  /*
+   * =========================================
+   * ACCESS EXPIRY
+   * =========================================
+   */
+
   const accessExpiresAt =
     await calculateAccessExpiry(
       orderSnapshot,
@@ -2940,6 +2947,12 @@ async function createPayment(
 
   const accessCode =
     createAccessCode();
+
+  /*
+   * =========================================
+   * UPLOAD SLIP
+   * =========================================
+   */
 
   const slipBytes =
     await slip.arrayBuffer();
@@ -2963,6 +2976,14 @@ async function createPayment(
           selectedSession?.id ||
           "",
 
+        sessionIds:
+          entitledSessions
+            .map(
+              session =>
+                session.id
+            )
+            .join(","),
+
         price:
           String(
             selectedPackage.price
@@ -2973,6 +2994,12 @@ async function createPayment(
       },
     }
   );
+
+  /*
+   * =========================================
+   * INSERT ORDER
+   * =========================================
+   */
 
   try {
     await env.DB.prepare(
@@ -3113,7 +3140,76 @@ async function createPayment(
   }
 
   /*
+   * =========================================
+   * SNAPSHOT ORDER SESSION RIGHTS
+   * =========================================
+   *
+   * หลังจากนี้ แม้ Admin จะแก้ package_sessions
+   * สิทธิ์ของลูกค้าที่ซื้อแล้วจะไม่เปลี่ยน
+   */
+
+  try {
+    await saveOrderSessionSnapshots(
+      orderId,
+      entitledSessions,
+      env
+    );
+
+  } catch (
+    snapshotError
+  ) {
+    console.error(
+      "Save order session snapshots failed:",
+      snapshotError
+    );
+
+    /*
+     * ป้องกันออเดอร์ที่มีสิทธิ์ไม่ครบ
+     */
+
+    try {
+      await env.DB.prepare(
+        `
+        DELETE FROM order_sessions
+        WHERE order_id = ?
+        `
+      )
+        .bind(
+          orderId
+        )
+        .run();
+
+      await env.DB.prepare(
+        `
+        DELETE FROM orders
+        WHERE id = ?
+        `
+      )
+        .bind(
+          orderId
+        )
+        .run();
+
+      await env.SLIPS.delete(
+        slipKey
+      );
+
+    } catch (
+      cleanupError
+    ) {
+      console.error(
+        "Order snapshot cleanup failed:",
+        cleanupError
+      );
+    }
+
+    throw snapshotError;
+  }
+
+  /*
+   * =========================================
    * LINK ORDER TO LINE
+   * =========================================
    */
 
   let lineNotificationSent =
@@ -3175,6 +3271,16 @@ async function createPayment(
             selectedSession?.name ||
             "",
 
+          sessionNames:
+            entitledSessions
+              .map(
+                session =>
+                  session.name
+              )
+              .filter(
+                Boolean
+              ),
+
           liveStartsAt:
             selectedSession
               ?.live_starts_at ||
@@ -3209,6 +3315,12 @@ async function createPayment(
       );
     }
   }
+
+  /*
+   * =========================================
+   * RESPONSE
+   * =========================================
+   */
 
   return jsonResponse(
     {
@@ -3254,6 +3366,32 @@ async function createPayment(
                   .live_ends_at,
             }
           : null,
+
+      /*
+       * รายการวันทั้งหมดที่ออเดอร์นี้มีสิทธิ์
+       */
+
+      entitledSessions:
+        entitledSessions.map(
+          session => ({
+            id:
+              session.id,
+
+            name:
+              session.name ||
+              "",
+
+            liveStartsAt:
+              session
+                .live_starts_at ||
+              null,
+
+            liveEndsAt:
+              session
+                .live_ends_at ||
+              null,
+          })
+        ),
 
       package: {
         id:
@@ -3762,6 +3900,7 @@ async function verifyAccessCode(
   return buildAccessVerificationResponse(
     result.order,
     result.concert,
+    result.entitledSessions,
     corsHeaders
   );
 }
@@ -3857,6 +3996,10 @@ async function startViewingSession(
       1000
     ).toISOString();
 
+  /*
+   * ปิด session เก่าที่ค้างเกิน 2 นาที
+   */
+
   await env.DB.prepare(
     `
     UPDATE viewing_sessions
@@ -3872,6 +4015,10 @@ async function startViewingSession(
     )
     .run();
 
+  /*
+   * ปิด session เก่าของอุปกรณ์เดียวกัน
+   */
+
   await env.DB.prepare(
     `
     UPDATE viewing_sessions
@@ -3886,6 +4033,10 @@ async function startViewingSession(
       deviceId
     )
     .run();
+
+  /*
+   * ตรวจว่ากำลังดูจากอุปกรณ์อื่นอยู่หรือไม่
+   */
 
   const activeOtherDevice =
     await env.DB.prepare(
@@ -4008,6 +4159,11 @@ async function startViewingSession(
           "",
       },
 
+      /*
+       * สำหรับ LIVE เดิม
+       * ยังคงส่ง selected session เดิม
+       */
+
       session: {
         id:
           order
@@ -4029,6 +4185,40 @@ async function startViewingSession(
             .selected_session_ends_at ||
           null,
       },
+
+      /*
+       * สิทธิ์วันทั้งหมดจาก snapshot
+       *
+       * REPLAY 1 วัน
+       * REPLAY หลายวัน
+       * REPLAY ALL DAYS
+       */
+
+      entitledSessions:
+        (
+          result.entitledSessions ||
+          []
+        ).map(
+          session => ({
+            id:
+              session.session_id ||
+              session.id ||
+              "",
+
+            name:
+              session.session_name ||
+              session.name ||
+              "",
+
+            liveStartsAt:
+              session.live_starts_at ||
+              null,
+
+            liveEndsAt:
+              session.live_ends_at ||
+              null,
+          })
+        ),
 
       package: {
         id:
@@ -4283,6 +4473,12 @@ async function checkViewingSession(
     )
     .run();
 
+  const entitledSessions =
+    await getOrderSessionSnapshots(
+      order.id,
+      env
+    );
+
   return jsonResponse(
     {
       success: true,
@@ -4297,6 +4493,62 @@ async function checkViewingSession(
 
       accessExpiresAt:
         order.access_expires_at,
+
+      entitledSessions:
+        entitledSessions.map(
+          session => ({
+            id:
+              session.session_id ||
+              "",
+
+            name:
+              session.session_name ||
+              "",
+
+            liveStartsAt:
+              session.live_starts_at ||
+              null,
+
+            liveEndsAt:
+              session.live_ends_at ||
+              null,
+          })
+        ),
+
+      package: {
+        id:
+          order.package_id ||
+          "",
+
+        name:
+          order.package_name ||
+          "",
+
+        accessType:
+          order.access_type ||
+          "live",
+
+        replayDays:
+          Number(
+            order.replay_days ||
+            0
+          ),
+
+        replayMonths:
+          Number(
+            order.replay_months ||
+            0
+          ),
+
+        hasEcard:
+          Number(
+            order.has_ecard
+          ) === 1,
+
+        videoQuality:
+          order.video_quality ||
+          "1080p",
+      },
 
       message:
         "เซสชันรับชมยังใช้งานได้",
@@ -4379,6 +4631,13 @@ async function deactivateViewingSession(
     )
     .run();
 }
+
+
+/*
+ * =========================================
+ * APPROVED ORDER BY ACCESS CODE
+ * =========================================
+ */
 
 async function getApprovedOrderByAccessCode(
   accessCode,
@@ -4517,16 +4776,75 @@ async function getApprovedOrderByAccessCode(
       )
       .first();
 
+  /*
+   * ดึง snapshot สิทธิ์วัน
+   */
+
+  let entitledSessions =
+    await getOrderSessionSnapshots(
+      order.id,
+      env
+    );
+
+  /*
+   * รองรับออเดอร์เก่าก่อนมี order_sessions
+   *
+   * ถ้ายังไม่มี snapshot
+   * แต่ order เดิมมี selected session
+   * ให้สร้าง response จากข้อมูลเดิม
+   */
+
+  if (
+    entitledSessions.length ===
+      0 &&
+    order.selected_session_id
+  ) {
+    entitledSessions = [
+      {
+        order_id:
+          order.id,
+
+        session_id:
+          order
+            .selected_session_id,
+
+        session_name:
+          order
+            .selected_session_name ||
+          "",
+
+        live_starts_at:
+          order
+            .selected_session_starts_at ||
+          null,
+
+        live_ends_at:
+          order
+            .selected_session_ends_at ||
+          null,
+      },
+    ];
+  }
+
   return {
     ok: true,
     order,
     concert,
+    entitledSessions,
   };
 }
+
+
+/*
+ * =========================================
+ * ACCESS VERIFICATION RESPONSE
+ * =========================================
+ */
 
 function buildAccessVerificationResponse(
   order,
   concert,
+  entitledSessions,
   corsHeaders
 ) {
   return jsonResponse(
@@ -4573,6 +4891,10 @@ function buildAccessVerificationResponse(
           "",
       },
 
+      /*
+       * รองรับระบบเดิม
+       */
+
       session: {
         id:
           order
@@ -4594,6 +4916,36 @@ function buildAccessVerificationResponse(
             .selected_session_ends_at ||
           null,
       },
+
+      /*
+       * สิทธิ์วันทั้งหมด
+       */
+
+      entitledSessions:
+        (
+          entitledSessions ||
+          []
+        ).map(
+          session => ({
+            id:
+              session.session_id ||
+              session.id ||
+              "",
+
+            name:
+              session.session_name ||
+              session.name ||
+              "",
+
+            liveStartsAt:
+              session.live_starts_at ||
+              null,
+
+            liveEndsAt:
+              session.live_ends_at ||
+              null,
+          })
+        ),
 
       package: {
         id:
@@ -4790,6 +5142,66 @@ async function getOrders(
     order.video_quality =
       order.video_quality ||
       "1080p";
+
+    /*
+     * เพิ่มวันทั้งหมดของออเดอร์
+     */
+
+    let entitledSessions =
+      await getOrderSessionSnapshots(
+        order.id,
+        env
+      );
+
+    if (
+      entitledSessions.length ===
+        0 &&
+      order.selected_session_id
+    ) {
+      entitledSessions = [
+        {
+          session_id:
+            order
+              .selected_session_id,
+
+          session_name:
+            order
+              .selected_session_name ||
+            "",
+
+          live_starts_at:
+            order
+              .selected_session_starts_at ||
+            null,
+
+          live_ends_at:
+            order
+              .selected_session_ends_at ||
+            null,
+        },
+      ];
+    }
+
+    order.entitled_sessions =
+      entitledSessions.map(
+        session => ({
+          id:
+            session.session_id ||
+            "",
+
+          name:
+            session.session_name ||
+            "",
+
+          live_starts_at:
+            session.live_starts_at ||
+            null,
+
+          live_ends_at:
+            session.live_ends_at ||
+            null,
+        })
+      );
   }
 
   return jsonResponse(
@@ -5046,6 +5458,7 @@ async function updateOrderStatus(
 
   const expiryInput = {
     ...order,
+
     approved_at:
       approvedAt,
   };
@@ -5065,6 +5478,82 @@ async function updateOrderStatus(
       400,
       corsHeaders
     );
+  }
+
+  /*
+   * หากเป็นออเดอร์ที่ยังไม่มี snapshot
+   * ให้สร้างจาก package_sessions
+   *
+   * ใช้เฉพาะกรณี manual approve / ข้อมูลเก่า
+   */
+
+  let existingSnapshots =
+    await getOrderSessionSnapshots(
+      orderId,
+      env
+    );
+
+  if (
+    existingSnapshots.length ===
+    0
+  ) {
+    let sessionsToSnapshot =
+      [];
+
+    if (
+      order.access_type ===
+      "replay"
+    ) {
+      sessionsToSnapshot =
+        await getPackageEntitledSessions(
+          order.package_id,
+          order.concert_id,
+          env
+        );
+
+    } else if (
+      order.selected_session_id
+    ) {
+      sessionsToSnapshot = [
+        {
+          id:
+            order
+              .selected_session_id,
+
+          name:
+            order
+              .selected_session_name ||
+            "",
+
+          live_starts_at:
+            order
+              .selected_session_starts_at ||
+            null,
+
+          live_ends_at:
+            order
+              .selected_session_ends_at ||
+            null,
+        },
+      ];
+    }
+
+    if (
+      sessionsToSnapshot.length >
+      0
+    ) {
+      await saveOrderSessionSnapshots(
+        orderId,
+        sessionsToSnapshot,
+        env
+      );
+
+      existingSnapshots =
+        await getOrderSessionSnapshots(
+          orderId,
+          env
+        );
+    }
   }
 
   await env.DB.prepare(
@@ -5126,6 +5615,27 @@ async function updateOrderStatus(
             }
           : null,
 
+      entitledSessions:
+        existingSnapshots.map(
+          session => ({
+            id:
+              session.session_id ||
+              "",
+
+            name:
+              session.session_name ||
+              "",
+
+            liveStartsAt:
+              session.live_starts_at ||
+              null,
+
+            liveEndsAt:
+              session.live_ends_at ||
+              null,
+          })
+        ),
+
       package: {
         name:
           order.package_name ||
@@ -5168,7 +5678,7 @@ async function updateOrderStatus(
 
 /*
  * =========================================
- * PACKAGE HELPERS
+ * PACKAGE / ORDER SESSION HELPERS
  * =========================================
  */
 
@@ -5215,6 +5725,218 @@ async function replacePackageSessions(
       .run();
   }
 }
+
+
+/*
+ * ดึงวันทั้งหมดที่ผูกกับแพ็กเกจ
+ *
+ * ใช้สำหรับ REPLAY:
+ * - DAY 1
+ * - DAY 1 + DAY 3
+ * - ALL DAYS
+ */
+
+async function getPackageEntitledSessions(
+  packageId,
+  concertId,
+  env
+) {
+  if (
+    !packageId ||
+    !concertId
+  ) {
+    return [];
+  }
+
+  const result =
+    await env.DB.prepare(
+      `
+      SELECT
+        s.id,
+        s.concert_id,
+        s.name,
+        s.live_starts_at,
+        s.live_ends_at,
+        s.sort_order
+
+      FROM package_sessions ps
+
+      INNER JOIN concert_sessions s
+        ON s.id =
+          ps.session_id
+
+      WHERE ps.package_id = ?
+        AND s.concert_id = ?
+        AND s.is_active = 1
+
+      ORDER BY
+        s.sort_order ASC,
+        s.live_starts_at ASC
+      `
+    )
+      .bind(
+        packageId,
+        concertId
+      )
+      .all();
+
+  return (
+    result.results ||
+    []
+  );
+}
+
+
+/*
+ * Snapshot สิทธิ์วันตอนซื้อ
+ *
+ * ไม่อ้าง package_sessions อีกหลังจากซื้อแล้ว
+ */
+
+async function saveOrderSessionSnapshots(
+  orderId,
+  sessions,
+  env
+) {
+  if (
+    !orderId
+  ) {
+    throw new Error(
+      "Order ID is missing"
+    );
+  }
+
+  if (
+    !Array.isArray(
+      sessions
+    ) ||
+    sessions.length ===
+      0
+  ) {
+    throw new Error(
+      "Order session rights are empty"
+    );
+  }
+
+  const now =
+    new Date()
+      .toISOString();
+
+  /*
+   * ป้องกันข้อมูลค้างกรณีเรียกซ้ำ
+   */
+
+  await env.DB.prepare(
+    `
+    DELETE FROM order_sessions
+    WHERE order_id = ?
+    `
+  )
+    .bind(
+      orderId
+    )
+    .run();
+
+  for (
+    const session
+    of sessions
+  ) {
+    const sessionId =
+      cleanText(
+        session.id ||
+        session.session_id
+      );
+
+    if (
+      !sessionId
+    ) {
+      throw new Error(
+        "Session ID is missing"
+      );
+    }
+
+    await env.DB.prepare(
+      `
+      INSERT INTO order_sessions (
+        order_id,
+        session_id,
+        session_name,
+        live_starts_at,
+        live_ends_at,
+        created_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?)
+      `
+    )
+      .bind(
+        orderId,
+
+        sessionId,
+
+        cleanText(
+          session.name ||
+          session.session_name
+        ) ||
+        null,
+
+        session.live_starts_at ||
+        null,
+
+        session.live_ends_at ||
+        null,
+
+        now
+      )
+      .run();
+  }
+}
+
+
+/*
+ * ดึงสิทธิ์วันจาก Snapshot ของ Order
+ */
+
+async function getOrderSessionSnapshots(
+  orderId,
+  env
+) {
+  if (
+    !orderId
+  ) {
+    return [];
+  }
+
+  const result =
+    await env.DB.prepare(
+      `
+      SELECT
+        order_id,
+        session_id,
+        session_name,
+        live_starts_at,
+        live_ends_at,
+        created_at
+
+      FROM order_sessions
+
+      WHERE order_id = ?
+
+      ORDER BY
+        live_starts_at ASC,
+        created_at ASC
+      `
+    )
+      .bind(
+        orderId
+      )
+      .all();
+
+  return (
+    result.results ||
+    []
+  );
+}
+
 
 async function validateSessionsForConcert(
   concertId,
@@ -5319,15 +6041,22 @@ async function updateConcertTimeRange(
 
 
 /*
- * LIVE:
- *   หมดอายุตามวันแสดงที่ซื้อ
+ * =========================================
+ * ACCESS EXPIRY
+ * =========================================
  *
- * LIVE + REPLAY:
- *   วันแสดงที่ซื้อ + ระยะ Replay
+ * LIVE
+ *   หมดอายุตามวัน LIVE ที่ลูกค้าเลือก
  *
- * REPLAY:
- *   เริ่มนับจากวันที่อนุมัติการซื้อ
+ * LIVE + REPLAY
+ *   วัน LIVE ที่ลูกค้าเลือก
+ *   + ระยะเวลา Replay
+ *
+ * REPLAY
+ *   เริ่มนับจากวันอนุมัติชำระเงิน
+ *   + replay_days / replay_months
  */
+
 async function calculateAccessExpiry(
   order,
   env
@@ -5427,7 +6156,8 @@ async function calculateAccessExpiry(
         FROM package_sessions ps
 
         INNER JOIN concert_sessions s
-          ON s.id = ps.session_id
+          ON s.id =
+            ps.session_id
 
         WHERE ps.package_id = ?
           AND s.is_active = 1
@@ -5562,6 +6292,13 @@ function addUtcCalendarMonths(
   return date;
 }
 
+
+/*
+ * =========================================
+ * PACKAGE VALIDATION
+ * =========================================
+ */
+
 function validatePackageInput(
   concertId,
   name,
@@ -5669,8 +6406,7 @@ async function handleLineWebhook(
     return new Response(
       "LINE_CHANNEL_SECRET is not configured",
       {
-        status:
-          500,
+        status: 500,
       }
     );
   }
@@ -5685,8 +6421,7 @@ async function handleLineWebhook(
     return new Response(
       "LINE_CHANNEL_ACCESS_TOKEN is not configured",
       {
-        status:
-          500,
+        status: 500,
       }
     );
   }
@@ -5701,8 +6436,7 @@ async function handleLineWebhook(
     return new Response(
       "DB binding is not configured",
       {
-        status:
-          500,
+        status: 500,
       }
     );
   }
@@ -5718,8 +6452,7 @@ async function handleLineWebhook(
     return new Response(
       "Missing LINE signature",
       {
-        status:
-          401,
+        status: 401,
       }
     );
   }
@@ -5744,8 +6477,7 @@ async function handleLineWebhook(
     return new Response(
       "Invalid LINE signature",
       {
-        status:
-          401,
+        status: 401,
       }
     );
   }
@@ -5762,8 +6494,7 @@ async function handleLineWebhook(
     return new Response(
       "Invalid JSON",
       {
-        status:
-          400,
+        status: 400,
       }
     );
   }
@@ -5803,11 +6534,6 @@ async function handleLineWebhook(
         await saveLineUser(
           userId,
           env
-        );
-
-        console.log(
-          "LINE user saved:",
-          userId
         );
 
       } catch (
@@ -5890,11 +6616,6 @@ async function handleLineWebhook(
         env
       );
 
-      console.log(
-        "LINE reply sent successfully:",
-        userId
-      );
-
     } catch (
       error
     ) {
@@ -5911,8 +6632,7 @@ async function handleLineWebhook(
   return new Response(
     "OK",
     {
-      status:
-        200,
+      status: 200,
 
       headers: {
         "Content-Type":
@@ -6098,8 +6818,7 @@ async function replyLineMessage(
       "https://api.line.me/v2/bot/message/reply",
 
       {
-        method:
-          "POST",
+        method: "POST",
 
         headers: {
           "Content-Type":
@@ -6117,8 +6836,7 @@ async function replyLineMessage(
 
               messages: [
                 {
-                  type:
-                    "text",
+                  type: "text",
 
                   text:
                     String(
@@ -6183,8 +6901,7 @@ async function pushLineMessage(
       "https://api.line.me/v2/bot/message/push",
 
       {
-        method:
-          "POST",
+        method: "POST",
 
         headers: {
           "Content-Type":
@@ -6203,8 +6920,7 @@ async function pushLineMessage(
 
               messages: [
                 {
-                  type:
-                    "text",
+                  type: "text",
 
                   text:
                     String(
@@ -6304,6 +7020,45 @@ async function pushApprovedOrderToLine(
     orderData.accessType ===
     "replay";
 
+  const sessionNames =
+    Array.isArray(
+      orderData.sessionNames
+    )
+      ? orderData.sessionNames
+          .map(
+            item =>
+              cleanText(
+                item
+              )
+          )
+          .filter(
+            Boolean
+          )
+      : [];
+
+  let rightsText =
+    "";
+
+  if (
+    isReplayOnly &&
+    sessionNames.length > 0
+  ) {
+    rightsText =
+      "สิทธิ์รับชม: " +
+      sessionNames.join(
+        ", "
+      ) +
+      "\n";
+
+  } else if (
+    orderData.sessionName
+  ) {
+    rightsText =
+      "รอบ: " +
+      orderData.sessionName +
+      "\n";
+  }
+
   const message =
     "LIVEHUB TH ✅\n\n" +
     "ตรวจสอบการชำระเงินเรียบร้อยแล้ว\n\n" +
@@ -6322,15 +7077,10 @@ async function pushApprovedOrderToLine(
         : ""
     ) +
 
-    (
-      orderData.sessionName
-        ? "รอบ: " +
-          orderData.sessionName +
-          "\n"
-        : ""
-    ) +
+    rightsText +
 
     (
+      !isReplayOnly &&
       liveText
         ? "เริ่มแสดง: " +
           liveText +
@@ -6426,8 +7176,7 @@ async function verifyLineLinkToken(
     !env.LINE_CHANNEL_SECRET
   ) {
     return {
-      ok:
-        false,
+      ok: false,
 
       message:
         "ข้อมูลเชื่อมต่อ LINE ไม่ถูกต้อง",
@@ -6446,8 +7195,7 @@ async function verifyLineLinkToken(
     2
   ) {
     return {
-      ok:
-        false,
+      ok: false,
 
       message:
         "ลิงก์ LINE ไม่ถูกต้อง",
@@ -6472,8 +7220,7 @@ async function verifyLineLinkToken(
     )
   ) {
     return {
-      ok:
-        false,
+      ok: false,
 
       message:
         "ลิงก์ LINE ไม่ถูกต้อง",
@@ -6492,8 +7239,7 @@ async function verifyLineLinkToken(
 
   } catch {
     return {
-      ok:
-        false,
+      ok: false,
 
       message:
         "ข้อมูลลิงก์ LINE ไม่ถูกต้อง",
@@ -6517,8 +7263,7 @@ async function verifyLineLinkToken(
     )
   ) {
     return {
-      ok:
-        false,
+      ok: false,
 
       message:
         "ข้อมูลลิงก์ LINE ไม่ครบ",
@@ -6530,8 +7275,7 @@ async function verifyLineLinkToken(
     expiresAt
   ) {
     return {
-      ok:
-        false,
+      ok: false,
 
       message:
         "ลิงก์ LINE หมดอายุแล้ว กรุณากลับไปที่ LINE แล้วพิมพ์คำว่า ซื้อ อีกครั้ง",
@@ -6539,9 +7283,7 @@ async function verifyLineLinkToken(
   }
 
   return {
-    ok:
-      true,
-
+    ok: true,
     lineUserId,
   };
 }
@@ -6571,11 +7313,8 @@ async function signLineLinkPayload(
       derivedKeyBytes,
 
       {
-        name:
-          "HMAC",
-
-        hash:
-          "SHA-256",
+        name: "HMAC",
+        hash: "SHA-256",
       },
 
       false,
@@ -6624,11 +7363,8 @@ async function verifyLineSignature(
       ),
 
       {
-        name:
-          "HMAC",
-
-        hash:
-          "SHA-256",
+        name: "HMAC",
+        hash: "SHA-256",
       },
 
       false,
@@ -6861,10 +7597,8 @@ function normalizePrice(
     !Number.isInteger(
       price
     ) ||
-    price <
-      0 ||
-    price >
-      1000000
+    price < 0 ||
+    price > 1000000
   ) {
     return null;
   }
@@ -6931,10 +7665,8 @@ function normalizeReplayDays(
     !Number.isInteger(
       days
     ) ||
-    days <
-      0 ||
-    days >
-      3650
+    days < 0 ||
+    days > 3650
   ) {
     return null;
   }
@@ -6970,10 +7702,8 @@ function normalizeReplayMonths(
     !Number.isInteger(
       months
     ) ||
-    months <
-      0 ||
-    months >
-      120
+    months < 0 ||
+    months > 120
   ) {
     return null;
   }
@@ -7037,8 +7767,7 @@ function normalizeNonNegativeInteger(
     !Number.isInteger(
       number
     ) ||
-    number <
-      0
+    number < 0
   ) {
     return defaultValue;
   }
@@ -7276,9 +8005,7 @@ function errorResponse(
 ) {
   return jsonResponse(
     {
-      success:
-        false,
-
+      success: false,
       message,
     },
 
@@ -7298,17 +8025,10 @@ function getImageExtension(
   contentType
 ) {
   const extensions = {
-    "image/jpeg":
-      "jpg",
-
-    "image/png":
-      "png",
-
-    "image/webp":
-      "webp",
-
-    "image/gif":
-      "gif",
+    "image/jpeg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
   };
 
   return (
