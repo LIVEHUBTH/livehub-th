@@ -2,10 +2,8 @@ export default {
   async fetch(request, env) {
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods":
-        "GET, POST, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers":
-        "Content-Type, Authorization, X-Admin-Token",
+      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Admin-Token",
     };
 
     if (request.method === "OPTIONS") {
@@ -59,7 +57,7 @@ export default {
 
       /*
        * =========================================
-       * LINE MESSAGING API WEBHOOK
+       * LINE WEBHOOK
        * =========================================
        */
 
@@ -75,7 +73,7 @@ export default {
 
       /*
        * =========================================
-       * VIEWING SESSION API
+       * VIEWING SESSION
        * =========================================
        */
 
@@ -114,7 +112,7 @@ export default {
 
       /*
        * =========================================
-       * ADMIN AUTHENTICATION
+       * ADMIN AUTH
        * =========================================
        */
 
@@ -157,9 +155,7 @@ export default {
       }
 
       if (
-        path.startsWith(
-          "/api/admin/concerts/"
-        ) &&
+        path.startsWith("/api/admin/concerts/") &&
         request.method === "POST"
       ) {
         const concertId =
@@ -205,9 +201,7 @@ export default {
       }
 
       if (
-        path.startsWith(
-          "/api/admin/sessions/"
-        ) &&
+        path.startsWith("/api/admin/sessions/") &&
         request.method === "POST"
       ) {
         const sessionId =
@@ -253,9 +247,7 @@ export default {
       }
 
       if (
-        path.startsWith(
-          "/api/admin/packages/"
-        ) &&
+        path.startsWith("/api/admin/packages/") &&
         request.method === "POST"
       ) {
         const packageId =
@@ -273,9 +265,7 @@ export default {
       }
 
       if (
-        path.startsWith(
-          "/api/admin/packages/"
-        ) &&
+        path.startsWith("/api/admin/packages/") &&
         request.method === "DELETE"
       ) {
         const packageId =
@@ -309,9 +299,7 @@ export default {
       }
 
       if (
-        path.startsWith(
-          "/api/admin/slip/"
-        ) &&
+        path.startsWith("/api/admin/slip/") &&
         request.method === "GET"
       ) {
         const orderId =
@@ -328,9 +316,7 @@ export default {
       }
 
       if (
-        path.startsWith(
-          "/api/admin/orders/"
-        ) &&
+        path.startsWith("/api/admin/orders/") &&
         path.endsWith("/status") &&
         request.method === "POST"
       ) {
@@ -580,14 +566,15 @@ async function createConcert(
   env,
   corsHeaders
 ) {
-  const body =
-    await readJson(request);
-
   const input =
-    normalizeConcertInput(body);
+    normalizeConcertInput(
+      await readJson(request)
+    );
 
   const validationError =
-    validateConcertInput(input);
+    validateConcertInput(
+      input
+    );
 
   if (validationError) {
     return errorResponse(
@@ -678,14 +665,15 @@ async function updateConcert(
     );
   }
 
-  const body =
-    await readJson(request);
-
   const input =
-    normalizeConcertInput(body);
+    normalizeConcertInput(
+      await readJson(request)
+    );
 
   const validationError =
-    validateConcertInput(input);
+    validateConcertInput(
+      input
+    );
 
   if (validationError) {
     return errorResponse(
@@ -882,14 +870,15 @@ async function createSession(
   env,
   corsHeaders
 ) {
-  const body =
-    await readJson(request);
-
   const input =
-    normalizeSessionInput(body);
+    normalizeSessionInput(
+      await readJson(request)
+    );
 
   const validationError =
-    validateSessionInput(input);
+    validateSessionInput(
+      input
+    );
 
   if (validationError) {
     return errorResponse(
@@ -908,7 +897,9 @@ async function createSession(
       LIMIT 1
       `
     )
-      .bind(input.concertId)
+      .bind(
+        input.concertId
+      )
       .first();
 
   if (!concert) {
@@ -1018,7 +1009,9 @@ async function updateSession(
     });
 
   const validationError =
-    validateSessionInput(input);
+    validateSessionInput(
+      input
+    );
 
   if (validationError) {
     return errorResponse(
@@ -1281,11 +1274,10 @@ async function createPackage(
   env,
   corsHeaders
 ) {
-  const body =
-    await readJson(request);
-
   const input =
-    normalizePackageInput(body);
+    normalizePackageInput(
+      await readJson(request)
+    );
 
   const validationError =
     validatePackageInput(
@@ -1325,7 +1317,9 @@ async function createPackage(
       LIMIT 1
       `
     )
-      .bind(input.concertId)
+      .bind(
+        input.concertId
+      )
       .first();
 
   if (!concert) {
@@ -1418,7 +1412,6 @@ async function createPackage(
   return jsonResponse(
     {
       success: true,
-
       packageId,
 
       package: {
@@ -1603,7 +1596,6 @@ async function updatePackage(
   return jsonResponse(
     {
       success: true,
-
       packageId,
 
       package: {
@@ -1791,7 +1783,6 @@ async function deletePackage(
   return jsonResponse(
     {
       success: true,
-
       packageId,
 
       message:
@@ -1806,7 +1797,7 @@ async function deletePackage(
 
 /*
  * =========================================
- * PAYMENT + EASYSLIP AUTO APPROVAL
+ * PAYMENT + EASYSLIP + LINE
  * =========================================
  */
 
@@ -1855,6 +1846,38 @@ async function createPayment(
       "slip"
     );
 
+  /*
+   * LINE token มาจาก URL หน้า payment
+   * และ payment.html จะส่งกลับมาพร้อม FormData
+   */
+  const lineLinkToken =
+    cleanText(
+      formData.get(
+        "lineLinkToken"
+      )
+    );
+
+  let lineUserId = "";
+
+  if (lineLinkToken) {
+    const lineLinkResult =
+      await verifyLineLinkToken(
+        lineLinkToken,
+        env
+      );
+
+    if (!lineLinkResult.ok) {
+      return errorResponse(
+        lineLinkResult.message,
+        400,
+        corsHeaders
+      );
+    }
+
+    lineUserId =
+      lineLinkResult.lineUserId;
+  }
+
   if (!packageId) {
     return errorResponse(
       "กรุณาเลือกแพ็กเกจ",
@@ -1883,7 +1906,9 @@ async function createPayment(
   }
 
   const slipError =
-    validateSlip(slip);
+    validateSlip(
+      slip
+    );
 
   if (slipError) {
     return errorResponse(
@@ -2029,7 +2054,9 @@ async function createPayment(
     );
   }
 
-  if (easySlip.isDuplicate) {
+  if (
+    easySlip.isDuplicate
+  ) {
     return errorResponse(
       "สลิปนี้เคยถูกใช้แล้ว กรุณาใช้สลิปใหม่",
       409,
@@ -2037,7 +2064,9 @@ async function createPayment(
     );
   }
 
-  if (!easySlip.isAmountMatched) {
+  if (
+    !easySlip.isAmountMatched
+  ) {
     return errorResponse(
       "ยอดเงินในสลิป " +
       easySlip.amountInSlip
@@ -2248,6 +2277,7 @@ async function createPayment(
         ),
         slipKey,
         now,
+
         orderSnapshot.concert_id,
         orderSnapshot.package_id,
         orderSnapshot.package_name,
@@ -2256,17 +2286,23 @@ async function createPayment(
         orderSnapshot.replay_months,
         orderSnapshot.has_ecard,
         orderSnapshot.video_quality,
+
         orderSnapshot
           .selected_session_id,
+
         orderSnapshot
           .selected_session_name,
+
         orderSnapshot
           .selected_session_starts_at,
+
         orderSnapshot
           .selected_session_ends_at,
+
         accessCode,
         now,
         accessExpiresAt,
+
         easySlip.transRef,
         now,
         easySlip.amountInSlip,
@@ -2305,18 +2341,118 @@ async function createPayment(
     throw databaseError;
   }
 
+  /*
+   * =========================================
+   * LINK ORDER TO LINE USER
+   * =========================================
+   */
+
+  let lineNotificationSent =
+    false;
+
+  if (lineUserId) {
+    const linkedAt =
+      new Date().toISOString();
+
+    await env.DB.prepare(
+      `
+      INSERT INTO line_users (
+        line_user_id,
+        order_id,
+        created_at,
+        updated_at
+      )
+      VALUES (?, ?, ?, ?)
+
+      ON CONFLICT(line_user_id)
+      DO UPDATE SET
+        order_id = excluded.order_id,
+        updated_at = excluded.updated_at
+      `
+    )
+      .bind(
+        lineUserId,
+        orderId,
+        linkedAt,
+        linkedAt
+      )
+      .run();
+
+    try {
+      await pushApprovedOrderToLine(
+        lineUserId,
+        {
+          orderId,
+
+          accessCode,
+
+          accessExpiresAt,
+
+          packageName:
+            selectedPackage.name,
+
+          sessionName:
+            selectedSession.name,
+
+          liveStartsAt:
+            selectedSession
+              .live_starts_at,
+
+          concertId:
+            selectedPackage
+              .concert_id,
+        },
+        env
+      );
+
+      lineNotificationSent =
+        true;
+
+      console.log(
+        "LINE access code sent:",
+        lineUserId,
+        orderId
+      );
+
+    } catch (lineError) {
+      /*
+       * Payment ผ่านแล้ว
+       * ห้าม rollback order
+       * เพียงเพราะ LINE ส่งไม่สำเร็จ
+       */
+      console.error(
+        "LINE access code push failed:",
+        lineError?.message ||
+        String(lineError)
+      );
+    }
+  }
+
   return jsonResponse(
     {
       success: true,
+
       orderId,
+
       status:
         "approved",
+
       automaticApproval:
         true,
+
       accessCode,
+
       approvedAt:
         now,
+
       accessExpiresAt,
+
+      lineLinked:
+        Boolean(
+          lineUserId
+        ),
+
+      lineNotificationSent,
 
       selectedSession: {
         id:
@@ -2389,7 +2525,9 @@ async function createPayment(
       },
 
       message:
-        "ตรวจสอบสลิปและอนุมัติอัตโนมัติสำเร็จ กรุณาเก็บรหัสเข้าชมไว้",
+        lineNotificationSent
+          ? "ตรวจสอบสลิปและอนุมัติอัตโนมัติสำเร็จ ส่งรหัสเข้าชมทาง LINE แล้ว"
+          : "ตรวจสอบสลิปและอนุมัติอัตโนมัติสำเร็จ กรุณาเก็บรหัสเข้าชมไว้",
     },
     201,
     corsHeaders
@@ -2398,7 +2536,7 @@ async function createPayment(
 
 /*
  * =========================================
- * EASYSLIP VERIFICATION
+ * EASYSLIP
  * =========================================
  */
 
@@ -2414,7 +2552,8 @@ async function verifySlipWithEasySlip(
   easySlipForm.append(
     "image",
     slip,
-    slip.name || "slip.jpg"
+    slip.name ||
+    "slip.jpg"
   );
 
   easySlipForm.append(
@@ -2429,7 +2568,9 @@ async function verifySlipWithEasySlip(
 
   easySlipForm.append(
     "matchAmount",
-    String(expectedAmount)
+    String(
+      expectedAmount
+    )
   );
 
   easySlipForm.append(
@@ -2444,7 +2585,8 @@ async function verifySlipWithEasySlip(
       await fetch(
         "https://api.easyslip.com/v2/verify/bank",
         {
-          method: "POST",
+          method:
+            "POST",
 
           headers: {
             Authorization:
@@ -2456,13 +2598,15 @@ async function verifySlipWithEasySlip(
             easySlipForm,
         }
       );
+
   } catch {
     const networkError =
       new Error(
         "ไม่สามารถเชื่อมต่อ EasySlip ได้ กรุณาลองใหม่อีกครั้ง"
       );
 
-    networkError.status = 502;
+    networkError.status =
+      502;
 
     throw networkError;
   }
@@ -2472,13 +2616,15 @@ async function verifySlipWithEasySlip(
   try {
     result =
       await response.json();
+
   } catch {
     const invalidResponseError =
       new Error(
         "EasySlip ส่งข้อมูลตอบกลับไม่ถูกต้อง"
       );
 
-    invalidResponseError.status = 502;
+    invalidResponseError.status =
+      502;
 
     throw invalidResponseError;
   }
@@ -2550,7 +2696,9 @@ async function verifySlipWithEasySlip(
       "ตรวจสอบสลิปไม่สำเร็จ";
 
     const easySlipError =
-      new Error(message);
+      new Error(
+        message
+      );
 
     easySlipError.code =
       code;
@@ -2584,14 +2732,11 @@ async function verifySlipWithEasySlip(
           ) &&
           Math.abs(
             amountInSlip -
-            Number(expectedAmount)
+            Number(
+              expectedAmount
+            )
           ) < 0.001
         );
-
-  const matchedAccount =
-    normalizeMatchedAccount(
-      data.matchedAccount
-    );
 
   return {
     isDuplicate:
@@ -2599,7 +2744,10 @@ async function verifySlipWithEasySlip(
         data.isDuplicate
       ),
 
-    matchedAccount,
+    matchedAccount:
+      normalizeMatchedAccount(
+        data.matchedAccount
+      ),
 
     amountInSlip,
 
@@ -2648,13 +2796,13 @@ function normalizeMatchedAccount(
         .trim()
         .toLowerCase();
 
-    if (
-      normalized === "true" ||
-      normalized === "matched" ||
-      normalized === "success"
-    ) {
-      return true;
-    }
+    return [
+      "true",
+      "matched",
+      "success",
+    ].includes(
+      normalized
+    );
   }
 
   return false;
@@ -2669,22 +2817,28 @@ function normalizeEasySlipHttpStatus(
     );
 
   if (
-    status === 400 ||
-    status === 404 ||
-    status === 409 ||
-    status === 422
+    [
+      400,
+      404,
+      409,
+      422,
+    ].includes(status)
   ) {
     return status;
   }
 
   if (
-    status === 401 ||
-    status === 403
+    [
+      401,
+      403,
+    ].includes(status)
   ) {
     return 502;
   }
 
-  if (status === 429) {
+  if (
+    status === 429
+  ) {
     return 503;
   }
 
@@ -2713,12 +2867,6 @@ function getEasySlipAccountName(
     ""
   );
 }
-
-/*
- * =========================================
- * SLIP VALIDATION
- * =========================================
- */
 
 function validateSlip(
   slip
@@ -2760,7 +2908,7 @@ function validateSlip(
 
 /*
  * =========================================
- * PUBLIC ACCESS CODE VERIFICATION
+ * ACCESS CODE
  * =========================================
  */
 
@@ -2847,7 +2995,8 @@ async function startViewingSession(
   }
 
   if (
-    deviceId.length > 200
+    deviceId.length >
+    200
   ) {
     return errorResponse(
       "ข้อมูลอุปกรณ์ไม่ถูกต้อง",
@@ -2985,11 +3134,15 @@ async function startViewingSession(
     {
       success: true,
       valid: true,
+
       sessionToken,
+
       sessionId:
         viewingSessionId,
+
       accessCode:
         order.access_code,
+
       accessExpiresAt:
         order.access_expires_at,
 
@@ -3183,19 +3336,12 @@ async function checkViewingSession(
       expiresAt.getTime()
     ) ||
     Date.now() >
-      expiresAt.getTime()
+    expiresAt.getTime()
   ) {
-    await env.DB.prepare(
-      `
-      UPDATE viewing_sessions
-      SET is_active = 0
-      WHERE id = ?
-      `
-    )
-      .bind(
-        viewingSession.id
-      )
-      .run();
+    await deactivateViewingSession(
+      viewingSession.id,
+      env
+    );
 
     return errorResponse(
       "สิทธิ์การรับชมหมดอายุแล้ว",
@@ -3241,17 +3387,10 @@ async function checkViewingSession(
     !order ||
     order.status !== "approved"
   ) {
-    await env.DB.prepare(
-      `
-      UPDATE viewing_sessions
-      SET is_active = 0
-      WHERE id = ?
-      `
-    )
-      .bind(
-        viewingSession.id
-      )
-      .run();
+    await deactivateViewingSession(
+      viewingSession.id,
+      env
+    );
 
     return errorResponse(
       "สิทธิ์การรับชมถูกยกเลิก",
@@ -3271,19 +3410,12 @@ async function checkViewingSession(
       orderExpiresAt.getTime()
     ) ||
     Date.now() >
-      orderExpiresAt.getTime()
+    orderExpiresAt.getTime()
   ) {
-    await env.DB.prepare(
-      `
-      UPDATE viewing_sessions
-      SET is_active = 0
-      WHERE id = ?
-      `
-    )
-      .bind(
-        viewingSession.id
-      )
-      .run();
+    await deactivateViewingSession(
+      viewingSession.id,
+      env
+    );
 
     return errorResponse(
       "สิทธิ์การรับชมหมดอายุแล้ว",
@@ -3313,12 +3445,16 @@ async function checkViewingSession(
     {
       success: true,
       valid: true,
+
       sessionToken:
         viewingSession.session_token,
+
       accessCode:
         order.access_code,
+
       accessExpiresAt:
         order.access_expires_at,
+
       message:
         "เซสชันรับชมยังใช้งานได้",
     },
@@ -3373,12 +3509,28 @@ async function endViewingSession(
   return jsonResponse(
     {
       success: true,
+
       message:
         "สิ้นสุดเซสชันรับชมแล้ว",
     },
     200,
     corsHeaders
   );
+}
+
+async function deactivateViewingSession(
+  sessionId,
+  env
+) {
+  await env.DB.prepare(
+    `
+    UPDATE viewing_sessions
+    SET is_active = 0
+    WHERE id = ?
+    `
+  )
+    .bind(sessionId)
+    .run();
 }
 
 async function getApprovedOrderByAccessCode(
@@ -3422,17 +3574,20 @@ async function getApprovedOrderByAccessCode(
     return {
       ok: false,
       status: 404,
+
       message:
         "ไม่พบรหัสเข้าชมนี้",
     };
   }
 
   if (
-    order.status !== "approved"
+    order.status !==
+    "approved"
   ) {
     return {
       ok: false,
       status: 403,
+
       message:
         "รหัสนี้ยังไม่ได้รับการอนุมัติ",
     };
@@ -3444,6 +3599,7 @@ async function getApprovedOrderByAccessCode(
     return {
       ok: false,
       status: 403,
+
       message:
         "รหัสนี้ยังไม่มีข้อมูลวันหมดอายุ",
     };
@@ -3462,6 +3618,7 @@ async function getApprovedOrderByAccessCode(
     return {
       ok: false,
       status: 500,
+
       message:
         "ข้อมูลวันหมดอายุของรหัสไม่ถูกต้อง",
     };
@@ -3474,6 +3631,7 @@ async function getApprovedOrderByAccessCode(
     return {
       ok: false,
       status: 403,
+
       message:
         "รหัสเข้าชมนี้หมดอายุแล้ว",
     };
@@ -3635,7 +3793,8 @@ async function getOrders(
       url.searchParams.get(
         "status"
       )
-    ) || "pending";
+    ) ||
+    "pending";
 
   const allowed = [
     "pending",
@@ -3734,9 +3893,9 @@ async function getOrders(
 
     order.easyslip_amount =
       order.easyslip_amount ===
-        null ||
+      null ||
       order.easyslip_amount ===
-        undefined
+      undefined
         ? null
         : Number(
             order.easyslip_amount
@@ -3773,12 +3932,6 @@ async function getOrders(
     corsHeaders
   );
 }
-
-/*
- * =========================================
- * PAYMENT SLIP
- * =========================================
- */
 
 async function getSlip(
   orderId,
@@ -3869,12 +4022,6 @@ async function getSlip(
   );
 }
 
-/*
- * =========================================
- * APPROVE / REJECT ORDER
- * =========================================
- */
-
 async function updateOrderStatus(
   orderId,
   request,
@@ -3898,8 +4045,12 @@ async function updateOrderStatus(
     );
 
   if (
-    newStatus !== "approved" &&
-    newStatus !== "rejected"
+    ![
+      "approved",
+      "rejected",
+    ].includes(
+      newStatus
+    )
   ) {
     return errorResponse(
       "สถานะต้องเป็น approved หรือ rejected",
@@ -3946,7 +4097,8 @@ async function updateOrderStatus(
   }
 
   if (
-    newStatus === "rejected"
+    newStatus ===
+    "rejected"
   ) {
     await env.DB.prepare(
       `
@@ -3976,9 +4128,12 @@ async function updateOrderStatus(
     return jsonResponse(
       {
         success: true,
+
         orderId,
+
         status:
           "rejected",
+
         message:
           "ปฏิเสธการชำระเงินสำเร็จ",
       },
@@ -4032,11 +4187,16 @@ async function updateOrderStatus(
   return jsonResponse(
     {
       success: true,
+
       orderId,
+
       status:
         "approved",
+
       accessCode,
+
       approvedAt,
+
       accessExpiresAt,
 
       selectedSession: {
@@ -4102,7 +4262,7 @@ async function updateOrderStatus(
 
 /*
  * =========================================
- * PACKAGE SESSION HELPERS
+ * PACKAGE HELPERS
  * =========================================
  */
 
@@ -4189,12 +4349,6 @@ async function validateSessionsForConcert(
   );
 }
 
-/*
- * =========================================
- * UPDATE CONCERT TIME RANGE
- * =========================================
- */
-
 async function updateConcertTimeRange(
   concertId,
   env
@@ -4244,12 +4398,6 @@ async function updateConcertTimeRange(
     .run();
 }
 
-/*
- * =========================================
- * ACCESS EXPIRY
- * =========================================
- */
-
 async function calculateAccessExpiry(
   order,
   env
@@ -4292,7 +4440,8 @@ async function calculateAccessExpiry(
     const concert =
       await env.DB.prepare(
         `
-        SELECT live_ends_at
+        SELECT
+          live_ends_at
         FROM concerts
         WHERE id = ?
         LIMIT 1
@@ -4395,12 +4544,6 @@ function addUtcCalendarMonths(
   return date;
 }
 
-/*
- * =========================================
- * PACKAGE VALIDATION
- * =========================================
- */
-
 function validatePackageInput(
   concertId,
   name,
@@ -4418,7 +4561,9 @@ function validatePackageInput(
     return "กรุณากรอกชื่อแพ็กเกจ";
   }
 
-  if (price === null) {
+  if (
+    price === null
+  ) {
     return "ราคาแพ็กเกจไม่ถูกต้อง";
   }
 
@@ -4426,25 +4571,38 @@ function validatePackageInput(
     return "ประเภทสิทธิ์ไม่ถูกต้อง";
   }
 
-  if (replayDays === null) {
+  if (
+    replayDays === null
+  ) {
     return "จำนวนวัน Replay ไม่ถูกต้อง";
   }
 
-  if (replayMonths === null) {
+  if (
+    replayMonths === null
+  ) {
     return "จำนวนเดือน Replay ไม่ถูกต้อง";
   }
 
   if (
-    accessType === "live_replay" &&
-    Number(replayDays) < 1 &&
-    Number(replayMonths) < 1
+    accessType ===
+    "live_replay" &&
+    Number(
+      replayDays
+    ) < 1 &&
+    Number(
+      replayMonths
+    ) < 1
   ) {
     return "แพ็กเกจ LIVE + REPLAY ต้องมีจำนวนวันหรือจำนวนเดือน Replay";
   }
 
   if (
-    Number(replayDays) > 0 &&
-    Number(replayMonths) > 0
+    Number(
+      replayDays
+    ) > 0 &&
+    Number(
+      replayMonths
+    ) > 0
   ) {
     return "กรุณากำหนด Replay เป็นจำนวนวันหรือจำนวนเดือนอย่างใดอย่างหนึ่ง";
   }
@@ -4458,6 +4616,952 @@ function validatePackageInput(
 
 /*
  * =========================================
+ * LINE WEBHOOK
+ * =========================================
+ */
+
+async function handleLineWebhook(
+  request,
+  env
+) {
+  if (
+    !env.LINE_CHANNEL_SECRET
+  ) {
+    console.error(
+      "LINE_CHANNEL_SECRET is not configured"
+    );
+
+    return new Response(
+      "LINE_CHANNEL_SECRET is not configured",
+      {
+        status: 500,
+      }
+    );
+  }
+
+  if (
+    !env.LINE_CHANNEL_ACCESS_TOKEN
+  ) {
+    console.error(
+      "LINE_CHANNEL_ACCESS_TOKEN is not configured"
+    );
+
+    return new Response(
+      "LINE_CHANNEL_ACCESS_TOKEN is not configured",
+      {
+        status: 500,
+      }
+    );
+  }
+
+  if (!env.DB) {
+    console.error(
+      "DB binding is not configured"
+    );
+
+    return new Response(
+      "DB binding is not configured",
+      {
+        status: 500,
+      }
+    );
+  }
+
+  const signature =
+    request.headers.get(
+      "x-line-signature"
+    );
+
+  if (!signature) {
+    return new Response(
+      "Missing LINE signature",
+      {
+        status: 401,
+      }
+    );
+  }
+
+  /*
+   * ต้องใช้ raw body เดิม
+   * ก่อน JSON.parse
+   */
+  const bodyText =
+    await request.text();
+
+  const signatureValid =
+    await verifyLineSignature(
+      bodyText,
+      signature,
+      env.LINE_CHANNEL_SECRET
+    );
+
+  if (!signatureValid) {
+    console.error(
+      "Invalid LINE signature"
+    );
+
+    return new Response(
+      "Invalid LINE signature",
+      {
+        status: 401,
+      }
+    );
+  }
+
+  let payload;
+
+  try {
+    payload =
+      JSON.parse(
+        bodyText
+      );
+
+  } catch {
+    return new Response(
+      "Invalid JSON",
+      {
+        status: 400,
+      }
+    );
+  }
+
+  const events =
+    Array.isArray(
+      payload.events
+    )
+      ? payload.events
+      : [];
+
+  for (
+    const event
+    of events
+  ) {
+    const eventType =
+      cleanText(
+        event?.type
+      );
+
+    const userId =
+      cleanText(
+        event?.source?.userId
+      );
+
+    console.log(
+      "LINE webhook event:",
+      eventType,
+      userId
+    );
+
+    /*
+     * บันทึก LINE user
+     */
+    if (userId) {
+      try {
+        await saveLineUser(
+          userId,
+          env
+        );
+
+        console.log(
+          "LINE user saved:",
+          userId
+        );
+
+      } catch (
+        databaseError
+      ) {
+        console.error(
+          "Save LINE user failed:",
+          databaseError
+            ?.message ||
+          String(
+            databaseError
+          )
+        );
+      }
+    }
+
+    /*
+     * Reply เฉพาะข้อความ text
+     */
+    if (
+      eventType !==
+      "message" ||
+      event?.message?.type !==
+      "text"
+    ) {
+      continue;
+    }
+
+    const replyToken =
+      cleanText(
+        event?.replyToken
+      );
+
+    if (!replyToken) {
+      continue;
+    }
+
+    const userMessage =
+      cleanText(
+        event?.message?.text
+      );
+
+    /*
+     * สร้าง token เฉพาะลูกค้า
+     * อายุ 30 นาที
+     */
+    let lineLinkToken = "";
+
+    if (userId) {
+      try {
+        lineLinkToken =
+          await createLineLinkToken(
+            userId,
+            env
+          );
+
+      } catch (
+        tokenError
+      ) {
+        console.error(
+          "Create LINE link token failed:",
+          tokenError
+            ?.message ||
+          String(
+            tokenError
+          )
+        );
+      }
+    }
+
+    const replyText =
+      buildLineReplyMessage(
+        userMessage,
+        lineLinkToken,
+        env
+      );
+
+    try {
+      await replyLineMessage(
+        replyToken,
+        replyText,
+        env
+      );
+
+      console.log(
+        "LINE reply sent successfully:",
+        userId
+      );
+
+    } catch (error) {
+      console.error(
+        "LINE reply failed:",
+        error?.message ||
+        String(error)
+      );
+    }
+  }
+
+  return new Response(
+    "OK",
+    {
+      status: 200,
+
+      headers: {
+        "Content-Type":
+          "text/plain; charset=UTF-8",
+      },
+    }
+  );
+}
+
+/*
+ * =========================================
+ * SAVE LINE USER
+ * =========================================
+ */
+
+async function saveLineUser(
+  lineUserId,
+  env
+) {
+  if (
+    !lineUserId ||
+    !env.DB
+  ) {
+    return;
+  }
+
+  const now =
+    new Date().toISOString();
+
+  await env.DB.prepare(
+    `
+    INSERT INTO line_users (
+      line_user_id,
+      order_id,
+      created_at,
+      updated_at
+    )
+    VALUES (?, NULL, ?, ?)
+
+    ON CONFLICT(line_user_id)
+    DO UPDATE SET
+      updated_at =
+        excluded.updated_at
+    `
+  )
+    .bind(
+      lineUserId,
+      now,
+      now
+    )
+    .run();
+}
+
+/*
+ * =========================================
+ * LINE REPLY MESSAGE
+ * =========================================
+ */
+
+function buildLineReplyMessage(
+  userMessage,
+  lineLinkToken,
+  env
+) {
+  const normalized =
+    String(
+      userMessage || ""
+    )
+      .trim()
+      .toLowerCase();
+
+  if (
+    [
+      "ทดสอบ",
+      "ทดสอบ webhook",
+      "test",
+    ].includes(
+      normalized
+    )
+  ) {
+    return (
+      "LIVEHUB TH ✅\n\n" +
+      "ระบบ LINE Messaging API เชื่อมต่อสำเร็จแล้ว\n\n" +
+      "บัญชี LINE ของคุณเชื่อมต่อกับระบบ LIVEHUB TH แล้ว"
+    );
+  }
+
+  const wantsPurchase =
+    normalized.includes(
+      "ซื้อ"
+    ) ||
+    normalized.includes(
+      "ชำระ"
+    ) ||
+    normalized.includes(
+      "คอนเสิร์ต"
+    );
+
+  if (
+    wantsPurchase &&
+    lineLinkToken &&
+    env.PAYMENT_PAGE_URL
+  ) {
+    const separator =
+      String(
+        env.PAYMENT_PAGE_URL
+      ).includes("?")
+        ? "&"
+        : "?";
+
+    const paymentUrl =
+      String(
+        env.PAYMENT_PAGE_URL
+      ) +
+      separator +
+      "lineLinkToken=" +
+      encodeURIComponent(
+        lineLinkToken
+      );
+
+    return (
+      "LIVEHUB TH 🎵\n\n" +
+      "บัญชี LINE ของคุณพร้อมสำหรับการสั่งซื้อแล้ว\n\n" +
+      "กรุณาเปิดลิงก์นี้เพื่อเลือกคอนเสิร์ตและชำระเงิน\n\n" +
+      paymentUrl +
+      "\n\n" +
+      "ลิงก์นี้เป็นลิงก์เฉพาะบัญชีของคุณ กรุณาอย่าส่งต่อให้ผู้อื่น"
+    );
+  }
+
+  if (
+    wantsPurchase &&
+    !env.PAYMENT_PAGE_URL
+  ) {
+    return (
+      "LIVEHUB TH 🎵\n\n" +
+      "บัญชี LINE ของคุณเชื่อมต่อเรียบร้อยแล้ว\n\n" +
+      "ระบบลิงก์ชำระเงินกำลังรอการตั้งค่า PAYMENT_PAGE_URL"
+    );
+  }
+
+  return (
+    "LIVEHUB TH 🎵\n\n" +
+    "ได้รับข้อความของคุณเรียบร้อยแล้ว\n\n" +
+    "พิมพ์คำว่า “ซื้อ” เพื่อเข้าสู่ขั้นตอนเลือกคอนเสิร์ตและชำระเงิน"
+  );
+}
+
+/*
+ * =========================================
+ * LINE REPLY
+ * =========================================
+ */
+
+async function replyLineMessage(
+  replyToken,
+  text,
+  env
+) {
+  if (
+    !env.LINE_CHANNEL_ACCESS_TOKEN
+  ) {
+    throw new Error(
+      "LINE_CHANNEL_ACCESS_TOKEN is not configured"
+    );
+  }
+
+  const response =
+    await fetch(
+      "https://api.line.me/v2/bot/message/reply",
+      {
+        method:
+          "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+
+          Authorization:
+            "Bearer " +
+            env.LINE_CHANNEL_ACCESS_TOKEN,
+        },
+
+        body:
+          JSON.stringify(
+            {
+              replyToken,
+
+              messages: [
+                {
+                  type:
+                    "text",
+
+                  text:
+                    String(
+                      text || ""
+                    ).slice(
+                      0,
+                      5000
+                    ),
+                },
+              ],
+            }
+          ),
+      }
+    );
+
+  if (response.ok) {
+    return true;
+  }
+
+  const responseText =
+    await safeResponseText(
+      response
+    );
+
+  throw new Error(
+    "LINE Messaging API error " +
+    response.status +
+    (
+      responseText
+        ? " - " +
+          responseText
+        : ""
+    )
+  );
+}
+
+/*
+ * =========================================
+ * LINE PUSH
+ * =========================================
+ */
+
+async function pushLineMessage(
+  lineUserId,
+  text,
+  env
+) {
+  if (
+    !env.LINE_CHANNEL_ACCESS_TOKEN
+  ) {
+    throw new Error(
+      "LINE_CHANNEL_ACCESS_TOKEN is not configured"
+    );
+  }
+
+  const response =
+    await fetch(
+      "https://api.line.me/v2/bot/message/push",
+      {
+        method:
+          "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json",
+
+          Authorization:
+            "Bearer " +
+            env.LINE_CHANNEL_ACCESS_TOKEN,
+        },
+
+        body:
+          JSON.stringify(
+            {
+              to:
+                lineUserId,
+
+              messages: [
+                {
+                  type:
+                    "text",
+
+                  text:
+                    String(
+                      text || ""
+                    ).slice(
+                      0,
+                      5000
+                    ),
+                },
+              ],
+            }
+          ),
+      }
+    );
+
+  if (response.ok) {
+    return true;
+  }
+
+  const responseText =
+    await safeResponseText(
+      response
+    );
+
+  throw new Error(
+    "LINE push failed " +
+    response.status +
+    (
+      responseText
+        ? " - " +
+          responseText
+        : ""
+    )
+  );
+}
+
+/*
+ * =========================================
+ * SEND APPROVED ORDER TO LINE
+ * =========================================
+ */
+
+async function pushApprovedOrderToLine(
+  lineUserId,
+  orderData,
+  env
+) {
+  if (!lineUserId) {
+    throw new Error(
+      "LINE user ID is missing"
+    );
+  }
+
+  let concertTitle = "";
+
+  if (
+    orderData.concertId
+  ) {
+    const concert =
+      await env.DB.prepare(
+        `
+        SELECT title
+        FROM concerts
+        WHERE id = ?
+        LIMIT 1
+        `
+      )
+        .bind(
+          orderData.concertId
+        )
+        .first();
+
+    concertTitle =
+      cleanText(
+        concert?.title
+      );
+  }
+
+  const expiresText =
+    formatThaiDateTime(
+      orderData.accessExpiresAt
+    );
+
+  const liveText =
+    formatThaiDateTime(
+      orderData.liveStartsAt
+    );
+
+  const message =
+    "LIVEHUB TH ✅\n\n" +
+    "ตรวจสอบการชำระเงินเรียบร้อยแล้ว\n\n" +
+
+    (
+      concertTitle
+        ? "คอนเสิร์ต: " +
+          concertTitle +
+          "\n"
+        : ""
+    ) +
+
+    (
+      orderData.sessionName
+        ? "รอบ: " +
+          orderData.sessionName +
+          "\n"
+        : ""
+    ) +
+
+    (
+      liveText
+        ? "เริ่มแสดง: " +
+          liveText +
+          "\n"
+        : ""
+    ) +
+
+    (
+      orderData.packageName
+        ? "แพ็กเกจ: " +
+          orderData.packageName +
+          "\n"
+        : ""
+    ) +
+
+    "\nรหัสเข้าชมของคุณ\n" +
+    orderData.accessCode +
+    "\n\n" +
+
+    (
+      expiresText
+        ? "ใช้ได้ถึง: " +
+          expiresText +
+          "\n\n"
+        : ""
+    ) +
+
+    "กรุณาเก็บรหัสนี้เป็นความลับ และไม่ส่งต่อให้ผู้อื่น";
+
+  await pushLineMessage(
+    lineUserId,
+    message,
+    env
+  );
+}
+
+/*
+ * =========================================
+ * SIGNED LINE PAYMENT TOKEN
+ * =========================================
+ */
+
+async function createLineLinkToken(
+  lineUserId,
+  env
+) {
+  if (
+    !env.LINE_CHANNEL_SECRET
+  ) {
+    throw new Error(
+      "LINE_CHANNEL_SECRET is not configured"
+    );
+  }
+
+  /*
+   * Token มีอายุ 30 นาที
+   */
+  const payload = {
+    uid:
+      lineUserId,
+
+    exp:
+      Date.now() +
+      30 * 60 * 1000,
+  };
+
+  const payloadEncoded =
+    textToBase64Url(
+      JSON.stringify(
+        payload
+      )
+    );
+
+  const signature =
+    await signLineLinkPayload(
+      payloadEncoded,
+      env.LINE_CHANNEL_SECRET
+    );
+
+  return (
+    payloadEncoded +
+    "." +
+    signature
+  );
+}
+
+async function verifyLineLinkToken(
+  token,
+  env
+) {
+  if (
+    !token ||
+    !env.LINE_CHANNEL_SECRET
+  ) {
+    return {
+      ok: false,
+
+      message:
+        "ข้อมูลเชื่อมต่อ LINE ไม่ถูกต้อง",
+    };
+  }
+
+  const parts =
+    String(
+      token
+    ).split(".");
+
+  if (
+    parts.length !== 2
+  ) {
+    return {
+      ok: false,
+
+      message:
+        "ลิงก์ LINE ไม่ถูกต้อง",
+    };
+  }
+
+  const [
+    payloadEncoded,
+    receivedSignature,
+  ] = parts;
+
+  const expectedSignature =
+    await signLineLinkPayload(
+      payloadEncoded,
+      env.LINE_CHANNEL_SECRET
+    );
+
+  if (
+    !constantTimeEqual(
+      expectedSignature,
+      receivedSignature
+    )
+  ) {
+    return {
+      ok: false,
+
+      message:
+        "ลิงก์ LINE ไม่ถูกต้อง",
+    };
+  }
+
+  let payload;
+
+  try {
+    payload =
+      JSON.parse(
+        base64UrlToText(
+          payloadEncoded
+        )
+      );
+
+  } catch {
+    return {
+      ok: false,
+
+      message:
+        "ข้อมูลลิงก์ LINE ไม่ถูกต้อง",
+    };
+  }
+
+  const lineUserId =
+    cleanText(
+      payload?.uid
+    );
+
+  const expiresAt =
+    Number(
+      payload?.exp
+    );
+
+  if (
+    !lineUserId ||
+    !Number.isFinite(
+      expiresAt
+    )
+  ) {
+    return {
+      ok: false,
+
+      message:
+        "ข้อมูลลิงก์ LINE ไม่ครบ",
+    };
+  }
+
+  if (
+    Date.now() >
+    expiresAt
+  ) {
+    return {
+      ok: false,
+
+      message:
+        "ลิงก์ LINE หมดอายุแล้ว กรุณากลับไปที่ LINE แล้วพิมพ์คำว่า ซื้อ อีกครั้ง",
+    };
+  }
+
+  return {
+    ok: true,
+
+    lineUserId,
+  };
+}
+
+async function signLineLinkPayload(
+  value,
+  channelSecret
+) {
+  const encoder =
+    new TextEncoder();
+
+  /*
+   * Derive key สำหรับ payment link
+   * แยกจาก webhook signature
+   */
+  const derivedKeyBytes =
+    await crypto.subtle.digest(
+      "SHA-256",
+      encoder.encode(
+        String(
+          channelSecret
+        ) +
+        "|LIVEHUB-LINE-LINK-V1"
+      )
+    );
+
+  const key =
+    await crypto.subtle.importKey(
+      "raw",
+      derivedKeyBytes,
+      {
+        name:
+          "HMAC",
+
+        hash:
+          "SHA-256",
+      },
+      false,
+      [
+        "sign",
+      ]
+    );
+
+  const signature =
+    await crypto.subtle.sign(
+      "HMAC",
+      key,
+      encoder.encode(
+        value
+      )
+    );
+
+  return arrayBufferToBase64Url(
+    signature
+  );
+}
+
+/*
+ * =========================================
+ * VERIFY LINE WEBHOOK SIGNATURE
+ * =========================================
+ */
+
+async function verifyLineSignature(
+  bodyText,
+  receivedSignature,
+  channelSecret
+) {
+  const encoder =
+    new TextEncoder();
+
+  const key =
+    await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(
+        channelSecret
+      ),
+      {
+        name:
+          "HMAC",
+
+        hash:
+          "SHA-256",
+      },
+      false,
+      [
+        "sign",
+      ]
+    );
+
+  const signatureBuffer =
+    await crypto.subtle.sign(
+      "HMAC",
+      key,
+      encoder.encode(
+        bodyText
+      )
+    );
+
+  const expectedSignature =
+    arrayBufferToBase64(
+      signatureBuffer
+    );
+
+  return constantTimeEqual(
+    expectedSignature,
+    receivedSignature
+  );
+}
+
+/*
+ * =========================================
  * REQUEST UTILITIES
  * =========================================
  */
@@ -4467,6 +5571,7 @@ async function readJson(
 ) {
   try {
     return await request.json();
+
   } catch {
     return {};
   }
@@ -4477,7 +5582,9 @@ function getPathId(
   prefix
 ) {
   const remainder =
-    path.startsWith(prefix)
+    path.startsWith(
+      prefix
+    )
       ? path.slice(
           prefix.length
         )
@@ -4510,8 +5617,12 @@ function getOrderIdFromStatusPath(
     "/status";
 
   if (
-    !path.startsWith(prefix) ||
-    !path.endsWith(suffix)
+    !path.startsWith(
+      prefix
+    ) ||
+    !path.endsWith(
+      suffix
+    )
   ) {
     return "";
   }
@@ -4520,7 +5631,7 @@ function getOrderIdFromStatusPath(
     path.slice(
       prefix.length,
       path.length -
-        suffix.length
+      suffix.length
     );
 
   if (
@@ -4578,7 +5689,9 @@ function normalizeDate(
   }
 
   const date =
-    new Date(text);
+    new Date(
+      text
+    );
 
   if (
     Number.isNaN(
@@ -4626,7 +5739,9 @@ function normalizePrice(
   }
 
   const price =
-    Number(value);
+    Number(
+      value
+    );
 
   if (
     !Number.isInteger(
@@ -4666,7 +5781,8 @@ function normalizeReplayDays(
   accessType
 ) {
   if (
-    accessType === "live"
+    accessType ===
+    "live"
   ) {
     return 0;
   }
@@ -4680,7 +5796,9 @@ function normalizeReplayDays(
   }
 
   const days =
-    Number(value);
+    Number(
+      value
+    );
 
   if (
     !Number.isInteger(
@@ -4700,7 +5818,8 @@ function normalizeReplayMonths(
   accessType
 ) {
   if (
-    accessType === "live"
+    accessType ===
+    "live"
   ) {
     return 0;
   }
@@ -4714,7 +5833,9 @@ function normalizeReplayMonths(
   }
 
   const months =
-    Number(value);
+    Number(
+      value
+    );
 
   if (
     !Number.isInteger(
@@ -4734,7 +5855,8 @@ function normalizeVideoQuality(
 ) {
   const quality =
     String(
-      value || "1080p"
+      value ||
+      "1080p"
     )
       .trim()
       .toLowerCase();
@@ -4754,7 +5876,8 @@ function normalizeVideoQuality(
   }
 
   if (
-    quality === "4k"
+    quality ===
+    "4k"
   ) {
     return "4K";
   }
@@ -4775,7 +5898,9 @@ function normalizeNonNegativeInteger(
   }
 
   const number =
-    Number(value);
+    Number(
+      value
+    );
 
   if (
     !Number.isInteger(
@@ -4802,11 +5927,15 @@ function normalizeBooleanNumber(
   }
 
   if (
-    value === true ||
-    value === 1 ||
-    value === "1" ||
-    value === "true" ||
-    value === "on"
+    [
+      true,
+      1,
+      "1",
+      "true",
+      "on",
+    ].includes(
+      value
+    )
   ) {
     return 1;
   }
@@ -4818,7 +5947,9 @@ function normalizeIdArray(
   value
 ) {
   if (
-    !Array.isArray(value)
+    !Array.isArray(
+      value
+    )
   ) {
     return [];
   }
@@ -4832,14 +5963,16 @@ function normalizeIdArray(
               item ?? ""
             ).trim()
         )
-        .filter(Boolean)
+        .filter(
+          Boolean
+        )
     ),
   ];
 }
 
 /*
  * =========================================
- * ID GENERATORS
+ * IDS
  * =========================================
  */
 
@@ -4854,8 +5987,14 @@ function createId(
   const randomPart =
     crypto
       .randomUUID()
-      .replaceAll("-", "")
-      .slice(0, 8)
+      .replaceAll(
+        "-",
+        ""
+      )
+      .slice(
+        0,
+        8
+      )
       .toUpperCase();
 
   return (
@@ -4871,8 +6010,14 @@ function createAccessCode() {
   const randomPart =
     crypto
       .randomUUID()
-      .replaceAll("-", "")
-      .slice(0, 10)
+      .replaceAll(
+        "-",
+        ""
+      )
+      .slice(
+        0,
+        10
+      )
       .toUpperCase();
 
   return (
@@ -4885,12 +6030,18 @@ function createViewingSessionToken() {
   const part1 =
     crypto
       .randomUUID()
-      .replaceAll("-", "");
+      .replaceAll(
+        "-",
+        ""
+      );
 
   const part2 =
     crypto
       .randomUUID()
-      .replaceAll("-", "");
+      .replaceAll(
+        "-",
+        ""
+      );
 
   return (
     "VS_" +
@@ -4909,7 +6060,9 @@ function isAdmin(
   request,
   env
 ) {
-  if (!env.ADMIN_TOKEN) {
+  if (
+    !env.ADMIN_TOKEN
+  ) {
     return false;
   }
 
@@ -4954,7 +6107,9 @@ function jsonResponse(
   corsHeaders
 ) {
   return new Response(
-    JSON.stringify(data),
+    JSON.stringify(
+      data
+    ),
     {
       status,
 
@@ -4988,7 +6143,7 @@ function errorResponse(
 
 /*
  * =========================================
- * IMAGE EXTENSION
+ * IMAGE
  * =========================================
  */
 
@@ -5019,443 +6174,7 @@ function getImageExtension(
 
 /*
  * =========================================
- * LINE MESSAGING API WEBHOOK
- * =========================================
- */
-
-async function handleLineWebhook(
-  request,
-  env
-) {
-  if (!env.LINE_CHANNEL_SECRET) {
-    console.error(
-      "LINE_CHANNEL_SECRET is not configured"
-    );
-
-    return new Response(
-      "LINE_CHANNEL_SECRET is not configured",
-      {
-        status: 500,
-      }
-    );
-  }
-
-  if (!env.LINE_CHANNEL_ACCESS_TOKEN) {
-    console.error(
-      "LINE_CHANNEL_ACCESS_TOKEN is not configured"
-    );
-
-    return new Response(
-      "LINE_CHANNEL_ACCESS_TOKEN is not configured",
-      {
-        status: 500,
-      }
-    );
-  }
-
-  if (!env.DB) {
-    console.error(
-      "DB binding is not configured"
-    );
-
-    return new Response(
-      "DB binding is not configured",
-      {
-        status: 500,
-      }
-    );
-  }
-
-  const signature =
-    request.headers.get(
-      "x-line-signature"
-    );
-
-  if (!signature) {
-    console.error(
-      "Missing LINE signature"
-    );
-
-    return new Response(
-      "Missing LINE signature",
-      {
-        status: 401,
-      }
-    );
-  }
-
-  /*
-   * สำคัญ:
-   * ต้องใช้ raw body เดิม
-   * ก่อน JSON.parse()
-   */
-  const bodyText =
-    await request.text();
-
-  const signatureValid =
-    await verifyLineSignature(
-      bodyText,
-      signature,
-      env.LINE_CHANNEL_SECRET
-    );
-
-  if (!signatureValid) {
-    console.error(
-      "Invalid LINE signature"
-    );
-
-    return new Response(
-      "Invalid LINE signature",
-      {
-        status: 401,
-      }
-    );
-  }
-
-  let payload;
-
-  try {
-    payload =
-      JSON.parse(
-        bodyText
-      );
-  } catch {
-    console.error(
-      "Invalid LINE JSON"
-    );
-
-    return new Response(
-      "Invalid JSON",
-      {
-        status: 400,
-      }
-    );
-  }
-
-  const events =
-    Array.isArray(
-      payload.events
-    )
-      ? payload.events
-      : [];
-
-  for (
-    const event
-    of events
-  ) {
-    const eventType =
-      cleanText(
-        event?.type
-      );
-
-    const userId =
-      cleanText(
-        event?.source?.userId
-      );
-
-    console.log(
-      "LINE webhook event:",
-      eventType,
-      userId
-    );
-
-    /*
-     * =========================================
-     * SAVE LINE USER ID TO D1
-     * =========================================
-     */
-
-    if (userId) {
-      const now =
-        new Date().toISOString();
-
-      try {
-        await env.DB.prepare(
-          `
-          INSERT INTO line_users (
-            line_user_id,
-            order_id,
-            created_at,
-            updated_at
-          )
-          VALUES (?, NULL, ?, ?)
-
-          ON CONFLICT(line_user_id)
-          DO UPDATE SET
-            updated_at = excluded.updated_at
-          `
-        )
-          .bind(
-            userId,
-            now,
-            now
-          )
-          .run();
-
-        console.log(
-          "LINE user saved:",
-          userId
-        );
-
-      } catch (error) {
-        console.error(
-          "Save LINE user failed:",
-          error?.message ||
-          String(error)
-        );
-      }
-    }
-
-    /*
-     * ตอบเฉพาะ message event
-     */
-    if (
-      eventType !== "message"
-    ) {
-      continue;
-    }
-
-    if (
-      event?.message?.type !== "text"
-    ) {
-      continue;
-    }
-
-    const replyToken =
-      cleanText(
-        event?.replyToken
-      );
-
-    if (!replyToken) {
-      console.warn(
-        "LINE replyToken not found"
-      );
-
-      continue;
-    }
-
-    const userMessage =
-      cleanText(
-        event?.message?.text
-      );
-
-    const replyText =
-      buildLineReplyMessage(
-        userMessage
-      );
-
-    try {
-      await replyLineMessage(
-        replyToken,
-        replyText,
-        env
-      );
-
-      console.log(
-        "LINE reply sent successfully:",
-        userId
-      );
-
-    } catch (error) {
-      console.error(
-        "LINE reply failed:",
-        error?.message ||
-        String(error)
-      );
-    }
-  }
-
-  return new Response(
-    "OK",
-    {
-      status: 200,
-
-      headers: {
-        "Content-Type":
-          "text/plain; charset=UTF-8",
-      },
-    }
-  );
-}
-
-/*
- * =========================================
- * BUILD LINE REPLY MESSAGE
- * =========================================
- */
-
-function buildLineReplyMessage(
-  userMessage
-) {
-  const normalized =
-    String(
-      userMessage || ""
-    )
-      .trim()
-      .toLowerCase();
-
-  if (
-    normalized === "ทดสอบ" ||
-    normalized === "ทดสอบ webhook" ||
-    normalized === "test"
-  ) {
-    return (
-      "LIVEHUB TH ✅\n\n" +
-      "ระบบ LINE Messaging API เชื่อมต่อสำเร็จแล้ว\n\n" +
-      "ข้อมูล LINE ของคุณถูกบันทึกเข้าระบบเรียบร้อยแล้ว"
-    );
-  }
-
-  return (
-    "LIVEHUB TH 🎵\n\n" +
-    "ได้รับข้อความของคุณเรียบร้อยแล้ว\n\n" +
-    "ระบบบันทึกบัญชี LINE สำหรับเชื่อมต่อสิทธิ์การรับชมเรียบร้อยแล้ว"
-  );
-}
-
-/*
- * =========================================
- * SEND LINE REPLY MESSAGE
- * =========================================
- */
-
-async function replyLineMessage(
-  replyToken,
-  text,
-  env
-) {
-  if (!env.LINE_CHANNEL_ACCESS_TOKEN) {
-    throw new Error(
-      "LINE_CHANNEL_ACCESS_TOKEN is not configured"
-    );
-  }
-
-  const response =
-    await fetch(
-      "https://api.line.me/v2/bot/message/reply",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type":
-            "application/json",
-
-          Authorization:
-            "Bearer " +
-            env.LINE_CHANNEL_ACCESS_TOKEN,
-        },
-
-        body:
-          JSON.stringify(
-            {
-              replyToken,
-
-              messages: [
-                {
-                  type:
-                    "text",
-
-                  text:
-                    String(
-                      text || ""
-                    ).slice(
-                      0,
-                      5000
-                    ),
-                },
-              ],
-            }
-          ),
-      }
-    );
-
-  if (response.ok) {
-    return true;
-  }
-
-  let responseText = "";
-
-  try {
-    responseText =
-      await response.text();
-  } catch {
-    responseText = "";
-  }
-
-  throw new Error(
-    "LINE Messaging API error " +
-    response.status +
-    (
-      responseText
-        ? " - " +
-          responseText
-        : ""
-    )
-  );
-}
-
-/*
- * =========================================
- * VERIFY LINE WEBHOOK SIGNATURE
- * =========================================
- */
-
-async function verifyLineSignature(
-  bodyText,
-  receivedSignature,
-  channelSecret
-) {
-  const encoder =
-    new TextEncoder();
-
-  const key =
-    await crypto.subtle.importKey(
-      "raw",
-
-      encoder.encode(
-        channelSecret
-      ),
-
-      {
-        name:
-          "HMAC",
-
-        hash:
-          "SHA-256",
-      },
-
-      false,
-
-      [
-        "sign",
-      ]
-    );
-
-  const signatureBuffer =
-    await crypto.subtle.sign(
-      "HMAC",
-
-      key,
-
-      encoder.encode(
-        bodyText
-      )
-    );
-
-  const expectedSignature =
-    arrayBufferToBase64(
-      signatureBuffer
-    );
-
-  return constantTimeEqual(
-    expectedSignature,
-    receivedSignature
-  );
-}
-
-/*
- * =========================================
- * BASE64 HELPER
+ * BASE64
  * =========================================
  */
 
@@ -5485,9 +6204,121 @@ function arrayBufferToBase64(
   );
 }
 
+function arrayBufferToBase64Url(
+  buffer
+) {
+  return arrayBufferToBase64(
+    buffer
+  )
+    .replaceAll(
+      "+",
+      "-"
+    )
+    .replaceAll(
+      "/",
+      "_"
+    )
+    .replace(
+      /=+$/g,
+      ""
+    );
+}
+
+function textToBase64Url(
+  text
+) {
+  const bytes =
+    new TextEncoder()
+      .encode(
+        String(
+          text
+        )
+      );
+
+  let binary = "";
+
+  for (
+    let index = 0;
+    index < bytes.length;
+    index++
+  ) {
+    binary +=
+      String.fromCharCode(
+        bytes[index]
+      );
+  }
+
+  return btoa(
+    binary
+  )
+    .replaceAll(
+      "+",
+      "-"
+    )
+    .replaceAll(
+      "/",
+      "_"
+    )
+    .replace(
+      /=+$/g,
+      ""
+    );
+}
+
+function base64UrlToText(
+  value
+) {
+  let base64 =
+    String(
+      value
+    )
+      .replaceAll(
+        "-",
+        "+"
+      )
+      .replaceAll(
+        "_",
+        "/"
+      );
+
+  while (
+    base64.length %
+    4 !==
+    0
+  ) {
+    base64 += "=";
+  }
+
+  const binary =
+    atob(
+      base64
+    );
+
+  const bytes =
+    new Uint8Array(
+      binary.length
+    );
+
+  for (
+    let index = 0;
+    index < binary.length;
+    index++
+  ) {
+    bytes[index] =
+      binary.charCodeAt(
+        index
+      );
+  }
+
+  return new TextDecoder()
+    .decode(
+      bytes
+    );
+}
+
 /*
  * =========================================
- * CONSTANT TIME STRING COMPARE
+ * CONSTANT TIME
  * =========================================
  */
 
@@ -5528,5 +6359,72 @@ function constantTimeEqual(
       );
   }
 
-  return difference === 0;
+  return (
+    difference === 0
+  );
+}
+
+/*
+ * =========================================
+ * DATE FORMAT
+ * =========================================
+ */
+
+function formatThaiDateTime(
+  value
+) {
+  if (!value) {
+    return "";
+  }
+
+  const date =
+    new Date(
+      value
+    );
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "";
+  }
+
+  try {
+    return new Intl.DateTimeFormat(
+      "th-TH",
+      {
+        dateStyle:
+          "medium",
+
+        timeStyle:
+          "short",
+
+        timeZone:
+          "Asia/Bangkok",
+      }
+    ).format(
+      date
+    );
+
+  } catch {
+    return date.toISOString();
+  }
+}
+
+/*
+ * =========================================
+ * SAFE RESPONSE TEXT
+ * =========================================
+ */
+
+async function safeResponseText(
+  response
+) {
+  try {
+    return await response.text();
+
+  } catch {
+    return "";
+  }
 }
