@@ -1,0 +1,3159 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#050505"
+  >
+
+  <title>
+    REPLAY CONCERT | LIVEHUB TH
+  </title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #050505;
+      --panel: #0b0b0d;
+      --panel2: #111114;
+      --line: #34343a;
+      --pink: #ff0783;
+      --pink2: #ff61b5;
+      --text: #ffffff;
+      --muted: #aaaaaf;
+      --green: #39db85;
+      --yellow: #ffd166;
+      --red: #ff6678;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      color:
+        var(--text);
+
+      background:
+        radial-gradient(
+          circle at top,
+          #390820 0,
+          #13060d 27%,
+          #050505 68%
+        );
+
+      font-family:
+        Arial,
+        "Noto Sans Thai",
+        sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .page {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 18px 18px 80px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+
+      padding: 21px 23px;
+      margin-bottom: 27px;
+
+      background:
+        rgba(7, 7, 8, 0.96);
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        24px;
+    }
+
+    .brand {
+      margin: 0;
+
+      color:
+        #ffffff;
+
+      font-size:
+        clamp(
+          29px,
+          5vw,
+          47px
+        );
+
+      font-weight: 900;
+    }
+
+    .brand span {
+      color:
+        var(--pink);
+    }
+
+    .brand-sub {
+      margin:
+        8px 0 0;
+
+      color:
+        var(--muted);
+
+      font-size:
+        13px;
+
+      letter-spacing:
+        1.2px;
+    }
+
+    .home-button {
+      display:
+        inline-flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      min-height:
+        48px;
+
+      padding:
+        11px 18px;
+
+      color:
+        #ffffff;
+
+      text-decoration:
+        none;
+
+      font-weight:
+        900;
+
+      background:
+        #161618;
+
+      border:
+        1px solid var(--pink);
+
+      border-radius:
+        15px;
+    }
+
+    .hero {
+      padding:
+        38px 22px;
+
+      margin-bottom:
+        23px;
+
+      text-align:
+        center;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(
+            255,
+            7,
+            131,
+            0.18
+          ),
+          rgba(
+            8,
+            8,
+            10,
+            0.97
+          )
+        );
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        28px;
+    }
+
+    .hero-badge {
+      display:
+        inline-flex;
+
+      padding:
+        9px 16px;
+
+      margin-bottom:
+        16px;
+
+      color:
+        var(--pink2);
+
+      background:
+        rgba(
+          255,
+          7,
+          131,
+          0.12
+        );
+
+      border-radius:
+        999px;
+
+      font-weight:
+        900;
+
+      font-size:
+        14px;
+    }
+
+    .hero h1 {
+      margin: 0;
+
+      color:
+        #ffffff;
+
+      font-size:
+        clamp(
+          35px,
+          7vw,
+          64px
+        );
+
+      line-height:
+        1.1;
+    }
+
+    .hero h1 span {
+      color:
+        var(--pink);
+    }
+
+    .hero p {
+      max-width:
+        760px;
+
+      margin:
+        18px auto 0;
+
+      color:
+        #c5c5ca;
+
+      font-size:
+        17px;
+
+      line-height:
+        1.75;
+    }
+
+    .line-status {
+      display:
+        none;
+
+      margin-bottom:
+        22px;
+
+      padding:
+        16px 18px;
+
+      border-radius:
+        16px;
+
+      line-height:
+        1.6;
+
+      font-weight:
+        800;
+    }
+
+    .line-status.show {
+      display:
+        block;
+    }
+
+    .line-status.connected {
+      color:
+        #7bf2ae;
+
+      background:
+        #082619;
+
+      border:
+        1px solid #197142;
+    }
+
+    .line-status.not-connected {
+      color:
+        #ffe68b;
+
+      background:
+        #26210b;
+
+      border:
+        1px solid #75651f;
+    }
+
+    .message {
+      display:
+        none;
+
+      padding:
+        16px 18px;
+
+      margin-bottom:
+        22px;
+
+      border-radius:
+        16px;
+
+      line-height:
+        1.6;
+    }
+
+    .message.show {
+      display:
+        block;
+    }
+
+    .message.error {
+      color:
+        #ffabb7;
+
+      background:
+        #2d0c14;
+
+      border:
+        1px solid #862838;
+    }
+
+    .message.success {
+      color:
+        #78efac;
+
+      background:
+        #082618;
+
+      border:
+        1px solid #197142;
+    }
+
+    .message.info {
+      color:
+        #ffe68b;
+
+      background:
+        #26210b;
+
+      border:
+        1px solid #75651f;
+    }
+
+    .section {
+      padding:
+        23px;
+
+      margin-bottom:
+        25px;
+
+      background:
+        rgba(
+          7,
+          7,
+          8,
+          0.97
+        );
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        26px;
+    }
+
+    .section-title {
+      margin: 0;
+
+      font-size:
+        clamp(
+          27px,
+          5vw,
+          39px
+        );
+
+      font-weight:
+        900;
+    }
+
+    .section-description {
+      margin:
+        10px 0 0;
+
+      color:
+        var(--muted);
+
+      font-size:
+        16px;
+
+      line-height:
+        1.65;
+    }
+
+    .concert-list {
+      display:
+        grid;
+
+      gap:
+        25px;
+
+      margin-top:
+        23px;
+    }
+
+    .concert-card {
+      overflow:
+        hidden;
+
+      background:
+        #08080a;
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        24px;
+    }
+
+    .concert-cover {
+      position:
+        relative;
+
+      min-height:
+        340px;
+
+      background:
+        #0b0b0d;
+
+      overflow:
+        hidden;
+    }
+
+    .concert-cover img {
+      width:
+        100%;
+
+      height:
+        100%;
+
+      min-height:
+        340px;
+
+      object-fit:
+        cover;
+    }
+
+    .cover-placeholder {
+      min-height:
+        340px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      padding:
+        30px;
+
+      text-align:
+        center;
+
+      color:
+        var(--pink);
+
+      font-size:
+        38px;
+
+      font-weight:
+        900;
+    }
+
+    .replay-badge {
+      position:
+        absolute;
+
+      top:
+        18px;
+
+      left:
+        18px;
+
+      padding:
+        9px 15px;
+
+      border-radius:
+        999px;
+
+      background:
+        rgba(
+          255,
+          7,
+          131,
+          0.92
+        );
+
+      color:
+        #ffffff;
+
+      font-size:
+        14px;
+
+      font-weight:
+        900;
+    }
+
+    .concert-content {
+      padding:
+        23px;
+    }
+
+    .concert-title {
+      margin: 0;
+
+      color:
+        var(--pink2);
+
+      font-size:
+        clamp(
+          28px,
+          5vw,
+          42px
+        );
+
+      font-weight:
+        900;
+    }
+
+    .concert-description {
+      margin:
+        13px 0 0;
+
+      color:
+        #c6c6cb;
+
+      line-height:
+        1.7;
+
+      white-space:
+        pre-line;
+    }
+
+    .concert-date {
+      margin:
+        16px 0 0;
+
+      color:
+        #ffffff;
+
+      font-weight:
+        800;
+
+      line-height:
+        1.6;
+    }
+
+    .package-heading {
+      margin:
+        28px 0 16px;
+
+      font-size:
+        25px;
+
+      font-weight:
+        900;
+    }
+
+    .package-list {
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+
+      gap:
+        17px;
+    }
+
+    .package-card {
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+      padding:
+        21px;
+
+      background:
+        #111114;
+
+      border:
+        1px solid #39393f;
+
+      border-radius:
+        21px;
+    }
+
+    .package-card.selected {
+      border-color:
+        var(--pink);
+
+      box-shadow:
+        0 0 0 2px
+        rgba(
+          255,
+          7,
+          131,
+          0.12
+        );
+    }
+
+    .package-name {
+      margin: 0;
+
+      color:
+        var(--pink2);
+
+      font-size:
+        23px;
+
+      font-weight:
+        900;
+    }
+
+    .package-price {
+      margin:
+        17px 0 0;
+
+      font-size:
+        42px;
+
+      font-weight:
+        900;
+
+      color:
+        #ffffff;
+    }
+
+    .package-price span {
+      font-size:
+        16px;
+
+      color:
+        var(--pink2);
+    }
+
+    .feature-list {
+      display:
+        grid;
+
+      gap:
+        11px;
+
+      margin:
+        21px 0;
+
+      padding: 0;
+
+      list-style:
+        none;
+    }
+
+    .feature-list li {
+      position:
+        relative;
+
+      padding-left:
+        27px;
+
+      color:
+        #d0d0d5;
+
+      line-height:
+        1.55;
+    }
+
+    .feature-list li::before {
+      content:
+        "✓";
+
+      position:
+        absolute;
+
+      left: 0;
+
+      color:
+        var(--pink);
+
+      font-weight:
+        900;
+    }
+
+    .select-button {
+      width:
+        100%;
+
+      min-height:
+        54px;
+
+      margin-top:
+        auto;
+
+      padding:
+        12px 17px;
+
+      color:
+        #ffffff;
+
+      font-weight:
+        900;
+
+      background:
+        transparent;
+
+      border:
+        1px solid var(--pink);
+
+      border-radius:
+        16px;
+    }
+
+    .select-button:hover,
+    .select-button.selected {
+      background:
+        linear-gradient(
+          135deg,
+          var(--pink),
+          #c70061
+        );
+    }
+
+    .payment-section {
+      display:
+        none;
+    }
+
+    .payment-section.show {
+      display:
+        block;
+    }
+
+    .summary {
+      padding:
+        22px;
+
+      margin-bottom:
+        21px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(
+            255,
+            7,
+            131,
+            0.13
+          ),
+          #101012
+        );
+
+      border:
+        1px solid var(--pink);
+
+      border-radius:
+        21px;
+    }
+
+    .summary h3 {
+      margin: 0;
+
+      color:
+        var(--pink2);
+
+      font-size:
+        27px;
+    }
+
+    .summary p {
+      margin:
+        10px 0 0;
+
+      color:
+        #c8c8cd;
+
+      line-height:
+        1.65;
+    }
+
+    .summary-price {
+      color:
+        #ffffff !important;
+
+      font-size:
+        39px;
+
+      font-weight:
+        900;
+    }
+
+    .replay-info {
+      margin:
+        18px 0 0 !important;
+
+      padding:
+        14px 15px;
+
+      color:
+        #ffabd3 !important;
+
+      background:
+        #281021;
+
+      border:
+        1px solid #762756;
+
+      border-radius:
+        15px;
+
+      font-weight:
+        800;
+    }
+
+    .qr-card {
+      padding:
+        23px;
+
+      margin-bottom:
+        21px;
+
+      text-align:
+        center;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(
+            255,
+            7,
+            131,
+            0.12
+          ),
+          #101012
+        );
+
+      border:
+        1px solid var(--pink);
+
+      border-radius:
+        21px;
+    }
+
+    .qr-card h3 {
+      margin: 0;
+
+      color:
+        var(--pink2);
+
+      font-size:
+        25px;
+    }
+
+    .qr-card p {
+      color:
+        #c7c7cc;
+
+      line-height:
+        1.65;
+    }
+
+    .qr-wrap {
+      width:
+        min(
+          430px,
+          100%
+        );
+
+      margin:
+        20px auto 0;
+
+      padding:
+        13px;
+
+      background:
+        #ffffff;
+
+      border-radius:
+        18px;
+    }
+
+    .qr-wrap img {
+      width:
+        100%;
+
+      height:
+        auto;
+
+      border-radius:
+        10px;
+    }
+
+    .amount-box {
+      margin:
+        18px auto 0;
+
+      padding:
+        17px;
+
+      background:
+        #080809;
+
+      border:
+        1px solid #44444a;
+
+      border-radius:
+        16px;
+    }
+
+    .amount-label {
+      display:
+        block;
+
+      color:
+        var(--muted);
+
+      font-size:
+        14px;
+    }
+
+    .amount {
+      display:
+        block;
+
+      margin-top:
+        6px;
+
+      color:
+        #ffffff;
+
+      font-size:
+        39px;
+
+      font-weight:
+        900;
+    }
+
+    .warning {
+      color:
+        var(--yellow) !important;
+
+      font-size:
+        14px;
+    }
+
+    .payment-form {
+      display:
+        grid;
+
+      gap:
+        17px;
+    }
+
+    .field label {
+      display:
+        block;
+
+      margin-bottom:
+        8px;
+
+      font-weight:
+        800;
+    }
+
+    .file-input {
+      width:
+        100%;
+
+      padding:
+        16px;
+
+      color:
+        #ffffff;
+
+      background:
+        #111114;
+
+      border:
+        1px solid #44444a;
+
+      border-radius:
+        16px;
+    }
+
+    .file-input::file-selector-button {
+      margin-right:
+        12px;
+
+      padding:
+        10px 14px;
+
+      color:
+        #ffffff;
+
+      font-weight:
+        800;
+
+      background:
+        #35353a;
+
+      border: 0;
+
+      border-radius:
+        11px;
+    }
+
+    .hint {
+      display:
+        block;
+
+      margin-top:
+        7px;
+
+      color:
+        var(--muted);
+
+      font-size:
+        14px;
+
+      line-height:
+        1.55;
+    }
+
+    .preview {
+      display:
+        none;
+
+      padding:
+        13px;
+
+      background:
+        #0b0b0d;
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        18px;
+    }
+
+    .preview.show {
+      display:
+        block;
+    }
+
+    .preview img {
+      width:
+        min(
+          500px,
+          100%
+        );
+
+      max-height:
+        650px;
+
+      margin:
+        0 auto;
+
+      object-fit:
+        contain;
+
+      border-radius:
+        13px;
+    }
+
+    .submit {
+      width:
+        100%;
+
+      min-height:
+        61px;
+
+      padding:
+        14px 19px;
+
+      color:
+        #ffffff;
+
+      font-size:
+        18px;
+
+      font-weight:
+        900;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--pink),
+          #d60069
+        );
+
+      border: 0;
+
+      border-radius:
+        17px;
+    }
+
+    .result {
+      display:
+        none;
+
+      padding:
+        24px;
+
+      margin-top:
+        23px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(
+            33,
+            197,
+            105,
+            0.13
+          ),
+          #0a100d
+        );
+
+      border:
+        1px solid #208956;
+
+      border-radius:
+        22px;
+    }
+
+    .result.show {
+      display:
+        block;
+    }
+
+    .result h3 {
+      margin: 0;
+
+      color:
+        var(--green);
+
+      font-size:
+        28px;
+    }
+
+    .access-box {
+      margin-top:
+        19px;
+
+      padding:
+        21px;
+
+      text-align:
+        center;
+
+      background:
+        #050806;
+
+      border:
+        1px dashed var(--green);
+
+      border-radius:
+        17px;
+    }
+
+    .access-label {
+      display:
+        block;
+
+      color:
+        var(--muted);
+    }
+
+    .access-code {
+      display:
+        block;
+
+      margin-top:
+        9px;
+
+      color:
+        var(--green);
+
+      font-size:
+        clamp(
+          27px,
+          7vw,
+          45px
+        );
+
+      font-weight:
+        900;
+
+      letter-spacing:
+        2px;
+
+      overflow-wrap:
+        anywhere;
+    }
+
+    .copy {
+      min-height:
+        48px;
+
+      padding:
+        11px 19px;
+
+      margin-top:
+        15px;
+
+      color:
+        #ffffff;
+
+      font-weight:
+        900;
+
+      background:
+        #166b40;
+
+      border: 0;
+
+      border-radius:
+        13px;
+    }
+
+    .result-grid {
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+
+      gap:
+        12px;
+
+      margin-top:
+        19px;
+    }
+
+    .result-item {
+      padding:
+        15px;
+
+      background:
+        #101512;
+
+      border:
+        1px solid #294737;
+
+      border-radius:
+        14px;
+    }
+
+    .result-label {
+      display:
+        block;
+
+      color:
+        var(--muted);
+
+      font-size:
+        13px;
+    }
+
+    .result-value {
+      display:
+        block;
+
+      margin-top:
+        6px;
+
+      color:
+        #ffffff;
+
+      font-weight:
+        800;
+
+      line-height:
+        1.5;
+
+      overflow-wrap:
+        anywhere;
+    }
+
+    .empty,
+    .loading {
+      padding:
+        28px 19px;
+
+      margin-top:
+        21px;
+
+      text-align:
+        center;
+
+      border-radius:
+        18px;
+
+      line-height:
+        1.65;
+    }
+
+    .empty {
+      color:
+        var(--muted);
+
+      border:
+        1px dashed #424248;
+    }
+
+    .loading {
+      color:
+        var(--pink2);
+
+      border:
+        1px solid #482536;
+    }
+
+    .hidden {
+      display:
+        none !important;
+    }
+
+    @media (
+      max-width:
+      760px
+    ) {
+      .page {
+        padding:
+          12px 12px 60px;
+      }
+
+      .header {
+        padding:
+          17px;
+
+        align-items:
+          flex-start;
+
+        border-radius:
+          19px;
+      }
+
+      .brand-sub {
+        font-size:
+          11px;
+      }
+
+      .home-button {
+        min-height:
+          44px;
+
+        padding:
+          9px 14px;
+      }
+
+      .hero,
+      .section {
+        padding:
+          19px 15px;
+
+        border-radius:
+          21px;
+      }
+
+      .package-list,
+      .result-grid {
+        grid-template-columns:
+          1fr;
+      }
+
+      .concert-content {
+        padding:
+          18px;
+      }
+
+      .concert-cover,
+      .concert-cover img,
+      .cover-placeholder {
+        min-height:
+          240px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<main class="page">
+
+  <header class="header">
+
+    <div>
+      <h1 class="brand">
+        LIVE <span>HUB TH</span>
+      </h1>
+
+      <p class="brand-sub">
+        LIVE CONCERTS & REPLAY
+      </p>
+    </div>
+
+    <a
+      class="home-button"
+      href="index.html"
+      id="homeLink"
+    >
+      หน้าแรก
+    </a>
+
+  </header>
+
+  <section class="hero">
+
+    <span class="hero-badge">
+      REPLAY CONCERT
+    </span>
+
+    <h1>
+      รับชม <span>REPLAY</span>
+    </h1>
+
+    <p>
+      เลือกคอนเสิร์ตย้อนหลังและแพ็กเกจ REPLAY
+      ที่ต้องการ จากนั้นชำระเงินและแนบสลิป
+      ระบบจะตรวจสอบและสร้างรหัสเข้าชมให้อัตโนมัติ
+    </p>
+
+  </section>
+
+  <div
+    id="lineStatus"
+    class="line-status"
+  ></div>
+
+  <div
+    id="message"
+    class="message"
+  ></div>
+
+  <section class="section">
+
+    <h2 class="section-title">
+      REPLAY CONCERT
+    </h2>
+
+    <p class="section-description">
+      แสดงเฉพาะคอนเสิร์ตที่มีแพ็กเกจ
+      REPLAY เท่านั้น
+    </p>
+
+    <div
+      id="concertList"
+      class="concert-list"
+    >
+      <div class="loading">
+        กำลังโหลด REPLAY...
+      </div>
+    </div>
+
+  </section>
+
+  <section
+    id="paymentSection"
+    class="section payment-section"
+  >
+
+    <h2 class="section-title">
+      ชำระเงิน REPLAY
+    </h2>
+
+    <p class="section-description">
+      ตรวจสอบแพ็กเกจและยอดเงินก่อนชำระ
+    </p>
+
+    <div class="summary">
+
+      <h3
+        id="selectedPackageName"
+      >
+        -
+      </h3>
+
+      <p
+        id="selectedConcertName"
+      >
+        -
+      </p>
+
+      <p
+        id="selectedFeatures"
+      >
+        -
+      </p>
+
+      <p
+        id="selectedReplayInfo"
+        class="replay-info"
+      >
+        -
+      </p>
+
+      <p
+        id="selectedPrice"
+        class="summary-price"
+      >
+        0 บาท
+      </p>
+
+    </div>
+
+    <div class="qr-card">
+
+      <h3>
+        สแกน QR เพื่อชำระเงิน
+      </h3>
+
+      <p>
+        กรุณาตรวจสอบชื่อบัญชีและยอดเงิน
+        ก่อนยืนยันการโอน
+      </p>
+
+      <div class="qr-wrap">
+
+        <img
+          src="payment-qr.PNG"
+          alt="QR ชำระเงิน LIVEHUB TH"
+        >
+
+      </div>
+
+      <div class="amount-box">
+
+        <span class="amount-label">
+          ยอดที่ต้องชำระ
+        </span>
+
+        <strong
+          id="paymentAmount"
+          class="amount"
+        >
+          0 บาท
+        </strong>
+
+      </div>
+
+      <p class="warning">
+        ระบบ EasySlip จะตรวจสอบยอดเงิน
+        และตรวจสอบการใช้สลิปซ้ำโดยอัตโนมัติ
+      </p>
+
+    </div>
+
+    <form
+      id="paymentForm"
+      class="payment-form"
+    >
+
+      <div class="field">
+
+        <label for="slip">
+          ภาพสลิปการชำระเงิน
+        </label>
+
+        <input
+          id="slip"
+          class="file-input"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          required
+        >
+
+        <span class="hint">
+          รองรับ JPG, PNG, WEBP และ GIF
+          ขนาดไม่เกิน 4 MB
+        </span>
+
+      </div>
+
+      <div
+        id="slipPreview"
+        class="preview"
+      >
+        <img
+          id="slipPreviewImage"
+          alt="ตัวอย่างสลิป"
+        >
+      </div>
+
+      <button
+        id="submitButton"
+        class="submit"
+        type="submit"
+      >
+        ตรวจสอบสลิปและรับรหัส REPLAY
+      </button>
+
+    </form>
+
+    <div
+      id="result"
+      class="result"
+    >
+
+      <h3>
+        ชำระเงินสำเร็จ
+      </h3>
+
+      <p id="resultMessage">
+        ระบบอนุมัติสิทธิ์ REPLAY เรียบร้อยแล้ว
+      </p>
+
+      <div class="access-box">
+
+        <span class="access-label">
+          รหัสเข้าชม
+        </span>
+
+        <strong
+          id="accessCode"
+          class="access-code"
+        >
+          -
+        </strong>
+
+        <button
+          id="copyButton"
+          class="copy"
+          type="button"
+        >
+          คัดลอกรหัส
+        </button>
+
+      </div>
+
+      <div class="result-grid">
+
+        <div class="result-item">
+          <span class="result-label">
+            เลขคำสั่งซื้อ
+          </span>
+
+          <span
+            id="resultOrderId"
+            class="result-value"
+          >
+            -
+          </span>
+        </div>
+
+        <div class="result-item">
+          <span class="result-label">
+            แพ็กเกจ
+          </span>
+
+          <span
+            id="resultPackage"
+            class="result-value"
+          >
+            -
+          </span>
+        </div>
+
+        <div class="result-item">
+          <span class="result-label">
+            ยอดชำระ
+          </span>
+
+          <span
+            id="resultAmount"
+            class="result-value"
+          >
+            -
+          </span>
+        </div>
+
+        <div class="result-item">
+          <span class="result-label">
+            สิทธิ์หมดอายุ
+          </span>
+
+          <span
+            id="resultExpires"
+            class="result-value"
+          >
+            -
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+<script>
+"use strict";
+
+const API =
+  "https://livehub-payment-api.livehubth.workers.dev";
+
+/*
+ * =========================================
+ * URL / LINE
+ * =========================================
+ */
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const lineLinkToken =
+  (
+    params.get(
+      "lineLinkToken"
+    ) || ""
+  ).trim();
+
+const requestedConcertId =
+  (
+    params.get(
+      "concertId"
+    ) || ""
+  ).trim();
+
+const lineStatus =
+  document.getElementById(
+    "lineStatus"
+  );
+
+const homeLink =
+  document.getElementById(
+    "homeLink"
+  );
+
+if (
+  lineLinkToken
+) {
+  lineStatus.className =
+    "line-status show connected";
+
+  lineStatus.textContent =
+    "✅ เชื่อมต่อบัญชี LINE แล้ว เมื่อชำระเงินผ่าน ระบบจะส่งรหัส REPLAY กลับไปยัง LINE ของคุณอัตโนมัติ";
+
+  homeLink.href =
+    "index.html?lineLinkToken=" +
+    encodeURIComponent(
+      lineLinkToken
+    );
+
+} else {
+  lineStatus.className =
+    "line-status show not-connected";
+
+  lineStatus.textContent =
+    "ยังไม่ได้เชื่อมต่อ LINE คุณยังสามารถซื้อได้ แต่หากต้องการรับรหัสทาง LINE กรุณาเข้าผ่านลิงก์จาก LINE OA";
+}
+
+/*
+ * =========================================
+ * STATE
+ * =========================================
+ */
+
+let concerts = [];
+
+let selectedConcert =
+  null;
+
+let selectedPackage =
+  null;
+
+let previewUrl =
+  "";
+
+/*
+ * =========================================
+ * ELEMENTS
+ * =========================================
+ */
+
+const concertList =
+  document.getElementById(
+    "concertList"
+  );
+
+const paymentSection =
+  document.getElementById(
+    "paymentSection"
+  );
+
+const message =
+  document.getElementById(
+    "message"
+  );
+
+const paymentForm =
+  document.getElementById(
+    "paymentForm"
+  );
+
+const slipInput =
+  document.getElementById(
+    "slip"
+  );
+
+const slipPreview =
+  document.getElementById(
+    "slipPreview"
+  );
+
+const slipPreviewImage =
+  document.getElementById(
+    "slipPreviewImage"
+  );
+
+const submitButton =
+  document.getElementById(
+    "submitButton"
+  );
+
+const result =
+  document.getElementById(
+    "result"
+  );
+
+/*
+ * =========================================
+ * MESSAGE
+ * =========================================
+ */
+
+function showMessage(
+  text,
+  type = "info"
+) {
+  message.className =
+    "message show " +
+    type;
+
+  message.textContent =
+    text;
+}
+
+function clearMessage() {
+  message.className =
+    "message";
+
+  message.textContent =
+    "";
+}
+
+/*
+ * =========================================
+ * LOAD REPLAY
+ * =========================================
+ */
+
+async function loadReplay() {
+  try {
+    const response =
+      await fetch(
+        API +
+        "/api/concerts?mode=replay",
+        {
+          cache:
+            "no-store"
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (
+      !response.ok
+    ) {
+      throw new Error(
+        data?.message ||
+        "โหลด REPLAY ไม่สำเร็จ"
+      );
+    }
+
+    concerts =
+      Array.isArray(
+        data?.concerts
+      )
+        ? data.concerts
+        : [];
+
+    if (
+      requestedConcertId
+    ) {
+      concerts =
+        concerts.sort(
+          (
+            a,
+            b
+          ) => {
+            if (
+              a.id ===
+              requestedConcertId
+            ) {
+              return -1;
+            }
+
+            if (
+              b.id ===
+              requestedConcertId
+            ) {
+              return 1;
+            }
+
+            return 0;
+          }
+        );
+    }
+
+    renderConcerts();
+
+  } catch (
+    error
+  ) {
+    concertList.innerHTML =
+      '<div class="empty">โหลด REPLAY ไม่สำเร็จ</div>';
+
+    showMessage(
+      error.message,
+      "error"
+    );
+  }
+}
+
+/*
+ * =========================================
+ * RENDER
+ * =========================================
+ */
+
+function renderConcerts() {
+  if (
+    concerts.length ===
+    0
+  ) {
+    concertList.innerHTML =
+      '<div class="empty">ขณะนี้ยังไม่มี REPLAY ที่เปิดขาย</div>';
+
+    return;
+  }
+
+  concertList.innerHTML =
+    "";
+
+  for (
+    const concert
+    of concerts
+  ) {
+    const card =
+      document.createElement(
+        "article"
+      );
+
+    card.className =
+      "concert-card";
+
+    const cover =
+      document.createElement(
+        "div"
+      );
+
+    cover.className =
+      "concert-cover";
+
+    if (
+      isSafeImageUrl(
+        concert.cover_image_url
+      )
+    ) {
+      const image =
+        document.createElement(
+          "img"
+        );
+
+      image.src =
+        concert.cover_image_url;
+
+      image.alt =
+        concert.title ||
+        "REPLAY";
+
+      image.loading =
+        "lazy";
+
+      cover.appendChild(
+        image
+      );
+
+    } else {
+      const placeholder =
+        document.createElement(
+          "div"
+        );
+
+      placeholder.className =
+        "cover-placeholder";
+
+      placeholder.textContent =
+        concert.title ||
+        "LIVEHUB TH";
+
+      cover.appendChild(
+        placeholder
+      );
+    }
+
+    const badge =
+      document.createElement(
+        "span"
+      );
+
+    badge.className =
+      "replay-badge";
+
+    badge.textContent =
+      "REPLAY";
+
+    cover.appendChild(
+      badge
+    );
+
+    const content =
+      document.createElement(
+        "div"
+      );
+
+    content.className =
+      "concert-content";
+
+    const title =
+      document.createElement(
+        "h2"
+      );
+
+    title.className =
+      "concert-title";
+
+    title.textContent =
+      concert.title ||
+      "-";
+
+    const description =
+      document.createElement(
+        "p"
+      );
+
+    description.className =
+      "concert-description";
+
+    description.textContent =
+      concert.description ||
+      "รับชมคอนเสิร์ตย้อนหลังผ่าน LIVEHUB TH";
+
+    const date =
+      document.createElement(
+        "p"
+      );
+
+    date.className =
+      "concert-date";
+
+    date.textContent =
+      "วันที่จัดคอนเสิร์ต: " +
+      formatDateTime(
+        concert.live_starts_at
+      );
+
+    const heading =
+      document.createElement(
+        "h3"
+      );
+
+    heading.className =
+      "package-heading";
+
+    heading.textContent =
+      "เลือกแพ็กเกจ REPLAY";
+
+    const packages =
+      document.createElement(
+        "div"
+      );
+
+    packages.className =
+      "package-list";
+
+    const replayPackages =
+      Array.isArray(
+        concert.packages
+      )
+        ? [
+            ...concert.packages
+          ].filter(
+            item =>
+              item.access_type ===
+              "replay"
+          )
+          .sort(
+            comparePackages
+          )
+        : [];
+
+    for (
+      const packageItem
+      of replayPackages
+    ) {
+      packages.appendChild(
+        createPackageCard(
+          concert,
+          packageItem
+        )
+      );
+    }
+
+    content.appendChild(
+      title
+    );
+
+    content.appendChild(
+      description
+    );
+
+    content.appendChild(
+      date
+    );
+
+    content.appendChild(
+      heading
+    );
+
+    content.appendChild(
+      packages
+    );
+
+    card.appendChild(
+      cover
+    );
+
+    card.appendChild(
+      content
+    );
+
+    concertList.appendChild(
+      card
+    );
+  }
+}
+
+function createPackageCard(
+  concert,
+  packageItem
+) {
+  const card =
+    document.createElement(
+      "article"
+    );
+
+  card.className =
+    "package-card";
+
+  card.dataset.packageId =
+    packageItem.id;
+
+  const name =
+    document.createElement(
+      "h4"
+    );
+
+  name.className =
+    "package-name";
+
+  name.textContent =
+    packageItem.name ||
+    "แพ็กเกจ REPLAY";
+
+  const price =
+    document.createElement(
+      "p"
+    );
+
+  price.className =
+    "package-price";
+
+  price.innerHTML =
+    Number(
+      packageItem.price ||
+      0
+    ).toLocaleString(
+      "th-TH"
+    ) +
+    ' <span>บาท</span>';
+
+  const features =
+    document.createElement(
+      "ul"
+    );
+
+  features.className =
+    "feature-list";
+
+  const featureItems =
+    getReplayFeatures(
+      packageItem
+    );
+
+  for (
+    const text
+    of featureItems
+  ) {
+    const item =
+      document.createElement(
+        "li"
+      );
+
+    item.textContent =
+      text;
+
+    features.appendChild(
+      item
+    );
+  }
+
+  const button =
+    document.createElement(
+      "button"
+    );
+
+  button.type =
+    "button";
+
+  button.className =
+    "select-button";
+
+  button.textContent =
+    "เลือกแพ็กเกจนี้";
+
+  button.addEventListener(
+    "click",
+    () => {
+      selectPackage(
+        concert,
+        packageItem
+      );
+    }
+  );
+
+  card.appendChild(
+    name
+  );
+
+  card.appendChild(
+    price
+  );
+
+  card.appendChild(
+    features
+  );
+
+  card.appendChild(
+    button
+  );
+
+  return card;
+}
+
+/*
+ * =========================================
+ * SELECT PACKAGE
+ * =========================================
+ */
+
+function selectPackage(
+  concert,
+  packageItem
+) {
+  selectedConcert =
+    concert;
+
+  selectedPackage =
+    packageItem;
+
+  clearMessage();
+
+  result.classList.remove(
+    "show"
+  );
+
+  paymentForm.classList.remove(
+    "hidden"
+  );
+
+  document
+    .querySelectorAll(
+      ".package-card"
+    )
+    .forEach(
+      card => {
+        const selected =
+          String(
+            card.dataset.packageId
+          ) ===
+          String(
+            packageItem.id
+          );
+
+        card.classList.toggle(
+          "selected",
+          selected
+        );
+
+        const button =
+          card.querySelector(
+            ".select-button"
+          );
+
+        if (
+          button
+        ) {
+          button.classList.toggle(
+            "selected",
+            selected
+          );
+
+          button.textContent =
+            selected
+              ? "เลือกแพ็กเกจนี้แล้ว"
+              : "เลือกแพ็กเกจนี้";
+        }
+      }
+    );
+
+  document.getElementById(
+    "selectedPackageName"
+  ).textContent =
+    packageItem.name ||
+    "แพ็กเกจ REPLAY";
+
+  document.getElementById(
+    "selectedConcertName"
+  ).textContent =
+    concert.title ||
+    "-";
+
+  document.getElementById(
+    "selectedFeatures"
+  ).textContent =
+    getReplayFeatures(
+      packageItem
+    ).join(
+      " • "
+    );
+
+  document.getElementById(
+    "selectedReplayInfo"
+  ).textContent =
+    "สิทธิ์ REPLAY ใช้งานได้ " +
+    formatReplayDuration(
+      packageItem
+        .replay_days,
+      packageItem
+        .replay_months
+    ) +
+    " นับจากวันที่ชำระเงินและได้รับอนุมัติ";
+
+  document.getElementById(
+    "selectedPrice"
+  ).textContent =
+    Number(
+      packageItem.price ||
+      0
+    ).toLocaleString(
+      "th-TH"
+    ) +
+    " บาท";
+
+  document.getElementById(
+    "paymentAmount"
+  ).textContent =
+    Number(
+      packageItem.price ||
+      0
+    ).toLocaleString(
+      "th-TH"
+    ) +
+    " บาท";
+
+  paymentSection.classList.add(
+    "show"
+  );
+
+  paymentSection.scrollIntoView({
+    behavior:
+      "smooth",
+
+    block:
+      "start"
+  });
+}
+
+/*
+ * =========================================
+ * SLIP
+ * =========================================
+ */
+
+slipInput.addEventListener(
+  "change",
+  () => {
+    const file =
+      slipInput.files?.[0];
+
+    if (
+      previewUrl
+    ) {
+      URL.revokeObjectURL(
+        previewUrl
+      );
+
+      previewUrl =
+        "";
+    }
+
+    if (!file) {
+      slipPreview.classList.remove(
+        "show"
+      );
+
+      return;
+    }
+
+    const error =
+      validateSlip(
+        file
+      );
+
+    if (
+      error
+    ) {
+      slipInput.value =
+        "";
+
+      showMessage(
+        error,
+        "error"
+      );
+
+      return;
+    }
+
+    previewUrl =
+      URL.createObjectURL(
+        file
+      );
+
+    slipPreviewImage.src =
+      previewUrl;
+
+    slipPreview.classList.add(
+      "show"
+    );
+  }
+);
+
+/*
+ * =========================================
+ * PAYMENT
+ * =========================================
+ */
+
+paymentForm.addEventListener(
+  "submit",
+  async event => {
+    event.preventDefault();
+
+    clearMessage();
+
+    if (
+      !selectedPackage
+    ) {
+      showMessage(
+        "กรุณาเลือกแพ็กเกจ REPLAY",
+        "error"
+      );
+
+      return;
+    }
+
+    const file =
+      slipInput.files?.[0];
+
+    if (
+      !file
+    ) {
+      showMessage(
+        "กรุณาแนบภาพสลิป",
+        "error"
+      );
+
+      return;
+    }
+
+    const slipError =
+      validateSlip(
+        file
+      );
+
+    if (
+      slipError
+    ) {
+      showMessage(
+        slipError,
+        "error"
+      );
+
+      return;
+    }
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      "packageId",
+      String(
+        selectedPackage.id
+      )
+    );
+
+    /*
+     * REPLAY เท่านั้น
+     * ไม่ส่ง sessionId
+     */
+
+    formData.append(
+      "price",
+      String(
+        Number(
+          selectedPackage.price ||
+          0
+        )
+      )
+    );
+
+    if (
+      lineLinkToken
+    ) {
+      formData.append(
+        "lineLinkToken",
+        lineLinkToken
+      );
+    }
+
+    formData.append(
+      "slip",
+      file,
+      file.name
+    );
+
+    submitButton.disabled =
+      true;
+
+    submitButton.textContent =
+      "กำลังตรวจสอบสลิป...";
+
+    try {
+      const response =
+        await fetch(
+          API +
+          "/api/payment",
+          {
+            method:
+              "POST",
+
+            body:
+              formData
+          }
+        );
+
+      const data =
+        await readJsonResponse(
+          response
+        );
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data?.message ||
+          "ตรวจสอบสลิปไม่สำเร็จ"
+        );
+      }
+
+      if (
+        data?.status !==
+          "approved" &&
+        data?.success !==
+          true
+      ) {
+        throw new Error(
+          data?.message ||
+          "รายการยังไม่ได้รับการอนุมัติ"
+        );
+      }
+
+      showApproved(
+        data
+      );
+
+      let text =
+        data?.message ||
+        "ชำระเงินและเปิดสิทธิ์ REPLAY สำเร็จ";
+
+      if (
+        data
+          ?.lineNotificationSent ===
+        true
+      ) {
+        text +=
+          " และส่งรหัสไปยัง LINE แล้ว";
+      }
+
+      showMessage(
+        text,
+        "success"
+      );
+
+      paymentForm.classList.add(
+        "hidden"
+      );
+
+    } catch (
+      error
+    ) {
+      showMessage(
+        error.message ||
+        "เกิดข้อผิดพลาด",
+        "error"
+      );
+
+    } finally {
+      submitButton.disabled =
+        false;
+
+      submitButton.textContent =
+        "ตรวจสอบสลิปและรับรหัส REPLAY";
+    }
+  }
+);
+
+function showApproved(
+  data
+) {
+  document.getElementById(
+    "accessCode"
+  ).textContent =
+    data.accessCode ||
+    "-";
+
+  document.getElementById(
+    "resultOrderId"
+  ).textContent =
+    data.orderId ||
+    "-";
+
+  document.getElementById(
+    "resultPackage"
+  ).textContent =
+    data.package?.name ||
+    selectedPackage?.name ||
+    "-";
+
+  document.getElementById(
+    "resultAmount"
+  ).textContent =
+    Number(
+      data.verification
+        ?.amount ??
+      selectedPackage
+        ?.price ??
+      0
+    ).toLocaleString(
+      "th-TH"
+    ) +
+    " บาท";
+
+  document.getElementById(
+    "resultExpires"
+  ).textContent =
+    formatDateTime(
+      data.accessExpiresAt
+    );
+
+  document.getElementById(
+    "resultMessage"
+  ).textContent =
+    data
+      .lineNotificationSent ===
+      true
+        ? "ระบบอนุมัติสิทธิ์ REPLAY และส่งรหัสเข้าชมไปยัง LINE ของคุณแล้ว"
+        : "ระบบอนุมัติสิทธิ์ REPLAY แล้ว กรุณาเก็บรหัสเข้าชมไว้";
+
+  result.classList.add(
+    "show"
+  );
+
+  result.scrollIntoView({
+    behavior:
+      "smooth",
+
+    block:
+      "start"
+  });
+}
+
+/*
+ * =========================================
+ * COPY
+ * =========================================
+ */
+
+document.getElementById(
+  "copyButton"
+).addEventListener(
+  "click",
+  async () => {
+    const code =
+      document.getElementById(
+        "accessCode"
+      ).textContent.trim();
+
+    if (
+      !code ||
+      code === "-"
+    ) {
+      return;
+    }
+
+    try {
+      await navigator
+        .clipboard
+        .writeText(
+          code
+        );
+
+      showMessage(
+        "คัดลอกรหัสแล้ว",
+        "success"
+      );
+
+    } catch {
+      showMessage(
+        "กรุณากดค้างที่รหัสแล้วเลือกคัดลอก",
+        "info"
+      );
+    }
+  }
+);
+
+/*
+ * =========================================
+ * FEATURES
+ * =========================================
+ */
+
+function getReplayFeatures(
+  packageItem
+) {
+  const items = [
+    "รับชม REPLAY CONCERT"
+  ];
+
+  const duration =
+    formatReplayDuration(
+      packageItem
+        .replay_days,
+      packageItem
+        .replay_months
+    );
+
+  if (
+    duration !== "-"
+  ) {
+    items.push(
+      "รับชมย้อนหลัง " +
+      duration
+    );
+  }
+
+  if (
+    Number(
+      packageItem
+        .has_ecard
+    ) === 1
+  ) {
+    items.push(
+      "รับฟรี E-CARD"
+    );
+  }
+
+  items.push(
+    "ความคมชัด " +
+    formatQuality(
+      packageItem
+        .video_quality
+    )
+  );
+
+  return items;
+}
+
+function formatReplayDuration(
+  replayDays,
+  replayMonths
+) {
+  const months =
+    Number(
+      replayMonths ||
+      0
+    );
+
+  const days =
+    Number(
+      replayDays ||
+      0
+    );
+
+  if (
+    months > 0
+  ) {
+    return (
+      months +
+      " เดือน"
+    );
+  }
+
+  if (
+    days > 0
+  ) {
+    return (
+      days +
+      " วัน"
+    );
+  }
+
+  return "-";
+}
+
+function formatQuality(
+  value
+) {
+  const quality =
+    String(
+      value ||
+      "1080p"
+    ).toLowerCase();
+
+  if (
+    quality ===
+    "4k"
+  ) {
+    return "Ultra HD 4K";
+  }
+
+  if (
+    quality ===
+    "720p"
+  ) {
+    return "HD 720p";
+  }
+
+  return "Full HD 1080p";
+}
+
+/*
+ * =========================================
+ * SORT PACKAGES
+ * =========================================
+ */
+
+function comparePackages(
+  a,
+  b
+) {
+  const numberA =
+    getPackageNumber(
+      a?.name
+    );
+
+  const numberB =
+    getPackageNumber(
+      b?.name
+    );
+
+  if (
+    numberA !==
+    numberB
+  ) {
+    return (
+      numberA -
+      numberB
+    );
+  }
+
+  return String(
+    a?.name ||
+    ""
+  ).localeCompare(
+    String(
+      b?.name ||
+      ""
+    ),
+    "th"
+  );
+}
+
+function getPackageNumber(
+  name
+) {
+  const match =
+    String(
+      name ||
+      ""
+    ).match(
+      /(\d+)/
+    );
+
+  if (
+    !match
+  ) {
+    return Number
+      .MAX_SAFE_INTEGER;
+  }
+
+  return Number(
+    match[1]
+  );
+}
+
+/*
+ * =========================================
+ * HELPERS
+ * =========================================
+ */
+
+function formatDateTime(
+  value
+) {
+  if (
+    !value
+  ) {
+    return "-";
+  }
+
+  const date =
+    new Date(
+      value
+    );
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "-";
+  }
+
+  return date.toLocaleString(
+    "th-TH",
+    {
+      dateStyle:
+        "medium",
+
+      timeStyle:
+        "short",
+
+      timeZone:
+        "Asia/Bangkok"
+    }
+  );
+}
+
+function validateSlip(
+  file
+) {
+  const allowed = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif"
+  ];
+
+  if (
+    !allowed.includes(
+      file.type
+    )
+  ) {
+    return "รองรับเฉพาะ JPG, PNG, WEBP และ GIF";
+  }
+
+  if (
+    file.size >
+    4 *
+    1024 *
+    1024
+  ) {
+    return "ไฟล์สลิปต้องมีขนาดไม่เกิน 4 MB";
+  }
+
+  return "";
+}
+
+function isSafeImageUrl(
+  value
+) {
+  if (
+    !value
+  ) {
+    return false;
+  }
+
+  try {
+    const url =
+      new URL(
+        value,
+        window.location.href
+      );
+
+    return [
+      "http:",
+      "https:"
+    ].includes(
+      url.protocol
+    );
+
+  } catch {
+    return false;
+  }
+}
+
+async function readJsonResponse(
+  response
+) {
+  const text =
+    await response.text();
+
+  if (
+    !text
+  ) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(
+      text
+    );
+
+  } catch {
+    return {
+      message:
+        "ระบบตอบกลับในรูปแบบไม่ถูกต้อง"
+    };
+  }
+}
+
+window.addEventListener(
+  "beforeunload",
+  () => {
+    if (
+      previewUrl
+    ) {
+      URL.revokeObjectURL(
+        previewUrl
+      );
+    }
+  }
+);
+
+/*
+ * =========================================
+ * START
+ * =========================================
+ */
+
+loadReplay();
+
+</script>
+
+</body>
+</html>
