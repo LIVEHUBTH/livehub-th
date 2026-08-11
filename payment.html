@@ -10,7 +10,10 @@
 
   <title>ชำระเงิน | LIVEHUB TH</title>
 
-  <link rel="stylesheet" href="style.css?v=12">
+  <link
+    rel="stylesheet"
+    href="style.css?v=12"
+  >
 
   <style>
     .payment-page {
@@ -52,6 +55,12 @@
       font-size: 26px;
     }
 
+    .selected-session {
+      margin-top: 8px;
+      color: #d8d8d8;
+      font-size: 16px;
+    }
+
     .selected-price {
       margin-top: 12px;
       color: #ff0b72;
@@ -59,7 +68,7 @@
       font-weight: 800;
     }
 
-    .selected-price span {
+    .selected-price span:last-child {
       font-size: 20px;
     }
 
@@ -97,6 +106,27 @@
       line-height: 1.6;
     }
 
+    .line-status {
+      display: none;
+      margin-top: 18px;
+      padding: 14px;
+      border: 1px solid #ff0b72;
+      border-radius: 12px;
+      background: rgba(255, 11, 114, 0.08);
+      color: #ffffff;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .line-status.show {
+      display: block;
+    }
+
+    .line-status.warning {
+      border-color: #b46a00;
+      background: rgba(180, 106, 0, 0.12);
+    }
+
     .upload-label {
       display: block;
       margin-bottom: 10px;
@@ -118,11 +148,64 @@
       padding: 15px;
       border: 0;
       border-radius: 12px;
-      background: linear-gradient(135deg, #ff0b72, #e8005e);
+      background: linear-gradient(
+        135deg,
+        #ff0b72,
+        #e8005e
+      );
       color: #ffffff;
       font-size: 18px;
       font-weight: 700;
       cursor: pointer;
+    }
+
+    .confirm-button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .payment-result {
+      display: none;
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: 14px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .payment-result.show {
+      display: block;
+    }
+
+    .payment-result.success {
+      border: 1px solid #19b96b;
+      background: rgba(25, 185, 107, 0.10);
+    }
+
+    .payment-result.error {
+      border: 1px solid #ff4d4d;
+      background: rgba(255, 77, 77, 0.10);
+    }
+
+    .access-code-box {
+      margin-top: 15px;
+      padding: 15px;
+      border: 1px solid #ff0b72;
+      border-radius: 12px;
+      background: #080808;
+    }
+
+    .access-code-label {
+      color: #d0d0d0;
+      font-size: 14px;
+    }
+
+    .access-code {
+      margin-top: 5px;
+      color: #ff0b72;
+      font-size: 25px;
+      font-weight: 800;
+      word-break: break-all;
     }
 
     .back-link {
@@ -131,6 +214,34 @@
       color: #ff4c9a;
       text-align: center;
       text-decoration: none;
+    }
+
+    @media (max-width: 600px) {
+      .payment-page {
+        width: 94%;
+        margin: 20px auto;
+      }
+
+      .payment-card {
+        padding: 20px;
+      }
+
+      .payment-title h1 {
+        font-size: 29px;
+      }
+
+      .selected-package h2 {
+        font-size: 22px;
+      }
+
+      .selected-price {
+        font-size: 40px;
+      }
+
+      .payment-qr {
+        width: 210px;
+        height: 210px;
+      }
     }
   </style>
 </head>
@@ -143,7 +254,10 @@
 
       <div class="payment-title">
         <h1>ชำระเงิน</h1>
-        <p>ตรวจสอบแพ็กเกจและอัปโหลดหลักฐานการชำระเงิน</p>
+
+        <p>
+          ตรวจสอบแพ็กเกจและอัปโหลดหลักฐานการชำระเงิน
+        </p>
       </div>
 
       <section class="selected-package">
@@ -152,26 +266,48 @@
           แพ็กเกจ LIVEHUB TH
         </h2>
 
+        <div
+          id="sessionName"
+          class="selected-session"
+        ></div>
+
         <div class="selected-price">
-          <span id="packagePrice">0</span>
-          <span>บาท</span>
+
+          <span id="packagePrice">
+            0
+          </span>
+
+          <span>
+            บาท
+          </span>
+
         </div>
 
       </section>
 
+      <div
+        id="lineStatus"
+        class="line-status"
+      ></div>
+
       <section class="payment-section">
 
-        <h2>สแกน QR เพื่อชำระเงิน</h2>
+        <h2>
+          สแกน QR เพื่อชำระเงิน
+        </h2>
 
         <div class="payment-qr">
+
           <img
             src="payment-qr.PNG"
             alt="QR Code ชำระเงิน LIVEHUB TH"
           >
+
         </div>
 
         <p class="payment-note">
-          กรุณาตรวจสอบยอดเงินให้ถูกต้องก่อนชำระ<br>
+          กรุณาตรวจสอบยอดเงินให้ถูกต้องก่อนชำระ
+          <br>
           ชำระแล้วกรุณาอัปโหลดสลิปด้านล่าง
         </p>
 
@@ -180,47 +316,81 @@
       <section class="payment-section">
 
         <form
-  action="https://livehub-payment-api.livehubth.workers.dev/api/payment"
-  method="post"
-  enctype="multipart/form-data"
->
-  <input
-    type="hidden"
-    id="packageNumberInput"
-    name="packageNumber"
-  >
+          id="paymentForm"
+          enctype="multipart/form-data"
+        >
 
-  <input
-    type="hidden"
-    id="priceInput"
-    name="price"
-  >
+          <!--
+            รหัส package จริงจากฐานข้อมูล
+          -->
+          <input
+            type="hidden"
+            id="packageIdInput"
+            name="packageId"
+          >
 
-  <label
-    for="slip"
-    class="upload-label"
-  >
-    อัปโหลดสลิปการโอน
-  </label>
+          <!--
+            sessionId จริงจากฐานข้อมูล
+          -->
+          <input
+            type="hidden"
+            id="sessionIdInput"
+            name="sessionId"
+          >
 
-  <input
-    type="file"
-    id="slip"
-    name="slip"
-    class="upload-input"
-    accept="image/*"
-    required
-  >
+          <!--
+            ราคา package
+          -->
+          <input
+            type="hidden"
+            id="priceInput"
+            name="price"
+          >
 
-  <button
-    type="submit"
-    class="confirm-button"
-  >
-    ยืนยันการชำระเงิน
-  </button>
-</form>
+          <!--
+            Signed token ที่มาจาก LINE
+          -->
+          <input
+            type="hidden"
+            id="lineLinkTokenInput"
+            name="lineLinkToken"
+          >
 
-        <a href="index.html#packages" class="back-link">
+          <label
+            for="slip"
+            class="upload-label"
+          >
+            อัปโหลดสลิปการโอน
+          </label>
+
+          <input
+            type="file"
+            id="slip"
+            name="slip"
+            class="upload-input"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            required
+          >
+
+          <button
+            type="submit"
+            id="confirmButton"
+            class="confirm-button"
+          >
+            ยืนยันการชำระเงิน
+          </button>
+
+        </form>
+
+        <div
+          id="paymentResult"
+          class="payment-result"
+        ></div>
+
+        <a
+          href="index.html#packages"
+          class="back-link"
+        >
           ← กลับไปเลือกแพ็กเกจ
         </a>
 
@@ -230,26 +400,586 @@
 
   </div>
 
-<script>
-  const params = new URLSearchParams(window.location.search);
 
-  const packageNumber = params.get("package") || "";
-  const packagePrice = params.get("price") || "0";
+  <script>
+    /*
+     * =========================================
+     * LIVEHUB TH PAYMENT PAGE
+     * =========================================
+     */
 
-  document.getElementById("packageName").textContent =
-    packageNumber
-      ? `แพ็กเกจ ${packageNumber}`
-      : "ไม่พบแพ็กเกจ";
+    const API_BASE =
+      "https://livehub-payment-api.livehubth.workers.dev";
 
-  document.getElementById("packagePrice").textContent =
-    packagePrice;
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
 
-  document.getElementById("packageNumberInput").value =
-    packageNumber;
+    /*
+     * รองรับชื่อ parameter เดิม
+     * และชื่อใหม่
+     */
+    const packageId =
+      params.get("packageId") ||
+      params.get("package") ||
+      "";
 
-  document.getElementById("priceInput").value =
-    packagePrice;
-</script>
-  
+    const packageName =
+      params.get("packageName") ||
+      params.get("package") ||
+      "";
+
+    const sessionId =
+      params.get("sessionId") ||
+      "";
+
+    const sessionName =
+      params.get("sessionName") ||
+      "";
+
+    const packagePrice =
+      params.get("price") ||
+      "0";
+
+    const lineLinkToken =
+      params.get("lineLinkToken") ||
+      "";
+
+    /*
+     * =========================================
+     * PAGE ELEMENTS
+     * =========================================
+     */
+
+    const packageNameElement =
+      document.getElementById(
+        "packageName"
+      );
+
+    const sessionNameElement =
+      document.getElementById(
+        "sessionName"
+      );
+
+    const packagePriceElement =
+      document.getElementById(
+        "packagePrice"
+      );
+
+    const packageIdInput =
+      document.getElementById(
+        "packageIdInput"
+      );
+
+    const sessionIdInput =
+      document.getElementById(
+        "sessionIdInput"
+      );
+
+    const priceInput =
+      document.getElementById(
+        "priceInput"
+      );
+
+    const lineLinkTokenInput =
+      document.getElementById(
+        "lineLinkTokenInput"
+      );
+
+    const lineStatus =
+      document.getElementById(
+        "lineStatus"
+      );
+
+    const paymentForm =
+      document.getElementById(
+        "paymentForm"
+      );
+
+    const confirmButton =
+      document.getElementById(
+        "confirmButton"
+      );
+
+    const paymentResult =
+      document.getElementById(
+        "paymentResult"
+      );
+
+    /*
+     * =========================================
+     * DISPLAY PACKAGE
+     * =========================================
+     */
+
+    packageNameElement.textContent =
+      packageName
+        ? packageName.startsWith(
+            "แพ็กเกจ"
+          )
+          ? packageName
+          : "แพ็กเกจ " +
+            packageName
+        : "ไม่พบแพ็กเกจ";
+
+    packagePriceElement.textContent =
+      Number(
+        packagePrice || 0
+      ).toLocaleString(
+        "th-TH"
+      );
+
+    if (sessionName) {
+      sessionNameElement.textContent =
+        "รอบการแสดง: " +
+        sessionName;
+    } else {
+      sessionNameElement.textContent =
+        "";
+    }
+
+    /*
+     * =========================================
+     * SET HIDDEN INPUT VALUES
+     * =========================================
+     */
+
+    packageIdInput.value =
+      packageId;
+
+    sessionIdInput.value =
+      sessionId;
+
+    priceInput.value =
+      packagePrice;
+
+    lineLinkTokenInput.value =
+      lineLinkToken;
+
+    /*
+     * =========================================
+     * LINE CONNECTION STATUS
+     * =========================================
+     */
+
+    if (lineLinkToken) {
+      lineStatus.className =
+        "line-status show";
+
+      lineStatus.innerHTML =
+        "✅ เชื่อมต่อบัญชี LINE แล้ว<br>" +
+        "เมื่อชำระเงินผ่าน ระบบจะส่งรหัสเข้าชมกลับไปทาง LINE อัตโนมัติ";
+
+    } else {
+      lineStatus.className =
+        "line-status show warning";
+
+      lineStatus.innerHTML =
+        "ℹ️ หน้านี้ไม่ได้เปิดผ่านลิงก์ส่วนตัวจาก LINE<br>" +
+        "หากชำระเงินผ่าน รหัสเข้าชมจะแสดงบนหน้านี้ แต่จะยังไม่สามารถส่งกลับ LINE อัตโนมัติ";
+    }
+
+    /*
+     * =========================================
+     * VALIDATE REQUIRED PAYMENT DATA
+     * =========================================
+     */
+
+    function validatePaymentData() {
+      if (!packageId) {
+        return (
+          "ไม่พบรหัสแพ็กเกจ กรุณากลับไปเลือกแพ็กเกจใหม่"
+        );
+      }
+
+      if (!sessionId) {
+        return (
+          "ไม่พบรหัสวันแสดง กรุณากลับไปเลือกวันแสดงใหม่"
+        );
+      }
+
+      const price =
+        Number(
+          packagePrice
+        );
+
+      if (
+        !Number.isFinite(
+          price
+        ) ||
+        price < 0
+      ) {
+        return (
+          "ราคาแพ็กเกจไม่ถูกต้อง"
+        );
+      }
+
+      return "";
+    }
+
+    /*
+     * =========================================
+     * PAYMENT SUBMIT
+     * =========================================
+     */
+
+    paymentForm.addEventListener(
+      "submit",
+      async function(event) {
+        event.preventDefault();
+
+        paymentResult.className =
+          "payment-result";
+
+        paymentResult.innerHTML =
+          "";
+
+        const validationError =
+          validatePaymentData();
+
+        if (validationError) {
+          showPaymentError(
+            validationError
+          );
+
+          return;
+        }
+
+        const slipInput =
+          document.getElementById(
+            "slip"
+          );
+
+        const slip =
+          slipInput.files?.[0];
+
+        if (!slip) {
+          showPaymentError(
+            "กรุณาเลือกภาพสลิป"
+          );
+
+          return;
+        }
+
+        /*
+         * EasySlip backend จำกัด 4 MB
+         */
+        const maximumSize =
+          4 * 1024 * 1024;
+
+        if (
+          slip.size >
+          maximumSize
+        ) {
+          showPaymentError(
+            "ไฟล์สลิปต้องมีขนาดไม่เกิน 4 MB"
+          );
+
+          return;
+        }
+
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+        ];
+
+        if (
+          !allowedTypes.includes(
+            slip.type
+          )
+        ) {
+          showPaymentError(
+            "รองรับเฉพาะ JPG, PNG, WEBP และ GIF"
+          );
+
+          return;
+        }
+
+        /*
+         * ป้องกันกด Submit ซ้ำ
+         */
+        confirmButton.disabled =
+          true;
+
+        confirmButton.textContent =
+          "กำลังตรวจสอบสลิป...";
+
+        try {
+          const formData =
+            new FormData();
+
+          formData.append(
+            "packageId",
+            packageId
+          );
+
+          formData.append(
+            "sessionId",
+            sessionId
+          );
+
+          formData.append(
+            "price",
+            packagePrice
+          );
+
+          formData.append(
+            "slip",
+            slip,
+            slip.name
+          );
+
+          /*
+           * ถ้าเปิดมาจาก LINE
+           * จะส่ง signed token ไป Backend
+           */
+          if (lineLinkToken) {
+            formData.append(
+              "lineLinkToken",
+              lineLinkToken
+            );
+          }
+
+          const response =
+            await fetch(
+              API_BASE +
+              "/api/payment",
+              {
+                method:
+                  "POST",
+
+                body:
+                  formData,
+              }
+            );
+
+          let result;
+
+          try {
+            result =
+              await response.json();
+
+          } catch {
+            throw new Error(
+              "ระบบชำระเงินส่งข้อมูลตอบกลับไม่ถูกต้อง"
+            );
+          }
+
+          if (
+            !response.ok ||
+            !result?.success
+          ) {
+            throw new Error(
+              result?.message ||
+              "ชำระเงินไม่สำเร็จ"
+            );
+          }
+
+          /*
+           * Payment + EasySlip ผ่าน
+           */
+          showPaymentSuccess(
+            result
+          );
+
+          /*
+           * ปิดฟอร์มเพื่อกันส่งสลิปเดิมซ้ำ
+           */
+          slipInput.disabled =
+            true;
+
+          confirmButton.disabled =
+            true;
+
+          confirmButton.textContent =
+            "ชำระเงินสำเร็จ";
+
+        } catch (error) {
+          showPaymentError(
+            error?.message ||
+            "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+          );
+
+          confirmButton.disabled =
+            false;
+
+          confirmButton.textContent =
+            "ยืนยันการชำระเงิน";
+        }
+      }
+    );
+
+    /*
+     * =========================================
+     * SHOW SUCCESS
+     * =========================================
+     */
+
+    function showPaymentSuccess(
+      result
+    ) {
+      paymentResult.className =
+        "payment-result show success";
+
+      const lineMessage =
+        result.lineNotificationSent
+          ? (
+              "<p>✅ ระบบส่งรหัสเข้าชมไปทาง LINE ของคุณแล้ว</p>"
+            )
+          : result.lineLinked
+            ? (
+                "<p>การชำระเงินสำเร็จ แต่การส่งข้อความ LINE ยังไม่สำเร็จ กรุณาเก็บรหัสด้านล่างไว้</p>"
+              )
+            : (
+                "<p>การชำระเงินสำเร็จ กรุณาเก็บรหัสเข้าชมด้านล่างไว้</p>"
+              );
+
+      paymentResult.innerHTML =
+        "<strong>ชำระเงินสำเร็จ ✅</strong>" +
+
+        "<p>" +
+        escapeHtml(
+          result.message ||
+          "ตรวจสอบสลิปสำเร็จ"
+        ) +
+        "</p>" +
+
+        lineMessage +
+
+        "<div class=\"access-code-box\">" +
+          "<div class=\"access-code-label\">" +
+            "รหัสเข้าชม" +
+          "</div>" +
+
+          "<div class=\"access-code\">" +
+            escapeHtml(
+              result.accessCode ||
+              ""
+            ) +
+          "</div>" +
+        "</div>" +
+
+        (
+          result.accessExpiresAt
+            ? (
+                "<p>สิทธิ์ใช้ได้ถึง: " +
+                escapeHtml(
+                  formatThaiDateTime(
+                    result.accessExpiresAt
+                  )
+                ) +
+                "</p>"
+              )
+            : ""
+        );
+    }
+
+    /*
+     * =========================================
+     * SHOW ERROR
+     * =========================================
+     */
+
+    function showPaymentError(
+      message
+    ) {
+      paymentResult.className =
+        "payment-result show error";
+
+      paymentResult.innerHTML =
+        "<strong>ไม่สามารถชำระเงินได้</strong>" +
+        "<p>" +
+        escapeHtml(
+          message
+        ) +
+        "</p>";
+    }
+
+    /*
+     * =========================================
+     * FORMAT DATE
+     * =========================================
+     */
+
+    function formatThaiDateTime(
+      value
+    ) {
+      if (!value) {
+        return "";
+      }
+
+      const date =
+        new Date(
+          value
+        );
+
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+        return "";
+      }
+
+      try {
+        return new Intl.DateTimeFormat(
+          "th-TH",
+          {
+            dateStyle:
+              "medium",
+
+            timeStyle:
+              "short",
+
+            timeZone:
+              "Asia/Bangkok",
+          }
+        ).format(
+          date
+        );
+
+      } catch {
+        return value;
+      }
+    }
+
+    /*
+     * =========================================
+     * ESCAPE HTML
+     * =========================================
+     */
+
+    function escapeHtml(
+      value
+    ) {
+      return String(
+        value ?? ""
+      )
+        .replaceAll(
+          "&",
+          "&amp;"
+        )
+        .replaceAll(
+          "<",
+          "&lt;"
+        )
+        .replaceAll(
+          ">",
+          "&gt;"
+        )
+        .replaceAll(
+          "\"",
+          "&quot;"
+        )
+        .replaceAll(
+          "'",
+          "&#039;"
+        );
+    }
+  </script>
+
 </body>
 </html>
