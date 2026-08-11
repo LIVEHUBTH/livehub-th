@@ -34,6 +34,7 @@ export default {
         request.method === "GET"
       ) {
         return await getPublicConcerts(
+          url,
           env,
           corsHeaders
         );
@@ -423,32 +424,79 @@ export default {
  */
 
 async function getPublicConcerts(
+  url,
   env,
   corsHeaders
 ) {
-  const concertsResult =
-    await env.DB.prepare(
-      `
-      SELECT
-        id,
-        title,
-        description,
-        cover_image_url,
-        live_starts_at,
-        live_ends_at,
-        status
-      FROM concerts
-      WHERE status IN ('on_sale', 'live')
-      ORDER BY live_starts_at ASC
-      `
-    ).all();
+  const requestedMode =
+    cleanText(
+      url.searchParams.get(
+        "mode"
+      )
+    ).toLowerCase();
+
+  const mode =
+    requestedMode === "replay"
+      ? "replay"
+      : "live";
+
+  let concertsResult;
+
+  if (
+    mode === "replay"
+  ) {
+    concertsResult =
+      await env.DB.prepare(
+        `
+        SELECT
+          id,
+          title,
+          description,
+          cover_image_url,
+          live_starts_at,
+          live_ends_at,
+          status
+        FROM concerts
+        WHERE status IN (
+          'on_sale',
+          'live',
+          'ended'
+        )
+        ORDER BY live_starts_at DESC
+        `
+      ).all();
+
+  } else {
+    concertsResult =
+      await env.DB.prepare(
+        `
+        SELECT
+          id,
+          title,
+          description,
+          cover_image_url,
+          live_starts_at,
+          live_ends_at,
+          status
+        FROM concerts
+        WHERE status IN (
+          'on_sale',
+          'live'
+        )
+        ORDER BY live_starts_at ASC
+        `
+      ).all();
+  }
+
+  const allConcerts =
+    concertsResult.results || [];
 
   const concerts =
-    concertsResult.results || [];
+    [];
 
   for (
     const concert
-    of concerts
+    of allConcerts
   ) {
     const sessionsResult =
       await env.DB.prepare(
@@ -472,36 +520,79 @@ async function getPublicConcerts(
         )
         .all();
 
-    const packagesResult =
-      await env.DB.prepare(
-        `
-        SELECT
-          id,
-          name,
-          price,
-          access_type,
-          replay_days,
-          replay_months,
-          has_ecard,
-          video_quality
-        FROM packages
-        WHERE concert_id = ?
-          AND is_active = 1
-        ORDER BY
-          price ASC,
-          created_at ASC
-        `
-      )
-        .bind(
-          concert.id
+    let packagesResult;
+
+    if (
+      mode === "replay"
+    ) {
+      packagesResult =
+        await env.DB.prepare(
+          `
+          SELECT
+            id,
+            name,
+            price,
+            access_type,
+            replay_days,
+            replay_months,
+            has_ecard,
+            video_quality
+          FROM packages
+          WHERE concert_id = ?
+            AND is_active = 1
+            AND access_type = 'replay'
+          ORDER BY
+            price ASC,
+            created_at ASC
+          `
         )
-        .all();
+          .bind(
+            concert.id
+          )
+          .all();
+
+    } else {
+      packagesResult =
+        await env.DB.prepare(
+          `
+          SELECT
+            id,
+            name,
+            price,
+            access_type,
+            replay_days,
+            replay_months,
+            has_ecard,
+            video_quality
+          FROM packages
+          WHERE concert_id = ?
+            AND is_active = 1
+            AND access_type IN (
+              'live',
+              'live_replay'
+            )
+          ORDER BY
+            price ASC,
+            created_at ASC
+          `
+        )
+          .bind(
+            concert.id
+          )
+          .all();
+    }
 
     concert.sessions =
       sessionsResult.results || [];
 
     concert.packages =
       packagesResult.results || [];
+
+    if (
+      concert.packages.length === 0
+    ) {
+      continue;
+    }
 
     for (
       const packageItem
@@ -559,11 +650,16 @@ async function getPublicConcerts(
         packageItem.video_quality ||
         "1080p";
     }
+
+    concerts.push(
+      concert
+    );
   }
 
   return jsonResponse(
     {
       success: true,
+      mode,
       concerts,
     },
     200,
@@ -797,6 +893,18 @@ async function getConcertCover(
     return errorResponse(
       "ไม่พบชื่อไฟล์รูป",
       400,
+      corsHeaders
+    );
+  }
+
+  if (
+    !coverKey.startsWith(
+      "concert-covers/"
+    )
+  ) {
+    return errorResponse(
+      "ไม่พบรูปหน้าปก",
+      404,
       corsHeaders
     );
   }
@@ -1601,8 +1709,6 @@ function validateSessionInput(
 
   return "";
 }
-
-
 /*
  * =========================================
  * PACKAGES
@@ -1764,6 +1870,18 @@ async function createPackage(
       )
     );
 
+  /*
+   * REPLAY อย่างเดียว
+   * ไม่ผูกกับวันแสดงสด
+   */
+  if (
+    input.accessType ===
+    "replay"
+  ) {
+    input.sessionIds =
+      [];
+  }
+
   const validationError =
     validatePackageInput(
       input.concertId,
@@ -1786,8 +1904,10 @@ async function createPackage(
   }
 
   if (
+    input.accessType !==
+      "replay" &&
     input.sessionIds.length ===
-    0
+      0
   ) {
     return errorResponse(
       "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
@@ -1820,21 +1940,26 @@ async function createPackage(
     );
   }
 
-  const sessionsValid =
-    await validateSessionsForConcert(
-      input.concertId,
-      input.sessionIds,
-      env
-    );
-
   if (
-    !sessionsValid
+    input.accessType !==
+    "replay"
   ) {
-    return errorResponse(
-      "มีวันแสดงที่ไม่ได้อยู่ในคอนเสิร์ตนี้",
-      400,
-      corsHeaders
-    );
+    const sessionsValid =
+      await validateSessionsForConcert(
+        input.concertId,
+        input.sessionIds,
+        env
+      );
+
+    if (
+      !sessionsValid
+    ) {
+      return errorResponse(
+        "มีวันแสดงที่ไม่ได้อยู่ในคอนเสิร์ตนี้",
+        400,
+        corsHeaders
+      );
+    }
   }
 
   const packageId =
@@ -2024,6 +2149,14 @@ async function updatePackage(
       0;
   }
 
+  if (
+    input.accessType ===
+    "replay"
+  ) {
+    input.sessionIds =
+      [];
+  }
+
   const validationError =
     validatePackageInput(
       existing.concert_id,
@@ -2046,8 +2179,10 @@ async function updatePackage(
   }
 
   if (
+    input.accessType !==
+      "replay" &&
     input.sessionIds.length ===
-    0
+      0
   ) {
     return errorResponse(
       "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
@@ -2056,21 +2191,26 @@ async function updatePackage(
     );
   }
 
-  const sessionsValid =
-    await validateSessionsForConcert(
-      existing.concert_id,
-      input.sessionIds,
-      env
-    );
-
   if (
-    !sessionsValid
+    input.accessType !==
+    "replay"
   ) {
-    return errorResponse(
-      "มีวันแสดงที่ไม่ได้อยู่ในคอนเสิร์ตนี้",
-      400,
-      corsHeaders
-    );
+    const sessionsValid =
+      await validateSessionsForConcert(
+        existing.concert_id,
+        input.sessionIds,
+        env
+      );
+
+    if (
+      !sessionsValid
+    ) {
+      return errorResponse(
+        "มีวันแสดงที่ไม่ได้อยู่ในคอนเสิร์ตนี้",
+        400,
+        corsHeaders
+      );
+    }
   }
 
   await env.DB.prepare(
@@ -2425,16 +2565,6 @@ async function createPayment(
   }
 
   if (
-    !sessionId
-  ) {
-    return errorResponse(
-      "กรุณาเลือกวันแสดง",
-      400,
-      corsHeaders
-    );
-  }
-
-  if (
     priceValue === null ||
     priceValue === ""
   ) {
@@ -2509,20 +2639,47 @@ async function createPayment(
     );
   }
 
+  const isReplayOnly =
+    selectedPackage
+      .access_type ===
+    "replay";
+
   if (
-    ![
-      "on_sale",
-      "live",
-    ].includes(
-      selectedPackage
-        .concert_status
-    )
+    isReplayOnly
   ) {
-    return errorResponse(
-      "คอนเสิร์ตนี้ยังไม่เปิดขาย",
-      400,
-      corsHeaders
-    );
+    if (
+      ![
+        "on_sale",
+        "live",
+        "ended",
+      ].includes(
+        selectedPackage
+          .concert_status
+      )
+    ) {
+      return errorResponse(
+        "รีเพลย์นี้ยังไม่เปิดขาย",
+        400,
+        corsHeaders
+      );
+    }
+
+  } else {
+    if (
+      ![
+        "on_sale",
+        "live",
+      ].includes(
+        selectedPackage
+          .concert_status
+      )
+    ) {
+      return errorResponse(
+        "คอนเสิร์ตนี้ยังไม่เปิดขาย",
+        400,
+        corsHeaders
+      );
+    }
   }
 
   if (
@@ -2540,40 +2697,57 @@ async function createPayment(
     );
   }
 
-  const selectedSession =
-    await env.DB.prepare(
-      `
-      SELECT
-        s.id,
-        s.concert_id,
-        s.name,
-        s.live_starts_at,
-        s.live_ends_at
-      FROM package_sessions ps
-      INNER JOIN concert_sessions s
-        ON s.id = ps.session_id
-      WHERE ps.package_id = ?
-        AND s.id = ?
-        AND s.concert_id = ?
-        AND s.is_active = 1
-      LIMIT 1
-      `
-    )
-      .bind(
-        packageId,
-        sessionId,
-        selectedPackage.concert_id
-      )
-      .first();
+  let selectedSession =
+    null;
 
   if (
-    !selectedSession
+    !isReplayOnly
   ) {
-    return errorResponse(
-      "วันแสดงที่เลือกไม่อยู่ในสิทธิ์ของแพ็กเกจนี้",
-      400,
-      corsHeaders
-    );
+    if (
+      !sessionId
+    ) {
+      return errorResponse(
+        "กรุณาเลือกวันแสดง",
+        400,
+        corsHeaders
+      );
+    }
+
+    selectedSession =
+      await env.DB.prepare(
+        `
+        SELECT
+          s.id,
+          s.concert_id,
+          s.name,
+          s.live_starts_at,
+          s.live_ends_at
+        FROM package_sessions ps
+        INNER JOIN concert_sessions s
+          ON s.id = ps.session_id
+        WHERE ps.package_id = ?
+          AND s.id = ?
+          AND s.concert_id = ?
+          AND s.is_active = 1
+        LIMIT 1
+        `
+      )
+        .bind(
+          packageId,
+          sessionId,
+          selectedPackage.concert_id
+        )
+        .first();
+
+    if (
+      !selectedSession
+    ) {
+      return errorResponse(
+        "วันแสดงที่เลือกไม่อยู่ในสิทธิ์ของแพ็กเกจนี้",
+        400,
+        corsHeaders
+      );
+    }
   }
 
   const orderId =
@@ -2727,18 +2901,25 @@ async function createPayment(
       "1080p",
 
     selected_session_id:
-      selectedSession.id,
+      selectedSession?.id ||
+      null,
 
     selected_session_name:
-      selectedSession.name,
+      selectedSession?.name ||
+      null,
 
     selected_session_starts_at:
       selectedSession
-        .live_starts_at,
+        ?.live_starts_at ||
+      null,
 
     selected_session_ends_at:
       selectedSession
-        .live_ends_at,
+        ?.live_ends_at ||
+      null,
+
+    approved_at:
+      now,
   };
 
   const accessExpiresAt =
@@ -2779,7 +2960,8 @@ async function createPayment(
           selectedPackage.id,
 
         sessionId:
-          selectedSession.id,
+          selectedSession?.id ||
+          "",
 
         price:
           String(
@@ -2985,12 +3167,18 @@ async function createPayment(
           packageName:
             selectedPackage.name,
 
+          accessType:
+            selectedPackage
+              .access_type,
+
           sessionName:
-            selectedSession.name,
+            selectedSession?.name ||
+            "",
 
           liveStartsAt:
             selectedSession
-              .live_starts_at,
+              ?.live_starts_at ||
+            null,
 
           concertId:
             selectedPackage
@@ -3048,21 +3236,24 @@ async function createPayment(
 
       lineNotificationSent,
 
-      selectedSession: {
-        id:
-          selectedSession.id,
+      selectedSession:
+        selectedSession
+          ? {
+              id:
+                selectedSession.id,
 
-        name:
-          selectedSession.name,
+              name:
+                selectedSession.name,
 
-        liveStartsAt:
-          selectedSession
-            .live_starts_at,
+              liveStartsAt:
+                selectedSession
+                  .live_starts_at,
 
-        liveEndsAt:
-          selectedSession
-            .live_ends_at,
-      },
+              liveEndsAt:
+                selectedSession
+                  .live_ends_at,
+            }
+          : null,
 
       package: {
         id:
@@ -3521,8 +3712,6 @@ function validateSlip(
 
   return "";
 }
-
-
 /*
  * =========================================
  * ACCESS CODE
@@ -4855,10 +5044,16 @@ async function updateOrderStatus(
     order.access_code ||
     createAccessCode();
 
+  const expiryInput = {
+    ...order,
+    approved_at:
+      approvedAt,
+  };
+
   const accessExpiresAt =
     order.access_expires_at ||
     await calculateAccessExpiry(
-      order,
+      expiryInput,
       env
     );
 
@@ -4866,7 +5061,7 @@ async function updateOrderStatus(
     !accessExpiresAt
   ) {
     return errorResponse(
-      "ไม่สามารถคำนวณวันหมดอายุสิทธิ์ได้ กรุณาตรวจสอบวันแสดง",
+      "ไม่สามารถคำนวณวันหมดอายุสิทธิ์ได้ กรุณาตรวจสอบข้อมูลแพ็กเกจ",
       400,
       corsHeaders
     );
@@ -4906,27 +5101,30 @@ async function updateOrderStatus(
 
       accessExpiresAt,
 
-      selectedSession: {
-        id:
-          order
-            .selected_session_id ||
-          "",
+      selectedSession:
+        order
+          .selected_session_id
+          ? {
+              id:
+                order
+                  .selected_session_id,
 
-        name:
-          order
-            .selected_session_name ||
-          "",
+              name:
+                order
+                  .selected_session_name ||
+                "",
 
-        liveStartsAt:
-          order
-            .selected_session_starts_at ||
-          null,
+              liveStartsAt:
+                order
+                  .selected_session_starts_at ||
+                null,
 
-        liveEndsAt:
-          order
-            .selected_session_ends_at ||
-          null,
-      },
+              liveEndsAt:
+                order
+                  .selected_session_ends_at ||
+                null,
+            }
+          : null,
 
       package: {
         name:
@@ -5119,10 +5317,97 @@ async function updateConcertTimeRange(
     .run();
 }
 
+
+/*
+ * LIVE:
+ *   หมดอายุตามวันแสดงที่ซื้อ
+ *
+ * LIVE + REPLAY:
+ *   วันแสดงที่ซื้อ + ระยะ Replay
+ *
+ * REPLAY:
+ *   เริ่มนับจากวันที่อนุมัติการซื้อ
+ */
 async function calculateAccessExpiry(
   order,
   env
 ) {
+  const accessType =
+    cleanText(
+      order.access_type
+    ) ||
+    "live";
+
+  /*
+   * =========================================
+   * REPLAY ONLY
+   * =========================================
+   */
+
+  if (
+    accessType ===
+    "replay"
+  ) {
+    const approvedAt =
+      order.approved_at ||
+      new Date()
+        .toISOString();
+
+    const expiry =
+      new Date(
+        approvedAt
+      );
+
+    if (
+      Number.isNaN(
+        expiry.getTime()
+      )
+    ) {
+      return null;
+    }
+
+    const replayMonths =
+      Number(
+        order.replay_months ||
+        0
+      );
+
+    const replayDays =
+      Number(
+        order.replay_days ||
+        0
+      );
+
+    if (
+      replayMonths > 0
+    ) {
+      addUtcCalendarMonths(
+        expiry,
+        replayMonths
+      );
+
+    } else if (
+      replayDays > 0
+    ) {
+      expiry.setUTCDate(
+        expiry.getUTCDate() +
+        replayDays
+      );
+
+    } else {
+      return null;
+    }
+
+    return expiry
+      .toISOString();
+  }
+
+  /*
+   * =========================================
+   * LIVE / LIVE + REPLAY
+   * =========================================
+   */
+
   let finalSessionEnd =
     order
       .selected_session_ends_at ||
@@ -5202,7 +5487,7 @@ async function calculateAccessExpiry(
   }
 
   if (
-    order.access_type ===
+    accessType ===
     "live_replay"
   ) {
     const replayMonths =
@@ -5326,8 +5611,12 @@ function validatePackageInput(
   }
 
   if (
-    accessType ===
-      "live_replay" &&
+    (
+      accessType ===
+        "live_replay" ||
+      accessType ===
+        "replay"
+    ) &&
     Number(
       replayDays
     ) < 1 &&
@@ -5335,7 +5624,10 @@ function validatePackageInput(
       replayMonths
     ) < 1
   ) {
-    return "แพ็กเกจ LIVE + REPLAY ต้องมีจำนวนวันหรือจำนวนเดือน Replay";
+    return accessType ===
+      "replay"
+        ? "แพ็กเกจ REPLAY ต้องมีจำนวนวันหรือจำนวนเดือน Replay"
+        : "แพ็กเกจ LIVE + REPLAY ต้องมีจำนวนวันหรือจำนวนเดือน Replay";
   }
 
   if (
@@ -5357,8 +5649,6 @@ function validatePackageInput(
 
   return "";
 }
-
-
 /*
  * =========================================
  * LINE WEBHOOK
@@ -5723,6 +6013,12 @@ function buildLineReplyMessage(
     ) ||
     normalized.includes(
       "คอนเสิร์ต"
+    ) ||
+    normalized.includes(
+      "รีเพลย์"
+    ) ||
+    normalized.includes(
+      "replay"
     );
 
   if (
@@ -5752,7 +6048,7 @@ function buildLineReplyMessage(
     return (
       "LIVEHUB TH 🎵\n\n" +
       "บัญชี LINE ของคุณพร้อมสำหรับการสั่งซื้อแล้ว\n\n" +
-      "กรุณาเปิดลิงก์นี้เพื่อเลือกคอนเสิร์ตและชำระเงิน\n\n" +
+      "กรุณาเปิดลิงก์นี้เพื่อเลือก LIVE CONCERT หรือ REPLAY และชำระเงิน\n\n" +
       paymentUrl +
       "\n\n" +
       "ลิงก์นี้เป็นลิงก์เฉพาะบัญชีของคุณ กรุณาอย่าส่งต่อให้ผู้อื่น"
@@ -5773,7 +6069,7 @@ function buildLineReplyMessage(
   return (
     "LIVEHUB TH 🎵\n\n" +
     "ได้รับข้อความของคุณเรียบร้อยแล้ว\n\n" +
-    "พิมพ์คำว่า “ซื้อ” เพื่อเข้าสู่ขั้นตอนเลือกคอนเสิร์ตและชำระเงิน"
+    "พิมพ์คำว่า “ซื้อ” เพื่อเข้าสู่ LIVEHUB TH"
   );
 }
 
@@ -6004,6 +6300,10 @@ async function pushApprovedOrderToLine(
       orderData.liveStartsAt
     );
 
+  const isReplayOnly =
+    orderData.accessType ===
+    "replay";
+
   const message =
     "LIVEHUB TH ✅\n\n" +
     "ตรวจสอบการชำระเงินเรียบร้อยแล้ว\n\n" +
@@ -6013,6 +6313,12 @@ async function pushApprovedOrderToLine(
         ? "คอนเสิร์ต: " +
           concertTitle +
           "\n"
+        : ""
+    ) +
+
+    (
+      isReplayOnly
+        ? "ประเภท: REPLAY CONCERT\n"
         : ""
     ) +
 
@@ -6566,6 +6872,15 @@ function normalizePrice(
   return price;
 }
 
+
+/*
+ * 3 ประเภทสิทธิ์
+ *
+ * live
+ * live_replay
+ * replay
+ */
+
 function normalizeAccessType(
   value
 ) {
@@ -6578,6 +6893,7 @@ function normalizeAccessType(
   const allowed = [
     "live",
     "live_replay",
+    "replay",
   ];
 
   return allowed.includes(
