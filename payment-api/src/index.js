@@ -7576,7 +7576,67 @@ function normalizeConcertStatus(
     ? status
     : "";
 }
+function normalizePackageInput(
+  body
+) {
+  const accessType =
+    normalizeAccessType(
+      body.accessType
+    );
 
+  return {
+    concertId:
+      cleanText(
+        body.concertId
+      ),
+
+    name:
+      cleanText(
+        body.name
+      ),
+
+    price:
+      normalizePrice(
+        body.price
+      ),
+
+    accessType,
+
+    replayDays:
+      normalizeReplayDays(
+        body.replayDays,
+        accessType
+      ),
+
+    replayMonths:
+      normalizeReplayMonths(
+        body.replayMonths,
+        accessType
+      ),
+
+    hasEcard:
+      normalizeBooleanNumber(
+        body.hasEcard,
+        0
+      ),
+
+    videoQuality:
+      normalizeVideoQuality(
+        body.videoQuality
+      ),
+
+    sessionIds:
+      normalizeIdArray(
+        body.sessionIds
+      ),
+
+    isActive:
+      normalizeBooleanNumber(
+        body.isActive,
+        1
+      ),
+  };
+}
 function normalizePrice(
   value
 ) {
