@@ -7637,6 +7637,75 @@ function normalizePackageInput(
       ),
   };
 }
+function normalizePackageInput(
+  body
+) {
+  const accessType =
+    normalizeAccessType(
+      body.accessType ??
+      body.access_type
+    );
+
+  return {
+    concertId:
+      cleanText(
+        body.concertId ??
+        body.concert_id
+      ),
+
+    name:
+      cleanText(
+        body.name
+      ),
+
+    price:
+      normalizePrice(
+        body.price
+      ),
+
+    accessType,
+
+    replayDays:
+      normalizeReplayDays(
+        body.replayDays ??
+        body.replay_days,
+        accessType
+      ),
+
+    replayMonths:
+      normalizeReplayMonths(
+        body.replayMonths ??
+        body.replay_months,
+        accessType
+      ),
+
+    hasEcard:
+      normalizeBooleanNumber(
+        body.hasEcard ??
+        body.has_ecard,
+        0
+      ),
+
+    videoQuality:
+      normalizeVideoQuality(
+        body.videoQuality ??
+        body.video_quality
+      ),
+
+    sessionIds:
+      normalizeIdArray(
+        body.sessionIds ??
+        body.session_ids
+      ),
+
+    isActive:
+      normalizeBooleanNumber(
+        body.isActive ??
+        body.is_active,
+        1
+      ),
+  };
+}
 function normalizePrice(
   value
 ) {
