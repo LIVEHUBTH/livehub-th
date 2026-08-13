@@ -78,7 +78,42 @@ export default {
           corsHeaders
         );
       }
+/*
+ * =========================================
+ * PUBLIC SITE ASSET
+ * =========================================
+ */
 
+if (
+  path.startsWith("/api/site-asset/") &&
+  request.method === "GET"
+) {
+  const assetKey =
+    getSiteAssetKey(
+      path
+    );
+
+  return await getSiteAsset(
+    assetKey,
+    env,
+    corsHeaders
+  );
+}
+/*
+ * ==========================================
+ * PUBLIC SITE SETTINGS
+ * ==========================================
+ */
+
+if (
+  path === "/api/site-settings" &&
+  request.method === "GET"
+) {
+  return await getSiteSettings(
+    env,
+    corsHeaders
+  );
+}
       /*
        * =========================================
        * PAYMENT
@@ -184,7 +219,22 @@ export default {
           corsHeaders
         );
       }
+/*
+ * =========================================
+ * ADMIN SITE ASSETS
+ * =========================================
+ */
 
+if (
+  path === "/api/admin/site-assets" &&
+  request.method === "POST"
+) {
+  return await uploadSiteAsset(
+    request,
+    env,
+    corsHeaders
+  );
+}
       /*
        * =========================================
        * ADMIN CONCERT COVER
@@ -1033,7 +1083,273 @@ async function getConcertCover(
     }
   );
 }
+/*
+ * =========================================
+ * SITE ASSETS
+ * LOGO / HERO BACKGROUND
+ * =========================================
+ */
 
+async function uploadSiteAsset(
+  request,
+  env,
+  corsHeaders
+) {
+  if (!env.SLIPS) {
+    return errorResponse(
+      "ไม่พบ R2 Storage",
+      500,
+      corsHeaders
+    );
+  }
+
+  let formData;
+
+  try {
+    formData =
+      await request.formData();
+  } catch {
+    return errorResponse(
+      "ข้อมูลอัปโหลดไม่ถูกต้อง",
+      400,
+      corsHeaders
+    );
+  }
+
+  const file =
+    formData.get("file") ||
+    formData.get("image");
+
+  const assetType =
+    cleanText(
+      formData.get("type")
+    )
+      .toLowerCase();
+
+  if (
+    ![
+      "logo",
+      "hero-background",
+    ].includes(assetType)
+  ) {
+    return errorResponse(
+      "ประเภทภาพไม่ถูกต้อง",
+      400,
+      corsHeaders
+    );
+  }
+
+  if (
+    !(file instanceof File) ||
+    file.size === 0
+  ) {
+    return errorResponse(
+      "กรุณาเลือกรูปภาพ",
+      400,
+      corsHeaders
+    );
+  }
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+  ];
+
+  if (
+    !allowedTypes.includes(
+      file.type
+    )
+  ) {
+    return errorResponse(
+      "รองรับเฉพาะ JPG, PNG, WEBP และ GIF",
+      400,
+      corsHeaders
+    );
+  }
+
+  if (
+    file.size >
+    10 * 1024 * 1024
+  ) {
+    return errorResponse(
+      "รูปต้องมีขนาดไม่เกิน 10 MB",
+      400,
+      corsHeaders
+    );
+  }
+
+  const extension =
+    getImageExtension(
+      file.type
+    );
+
+  const assetKey =
+    "site-assets/" +
+    assetType +
+    "-" +
+    Date.now() +
+    "-" +
+    crypto
+      .randomUUID()
+      .replaceAll("-", "")
+      .slice(0, 12)
+      .toLowerCase() +
+    "." +
+    extension;
+
+  const fileBytes =
+    await file.arrayBuffer();
+
+  await env.SLIPS.put(
+    assetKey,
+    fileBytes,
+    {
+      httpMetadata: {
+        contentType:
+          file.type,
+      },
+
+      customMetadata: {
+        type:
+          assetType,
+
+        originalName:
+          String(
+            file.name ||
+            ""
+          ).slice(
+            0,
+            200
+          ),
+
+        uploadedAt:
+          new Date()
+            .toISOString(),
+      },
+    }
+  );
+
+  const assetUrl =
+    new URL(
+      request.url
+    ).origin +
+    "/api/site-asset/" +
+    encodeURIComponent(
+      assetKey
+    );
+
+  return jsonResponse(
+    {
+      success: true,
+
+      type:
+        assetType,
+
+      assetKey,
+
+      url:
+        assetUrl,
+
+      message:
+        "อัปโหลดรูปสำเร็จ",
+    },
+    201,
+    corsHeaders
+  );
+}
+
+
+async function getSiteAsset(
+  assetKey,
+  env,
+  corsHeaders
+) {
+  if (
+    !assetKey ||
+    !assetKey.startsWith(
+      "site-assets/"
+    )
+  ) {
+    return errorResponse(
+      "ไม่พบรูปภาพ",
+      404,
+      corsHeaders
+    );
+  }
+
+  if (!env.SLIPS) {
+    return errorResponse(
+      "ไม่พบระบบจัดเก็บรูป",
+      500,
+      corsHeaders
+    );
+  }
+
+  const object =
+    await env.SLIPS.get(
+      assetKey
+    );
+
+  if (!object) {
+    return errorResponse(
+      "ไม่พบรูปภาพ",
+      404,
+      corsHeaders
+    );
+  }
+
+  const headers =
+    new Headers();
+
+  object.writeHttpMetadata(
+    headers
+  );
+
+  headers.set(
+    "Content-Type",
+    object.httpMetadata
+      ?.contentType ||
+      "image/jpeg"
+  );
+
+  headers.set(
+    "Cache-Control",
+    "public, max-age=31536000, immutable"
+  );
+
+  headers.set(
+    "Access-Control-Allow-Origin",
+    corsHeaders[
+      "Access-Control-Allow-Origin"
+    ] ||
+    "*"
+  );
+
+  headers.set(
+    "X-Content-Type-Options",
+    "nosniff"
+  );
+
+  return new Response(
+    object.body,
+    {
+      status: 200,
+      headers,
+    }
+  );
+}
+
+
+function getSiteAssetKey(
+  path
+) {
+  return getPathId(
+    path,
+    "/api/site-asset/"
+  );
+}
 
 /*
  * =========================================
@@ -9491,5 +9807,58 @@ async function safeResponseText(
 
   } catch {
     return "";
+  }
+}
+
+/*
+ * ==========================================
+ * PUBLIC SITE SETTINGS
+ * ==========================================
+ */
+
+async function getSiteSettings(
+  env,
+  corsHeaders
+) {
+  try {
+    const row = await env.DB
+      .prepare(`
+        SELECT
+          setting_key,
+          setting_value
+        FROM site_settings
+      `)
+      .all();
+
+    const settings = {};
+
+    for (const item of row.results || []) {
+      settings[item.setting_key] =
+        item.setting_value;
+    }
+
+    return jsonResponse(
+      {
+        ok: true,
+        settings
+      },
+      200,
+      corsHeaders
+    );
+
+  } catch (error) {
+    console.error(
+      "getSiteSettings error:",
+      error
+    );
+
+    return jsonResponse(
+      {
+        ok: false,
+        error: "ไม่สามารถโหลดการตั้งค่าเว็บไซต์ได้"
+      },
+      500,
+      corsHeaders
+    );
   }
 }
