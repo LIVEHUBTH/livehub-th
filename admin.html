@@ -138,8 +138,7 @@
       margin-bottom: 24px;
       padding: 24px;
 
-      background:
-        rgba(10, 10, 11, 0.96);
+      background: rgba(10, 10, 11, 0.96);
 
       border: 1px solid var(--line);
       border-radius: 26px;
@@ -204,7 +203,6 @@
     textarea:focus,
     select:focus {
       border-color: var(--pink);
-
       box-shadow:
         0 0 0 2px
         rgba(255, 10, 131, 0.12);
@@ -229,9 +227,7 @@
     .hint {
       display: block;
       margin-top: 7px;
-
       color: var(--muted);
-
       font-size: 14px;
       line-height: 1.5;
     }
@@ -266,12 +262,9 @@
     .btn {
       min-height: 56px;
       padding: 13px 18px;
-
       color: #ffffff;
-
       border: 0;
       border-radius: 16px;
-
       font-weight: 800;
     }
 
@@ -306,20 +299,15 @@
     .btn-small {
       min-height: 44px;
       padding: 10px 15px;
-
       border-radius: 13px;
-
       font-size: 14px;
     }
 
     .status-box {
       display: none;
-
       margin-bottom: 20px;
       padding: 15px 17px;
-
       border-radius: 15px;
-
       line-height: 1.55;
     }
 
@@ -369,11 +357,8 @@
 
     .card {
       position: relative;
-
       padding: 20px;
-
       background: #09090a;
-
       border: 1px solid #343438;
       border-radius: 22px;
     }
@@ -384,18 +369,14 @@
 
     .card-title {
       margin: 0 0 10px;
-
       color: var(--pink2);
-
       font-size: 22px;
       font-weight: 900;
     }
 
     .card-text {
       margin: 5px 0;
-
       color: #c5c5ca;
-
       line-height: 1.55;
       overflow-wrap: anywhere;
     }
@@ -411,11 +392,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-
       padding: 8px 13px;
-
       border-radius: 999px;
-
       font-size: 13px;
       font-weight: 800;
     }
@@ -442,22 +420,169 @@
 
     .empty {
       padding: 24px;
-
       text-align: center;
-
       color: var(--muted);
-
       border: 1px dashed #3b3b40;
       border-radius: 18px;
-
       line-height: 1.65;
     }
+
+    /* ======================================
+       WEBSITE SETTINGS
+       ====================================== */
+
+    .settings-panel {
+      border-color: #6b214d;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255, 10, 131, 0.07),
+          rgba(10, 10, 11, 0.97) 30%
+        );
+    }
+
+    .settings-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .settings-heading-icon {
+      display: grid;
+      place-items: center;
+
+      width: 44px;
+      height: 44px;
+
+      flex: 0 0 auto;
+
+      color: #ffffff;
+      background: #351024;
+
+      border: 1px solid #8c2d63;
+      border-radius: 14px;
+
+      font-size: 22px;
+    }
+
+    .settings-heading .panel-title {
+      margin: 0;
+    }
+
+    .settings-group {
+      margin-top: 22px;
+      padding: 20px;
+
+      background: #09090b;
+
+      border: 1px solid #343438;
+      border-radius: 20px;
+    }
+
+    .settings-group-title {
+      margin: 0 0 17px;
+      color: var(--pink2);
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .settings-image-box {
+      padding: 16px;
+
+      background: #0b0b0d;
+
+      border: 1px solid #39393e;
+      border-radius: 18px;
+    }
+
+    .settings-preview-wrap {
+      display: none;
+      margin-bottom: 15px;
+      overflow: hidden;
+
+      background: #050505;
+
+      border: 1px solid #343438;
+      border-radius: 16px;
+    }
+
+    .settings-preview-wrap.show {
+      display: block;
+    }
+
+    .settings-logo-preview {
+      width: 100%;
+      height: 180px;
+      object-fit: contain;
+      padding: 20px;
+      background: #050505;
+    }
+
+    .settings-hero-preview {
+      width: 100%;
+      max-height: 480px;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      background: #050505;
+    }
+
+    .upload-status {
+      display: none;
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 13px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .upload-status.show {
+      display: block;
+    }
+
+    .upload-status.info {
+      color: #ffe67b;
+      background: #1d1b0b;
+      border: 1px solid #6d621e;
+    }
+
+    .upload-status.success {
+      color: #6deca6;
+      background: #092517;
+      border: 1px solid #17693d;
+    }
+
+    .upload-status.error {
+      color: #ff9bab;
+      background: #2a0d13;
+      border: 1px solid #7a2736;
+    }
+
+    .settings-current-value {
+      margin-top: 10px;
+      color: #99999f;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .settings-actions {
+      display: grid;
+      grid-template-columns:
+        minmax(0, 2fr)
+        minmax(0, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    /* ======================================
+       ORDER
+       ====================================== */
 
     .order-tools {
       display: grid;
       grid-template-columns:
         minmax(0, 1fr) auto;
-
       gap: 14px;
       align-items: end;
     }
@@ -473,7 +598,6 @@
       padding: 10px 15px;
 
       color: #ffffff;
-
       background: #27272a;
 
       border: 1px solid #444449;
@@ -514,12 +638,9 @@
 
     .order-id {
       margin: 0;
-
       color: var(--pink2);
-
       font-family: monospace;
       font-size: 17px;
-
       overflow-wrap: anywhere;
     }
 
@@ -527,7 +648,6 @@
       display: grid;
       grid-template-columns:
         repeat(2, minmax(0, 1fr));
-
       gap: 11px 18px;
     }
 
@@ -544,17 +664,13 @@
     .order-detail-label {
       display: block;
       margin-bottom: 5px;
-
       color: var(--muted);
-
       font-size: 13px;
     }
 
     .order-detail-value {
       display: block;
-
       color: #ffffff;
-
       line-height: 1.5;
       overflow-wrap: anywhere;
     }
@@ -576,18 +692,14 @@
 
     .selected-session-title {
       margin: 0 0 8px;
-
       color: var(--pink2);
-
       font-size: 17px;
       font-weight: 900;
     }
 
     .selected-session-box p {
       margin: 4px 0;
-
       color: #d4d4d8;
-
       line-height: 1.55;
     }
 
@@ -615,9 +727,7 @@
     .order-session-time {
       display: block;
       margin-top: 4px;
-
       color: var(--muted);
-
       font-size: 13px;
       line-height: 1.5;
     }
@@ -634,21 +744,21 @@
 
     .access-code {
       margin: 7px 0 0;
-
       color: #79edac;
-
       font-family: monospace;
       font-size: 20px;
       font-weight: 900;
-
       overflow-wrap: anywhere;
     }
+
+    /* ======================================
+       SESSION / PACKAGE
+       ====================================== */
 
     .session-choice-tools {
       display: flex;
       flex-wrap: wrap;
       gap: 9px;
-
       margin-bottom: 12px;
     }
 
@@ -657,7 +767,6 @@
       padding: 9px 14px;
 
       color: #ffffff;
-
       background: #29292c;
 
       border: 1px solid #46464c;
@@ -705,9 +814,7 @@
       width: 25px;
       height: 25px;
       margin-top: 2px;
-
       accent-color: var(--pink);
-
       flex: 0 0 auto;
     }
 
@@ -718,17 +825,13 @@
 
     .session-choice-name {
       display: block;
-
       margin-bottom: 5px;
-
       font-weight: 800;
     }
 
     .session-choice-time {
       display: block;
-
       color: var(--muted);
-
       font-size: 14px;
       font-weight: 400;
     }
@@ -745,80 +848,61 @@
 
     .package-feature-preview h4 {
       margin: 0 0 12px;
-
       color: var(--pink2);
-
       font-size: 18px;
     }
 
     .package-feature-preview ul {
       margin: 0;
       padding-left: 22px;
-
       color: #d3d3d7;
-
       line-height: 1.8;
     }
 
-    .legacy-note {
-      display: none;
-
-      margin-top: 10px;
-      padding: 12px 14px;
-
-      color: #ffe480;
-      background: #211e0d;
-
-      border: 1px solid #685b1d;
-      border-radius: 14px;
-
-      font-size: 14px;
-      line-height: 1.55;
-    }
-
-    .legacy-note.show {
-      display: block;
-    }
-
+    .legacy-note,
     .replay-note {
       display: none;
-
       margin-top: 12px;
-      padding: 14px 15px;
-
-      color: #ff9fd0;
-      background: #241021;
-
-      border: 1px solid #7d2c63;
+      padding: 12px 14px;
       border-radius: 14px;
-
-      line-height: 1.55;
       font-size: 14px;
-      font-weight: 700;
+      line-height: 1.55;
     }
 
+    .legacy-note.show,
     .replay-note.show {
       display: block;
     }
 
+    .legacy-note {
+      color: #ffe480;
+      background: #211e0d;
+      border: 1px solid #685b1d;
+    }
+
+    .replay-note {
+      color: #ff9fd0;
+      background: #241021;
+      border: 1px solid #7d2c63;
+      font-weight: 700;
+    }
+
+    /* ======================================
+       CONCERT COVER
+       ====================================== */
+
     .cover-upload-box {
       padding: 16px;
-
       background: #0b0b0d;
-
       border: 1px solid #39393e;
       border-radius: 18px;
     }
 
     .cover-preview-wrap {
       display: none;
-
       margin-bottom: 16px;
-
       overflow: hidden;
-
       background: #080808;
-
       border: 1px solid #343438;
       border-radius: 16px;
     }
@@ -830,10 +914,8 @@
     .cover-preview {
       width: 100%;
       max-height: 440px;
-
       aspect-ratio: 4 / 3;
       object-fit: contain;
-
       background: #050505;
     }
 
@@ -850,12 +932,9 @@
 
     .cover-status {
       display: none;
-
       margin-top: 12px;
       padding: 12px 14px;
-
       border-radius: 13px;
-
       line-height: 1.5;
       font-size: 14px;
     }
@@ -882,6 +961,10 @@
       color: #ff9bab;
     }
 
+    /* ======================================
+       SLIP MODAL
+       ====================================== */
+
     .slip-modal {
       position: fixed;
       inset: 0;
@@ -893,8 +976,7 @@
 
       padding: 18px;
 
-      background:
-        rgba(0, 0, 0, 0.88);
+      background: rgba(0, 0, 0, 0.88);
     }
 
     .slip-modal.show {
@@ -904,9 +986,7 @@
     .slip-dialog {
       width: min(760px, 100%);
       max-height: 92vh;
-
       overflow: auto;
-
       padding: 18px;
 
       background: #0b0b0d;
@@ -920,15 +1000,12 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-
       margin-bottom: 15px;
     }
 
     .slip-dialog-title {
       margin: 0;
-
       color: var(--pink2);
-
       font-size: 21px;
     }
 
@@ -948,10 +1025,8 @@
 
     .slip-image-wrap {
       min-height: 240px;
-
       display: grid;
       place-items: center;
-
       overflow: hidden;
 
       background: #111113;
@@ -975,13 +1050,15 @@
         padding: 20px 14px 60px;
       }
 
-      .panel {
+      .panel,
+      .settings-group {
         padding: 18px;
         border-radius: 20px;
       }
 
       .grid,
       .actions,
+      .settings-actions,
       .order-grid,
       .order-tools {
         grid-template-columns: 1fr;
@@ -998,6 +1075,10 @@
       .order-head {
         flex-direction: column;
       }
+
+      .settings-logo-preview {
+        height: 140px;
+      }
     }
   </style>
 </head>
@@ -1013,8 +1094,8 @@
     </h1>
 
     <p class="subtitle">
-      ระบบจัดการคอนเสิร์ต วันแสดง แพ็กเกจ
-      คำสั่งซื้อ และการชำระเงิน
+      ระบบจัดการเว็บไซต์ คอนเสิร์ต วันแสดง
+      แพ็กเกจ คำสั่งซื้อ และการชำระเงิน
     </p>
 
     <div class="top-links">
@@ -1022,13 +1103,15 @@
       <a
         class="top-link"
         href="index.html"
+        target="_blank"
       >
-        หน้าแรก
+        เปิดหน้าเว็บไซต์
       </a>
 
       <a
         class="top-link pink"
         href="tickets.html"
+        target="_blank"
       >
         หน้าซื้อบัตร
       </a>
@@ -1036,6 +1119,7 @@
       <a
         class="top-link pink"
         href="replay.html"
+        target="_blank"
       >
         หน้า REPLAY
       </a>
@@ -1048,6 +1132,10 @@
     id="globalMessage"
     class="status-box"
   ></div>
+
+  <!-- =====================================
+       LOGIN
+       ===================================== -->
 
   <section
     id="loginPanel"
@@ -1099,6 +1187,315 @@
     id="adminArea"
     class="admin-area"
   >
+
+    <!-- =====================================
+         WEBSITE SETTINGS
+         ===================================== -->
+
+    <section
+      id="siteSettingsSection"
+      class="panel settings-panel"
+    >
+
+      <div class="settings-heading">
+
+        <div class="settings-heading-icon">
+          ⚙
+        </div>
+
+        <h2 class="panel-title">
+          ตั้งค่าหน้าเว็บไซต์
+        </h2>
+
+      </div>
+
+      <p class="panel-subtitle">
+        เปลี่ยนโลโก้ ข้อความหน้าแรก ภาพ Hero
+        และลิงก์เมนูได้จากหน้านี้
+        โดยไม่ต้องแก้ index.html
+      </p>
+
+      <!-- LOGO -->
+
+      <div class="settings-group">
+
+        <h3 class="settings-group-title">
+          โลโก้เว็บไซต์
+        </h3>
+
+        <div class="grid">
+
+          <div class="field full">
+
+            <label for="siteLogoText">
+              ข้อความ Logo
+            </label>
+
+            <input
+              id="siteLogoText"
+              type="text"
+              value="LIVEHUB TH"
+              placeholder="LIVEHUB TH"
+            >
+
+          </div>
+
+          <div class="field full">
+
+            <label for="siteLogoFile">
+              รูป Logo
+            </label>
+
+            <div class="settings-image-box">
+
+              <div
+                id="siteLogoPreviewWrap"
+                class="settings-preview-wrap"
+              >
+                <img
+                  id="siteLogoPreview"
+                  class="settings-logo-preview"
+                  alt="ตัวอย่าง Logo"
+                >
+              </div>
+
+              <input
+                id="siteLogoFile"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+              >
+
+              <span class="hint">
+                เลือกรูปจาก Photo Library หรือ Files บน iPad ได้
+              </span>
+
+              <div class="cover-actions">
+
+                <button
+                  id="removeSiteLogoButton"
+                  class="btn btn-secondary btn-small"
+                  type="button"
+                >
+                  ล้าง Logo
+                </button>
+
+              </div>
+
+              <div
+                id="siteLogoStatus"
+                class="upload-status"
+              ></div>
+
+              <div
+                id="siteLogoCurrent"
+                class="settings-current-value"
+              ></div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- HERO -->
+
+      <div class="settings-group">
+
+        <h3 class="settings-group-title">
+          Hero หน้าแรก
+        </h3>
+
+        <div class="grid">
+
+          <div class="field full">
+
+            <label for="siteHeroTitle">
+              หัวข้อใหญ่
+            </label>
+
+            <input
+              id="siteHeroTitle"
+              type="text"
+              value="LIVEHUB TH"
+              placeholder="LIVEHUB TH"
+            >
+
+          </div>
+
+          <div class="field full">
+
+            <label for="siteHeroSubtitle">
+              ข้อความใต้หัวข้อ
+            </label>
+
+            <textarea
+              id="siteHeroSubtitle"
+              placeholder="ศูนย์รวมไลฟ์สตรีมคอนเสิร์ตและรีเพลย์คอนเสิร์ต"
+            ></textarea>
+
+          </div>
+
+          <div class="field full">
+
+            <label for="siteHeroFile">
+              ภาพพื้นหลัง Hero
+            </label>
+
+            <div class="settings-image-box">
+
+              <div
+                id="siteHeroPreviewWrap"
+                class="settings-preview-wrap"
+              >
+                <img
+                  id="siteHeroPreview"
+                  class="settings-hero-preview"
+                  alt="ตัวอย่าง Hero Background"
+                >
+              </div>
+
+              <input
+                id="siteHeroFile"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+              >
+
+              <span class="hint">
+                เลือกภาพจาก Photo Library หรือ Files
+                ระบบหน้าเว็บจะปรับขนาดตามหน้าจออัตโนมัติ
+              </span>
+
+              <div class="cover-actions">
+
+                <button
+                  id="removeSiteHeroButton"
+                  class="btn btn-secondary btn-small"
+                  type="button"
+                >
+                  ล้างภาพ Hero
+                </button>
+
+              </div>
+
+              <div
+                id="siteHeroStatus"
+                class="upload-status"
+              ></div>
+
+              <div
+                id="siteHeroCurrent"
+                class="settings-current-value"
+              ></div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- LINKS -->
+
+      <div class="settings-group">
+
+        <h3 class="settings-group-title">
+          ลิงก์หน้าเว็บไซต์
+        </h3>
+
+        <div class="grid">
+
+          <div class="field">
+
+            <label for="siteLiveLink">
+              LIVE CONCERT
+            </label>
+
+            <input
+              id="siteLiveLink"
+              type="text"
+              value="/events.html?mode=live"
+              placeholder="/events.html?mode=live"
+            >
+
+          </div>
+
+          <div class="field">
+
+            <label for="siteReplayLink">
+              REPLAY CONCERT
+            </label>
+
+            <input
+              id="siteReplayLink"
+              type="text"
+              value="/events.html?mode=replay"
+              placeholder="/events.html?mode=replay"
+            >
+
+          </div>
+
+          <div class="field">
+
+            <label for="sitePackageLink">
+              แพ็กเกจ
+            </label>
+
+            <input
+              id="sitePackageLink"
+              type="text"
+              value="#packages"
+              placeholder="#packages"
+            >
+
+          </div>
+
+          <div class="field">
+
+            <label for="siteContactLink">
+              ติดต่อ
+            </label>
+
+            <input
+              id="siteContactLink"
+              type="text"
+              value="#contact"
+              placeholder="#contact"
+            >
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="settings-actions">
+
+        <button
+          id="saveSiteSettingsButton"
+          class="btn btn-primary"
+          type="button"
+        >
+          บันทึกการตั้งค่าหน้าเว็บไซต์
+        </button>
+
+        <button
+          id="reloadSiteSettingsButton"
+          class="btn btn-secondary"
+          type="button"
+        >
+          โหลดค่าใหม่
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- =====================================
+         ORDERS
+         ===================================== -->
 
     <section class="panel">
 
@@ -1169,12 +1566,21 @@
       </div>
 
     </section>
+    <!-- =====================================
+         CONCERTS
+         ===================================== -->
 
     <section class="panel">
 
       <h2 class="panel-title">
         คอนเสิร์ต
       </h2>
+
+      <p class="panel-subtitle">
+        เพิ่มคอนเสิร์ตใหม่ แก้ไขข้อมูล
+        อัปโหลดภาพหน้าปก และเลือกคอนเสิร์ต
+        เพื่อจัดการวันแสดงกับแพ็กเกจ
+      </p>
 
       <button
         id="newConcertButton"
@@ -1190,6 +1596,10 @@
       ></div>
 
     </section>
+
+    <!-- =====================================
+         CONCERT FORM
+         ===================================== -->
 
     <section
       id="concertFormSection"
@@ -1270,7 +1680,8 @@
 
             <span class="hint">
               สามารถเลือกจาก Photo Library หรือ Files ได้
-              รองรับ JPG, PNG, WEBP และ GIF ขนาดไม่เกิน 8 MB
+              รองรับ JPG, PNG, WEBP และ GIF
+              ขนาดไม่เกิน 8 MB
             </span>
 
             <div class="cover-actions">
@@ -1375,6 +1786,10 @@
       </div>
 
     </section>
+
+    <!-- =====================================
+         SESSIONS
+         ===================================== -->
 
     <section
       id="sessionSection"
@@ -1504,6 +1919,10 @@
 
     </section>
 
+    <!-- =====================================
+         PACKAGES
+         ===================================== -->
+
     <section
       id="packageSection"
       class="panel hidden"
@@ -1540,7 +1959,7 @@
           <input
             id="packageName"
             type="text"
-            placeholder="เช่น REPLAY DAY 1 หรือ REPLAY ALL DAYS"
+            placeholder="เช่น LIVE DAY 1 / LIVE ALL DAYS / REPLAY"
           >
 
         </div>
@@ -1582,6 +2001,32 @@
             </option>
 
           </select>
+
+        </div>
+
+        <div class="field">
+
+          <label for="sessionSelectionMode">
+            รูปแบบสิทธิ์วันแสดง
+          </label>
+
+          <select id="sessionSelectionMode">
+
+            <option value="single">
+              ลูกค้าเลือกได้ 1 วัน
+            </option>
+
+            <option value="all">
+              ได้ทุกวันที่แพ็กเกจครอบคลุม
+            </option>
+
+          </select>
+
+          <span class="hint">
+            single = ลูกค้าเลือกวันเอง 1 วันตอนซื้อ
+            <br>
+            all = ลูกค้าได้ทุกวันที่เลือกไว้ในแพ็กเกจ
+          </span>
 
         </div>
 
@@ -1656,6 +2101,28 @@
 
         </div>
 
+        <div class="field">
+
+          <label>
+            สถานะแพ็กเกจ
+          </label>
+
+          <div class="checkbox-row">
+
+            <input
+              id="packageActive"
+              type="checkbox"
+              checked
+            >
+
+            <label for="packageActive">
+              เปิดขายแพ็กเกจนี้
+            </label>
+
+          </div>
+
+        </div>
+
         <div class="field full">
 
           <label id="packageSessionLabel">
@@ -1697,30 +2164,7 @@
           <div
             id="replaySessionNote"
             class="replay-note"
-          >
-            REPLAY เท่านั้นสามารถเลือกได้ 1 วัน
-            หลายวัน หรือกด “เลือกทุกวัน”
-            สิทธิ์ของลูกค้าจะถูกบันทึกตามวันที่เลือกไว้ในแพ็กเกจ
-            และระยะเวลา REPLAY จะเริ่มนับจากวันที่ชำระเงินและได้รับอนุมัติ
-          </div>
-
-        </div>
-
-        <div class="field full">
-
-          <div class="checkbox-row">
-
-            <input
-              id="packageActive"
-              type="checkbox"
-              checked
-            >
-
-            <label for="packageActive">
-              เปิดขายแพ็กเกจนี้
-            </label>
-
-          </div>
+          ></div>
 
         </div>
 
@@ -1766,6 +2210,10 @@
   </div>
 
 </main>
+
+<!-- =====================================
+     SLIP MODAL
+     ===================================== -->
 
 <div
   id="slipModal"
@@ -1817,8 +2265,20 @@
 <script>
 "use strict";
 
+/*
+ * =========================================
+ * API
+ * =========================================
+ */
+
 const API =
   "https://livehub-payment-api.livehubth.workers.dev";
+
+/*
+ * =========================================
+ * STATE
+ * =========================================
+ */
 
 let adminToken = "";
 
@@ -1833,6 +2293,20 @@ let currentOrderStatus = "pending";
 let selectedCoverFile = null;
 let coverPreviewObjectUrl = "";
 let currentSlipObjectUrl = "";
+
+let selectedSiteLogoFile = null;
+let selectedSiteHeroFile = null;
+
+let siteLogoPreviewObjectUrl = "";
+let siteHeroPreviewObjectUrl = "";
+
+let currentSiteSettings = null;
+
+/*
+ * =========================================
+ * ELEMENT HELPERS
+ * =========================================
+ */
 
 const byId = id =>
   document.getElementById(id);
@@ -1897,6 +2371,66 @@ const slipImage =
 const slipLoading =
   byId("slipLoading");
 
+/*
+ * SITE SETTINGS ELEMENTS
+ */
+
+const siteLogoText =
+  byId("siteLogoText");
+
+const siteLogoFile =
+  byId("siteLogoFile");
+
+const siteLogoPreview =
+  byId("siteLogoPreview");
+
+const siteLogoPreviewWrap =
+  byId("siteLogoPreviewWrap");
+
+const siteLogoStatus =
+  byId("siteLogoStatus");
+
+const siteLogoCurrent =
+  byId("siteLogoCurrent");
+
+const siteHeroTitle =
+  byId("siteHeroTitle");
+
+const siteHeroSubtitle =
+  byId("siteHeroSubtitle");
+
+const siteHeroFile =
+  byId("siteHeroFile");
+
+const siteHeroPreview =
+  byId("siteHeroPreview");
+
+const siteHeroPreviewWrap =
+  byId("siteHeroPreviewWrap");
+
+const siteHeroStatus =
+  byId("siteHeroStatus");
+
+const siteHeroCurrent =
+  byId("siteHeroCurrent");
+
+const siteLiveLink =
+  byId("siteLiveLink");
+
+const siteReplayLink =
+  byId("siteReplayLink");
+
+const sitePackageLink =
+  byId("sitePackageLink");
+
+const siteContactLink =
+  byId("siteContactLink");
+
+/*
+ * =========================================
+ * API FETCH
+ * =========================================
+ */
 
 async function apiFetch(
   path,
@@ -1939,6 +2473,7 @@ async function apiFetch(
     try {
       data =
         await response.json();
+
     } catch {
       data = null;
     }
@@ -1956,6 +2491,12 @@ async function apiFetch(
     data
   };
 }
+
+/*
+ * =========================================
+ * GLOBAL MESSAGE
+ * =========================================
+ */
 
 function showMessage(
   text,
@@ -1981,6 +2522,12 @@ function clearMessage() {
   globalMessage.textContent =
     "";
 }
+
+/*
+ * =========================================
+ * LOGIN
+ * =========================================
+ */
 
 async function login() {
   const token =
@@ -2025,6 +2572,7 @@ async function login() {
     clearMessage();
 
     await Promise.all([
+      loadSiteSettings(),
       loadConcerts(),
       loadOrders(
         currentOrderStatus
@@ -2096,6 +2644,860 @@ byId(
   }
 );
 
+/*
+ * =========================================
+ * SITE SETTINGS
+ * =========================================
+ */
+
+async function loadSiteSettings() {
+  try {
+    const { data } =
+      await apiFetch(
+        "/api/admin/site-settings"
+      );
+
+    const settings =
+      data?.settings ||
+      {};
+
+    currentSiteSettings =
+      settings;
+
+    applySiteSettingsToForm(
+      settings
+    );
+
+  } catch (error) {
+    /*
+     * ถ้า Worker ยังไม่มี endpoint
+     * จะขึ้นข้อความนี้ เพื่อให้รู้ตรงจุด
+     */
+
+    showMessage(
+      error?.message ||
+      "โหลดการตั้งค่าหน้าเว็บไซต์ไม่สำเร็จ",
+      "error"
+    );
+  }
+}
+
+function applySiteSettingsToForm(
+  settings = {}
+) {
+  siteLogoText.value =
+    settings.logoText ||
+    settings.logo_text ||
+    "LIVEHUB TH";
+
+  siteHeroTitle.value =
+    settings.heroTitle ||
+    settings.hero_title ||
+    "LIVEHUB TH";
+
+  siteHeroSubtitle.value =
+    settings.heroSubtitle ||
+    settings.hero_subtitle ||
+    "ศูนย์รวมไลฟ์สตรีมคอนเสิร์ตและรีเพลย์คอนเสิร์ต";
+
+  siteLiveLink.value =
+    settings.liveLink ||
+    settings.live_link ||
+    "/events.html?mode=live";
+
+  siteReplayLink.value =
+    settings.replayLink ||
+    settings.replay_link ||
+    "/events.html?mode=replay";
+
+  sitePackageLink.value =
+    settings.packageLink ||
+    settings.package_link ||
+    "#packages";
+
+  siteContactLink.value =
+    settings.contactLink ||
+    settings.contact_link ||
+    "#contact";
+
+  const logoUrl =
+    settings.logoImageUrl ||
+    settings.logo_image_url ||
+    "";
+
+  const heroUrl =
+    settings.heroBackgroundUrl ||
+    settings.hero_background_url ||
+    "";
+
+  showSiteLogoExisting(
+    logoUrl
+  );
+
+  showSiteHeroExisting(
+    heroUrl
+  );
+}
+
+/*
+ * =========================================
+ * SITE IMAGE VALIDATION
+ * =========================================
+ */
+
+function validateSiteImageFile(
+  file
+) {
+  if (!file) {
+    return "กรุณาเลือกรูปภาพ";
+  }
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif"
+  ];
+
+  if (
+    !allowedTypes.includes(
+      file.type
+    )
+  ) {
+    return "รองรับเฉพาะ JPG, PNG, WEBP และ GIF";
+  }
+
+  if (
+    file.size >
+    10 * 1024 * 1024
+  ) {
+    return "รูปต้องมีขนาดไม่เกิน 10 MB";
+  }
+
+  return "";
+}
+
+/*
+ * =========================================
+ * LOGO FILE
+ * =========================================
+ */
+
+siteLogoFile.addEventListener(
+  "change",
+  () => {
+    const file =
+      siteLogoFile.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const error =
+      validateSiteImageFile(
+        file
+      );
+
+    if (error) {
+      siteLogoFile.value =
+        "";
+
+      showUploadStatus(
+        siteLogoStatus,
+        error,
+        "error"
+      );
+
+      return;
+    }
+
+    selectedSiteLogoFile =
+      file;
+
+    if (
+      siteLogoPreviewObjectUrl
+    ) {
+      URL.revokeObjectURL(
+        siteLogoPreviewObjectUrl
+      );
+    }
+
+    siteLogoPreviewObjectUrl =
+      URL.createObjectURL(
+        file
+      );
+
+    siteLogoPreview.src =
+      siteLogoPreviewObjectUrl;
+
+    siteLogoPreviewWrap.classList.add(
+      "show"
+    );
+
+    showUploadStatus(
+      siteLogoStatus,
+      "เลือกรูป Logo แล้ว ระบบจะอัปโหลดเมื่อกดบันทึก",
+      "info"
+    );
+  }
+);
+
+/*
+ * =========================================
+ * HERO FILE
+ * =========================================
+ */
+
+siteHeroFile.addEventListener(
+  "change",
+  () => {
+    const file =
+      siteHeroFile.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const error =
+      validateSiteImageFile(
+        file
+      );
+
+    if (error) {
+      siteHeroFile.value =
+        "";
+
+      showUploadStatus(
+        siteHeroStatus,
+        error,
+        "error"
+      );
+
+      return;
+    }
+
+    selectedSiteHeroFile =
+      file;
+
+    if (
+      siteHeroPreviewObjectUrl
+    ) {
+      URL.revokeObjectURL(
+        siteHeroPreviewObjectUrl
+      );
+    }
+
+    siteHeroPreviewObjectUrl =
+      URL.createObjectURL(
+        file
+      );
+
+    siteHeroPreview.src =
+      siteHeroPreviewObjectUrl;
+
+    siteHeroPreviewWrap.classList.add(
+      "show"
+    );
+
+    showUploadStatus(
+      siteHeroStatus,
+      "เลือกภาพ Hero แล้ว ระบบจะอัปโหลดเมื่อกดบันทึก",
+      "info"
+    );
+  }
+);
+
+/*
+ * =========================================
+ * SHOW EXISTING SITE LOGO
+ * =========================================
+ */
+
+function showSiteLogoExisting(
+  url
+) {
+  selectedSiteLogoFile =
+    null;
+
+  siteLogoFile.value =
+    "";
+
+  if (
+    siteLogoPreviewObjectUrl
+  ) {
+    URL.revokeObjectURL(
+      siteLogoPreviewObjectUrl
+    );
+
+    siteLogoPreviewObjectUrl =
+      "";
+  }
+
+  if (!url) {
+    siteLogoPreview.removeAttribute(
+      "src"
+    );
+
+    siteLogoPreviewWrap.classList.remove(
+      "show"
+    );
+
+    siteLogoCurrent.textContent =
+      "ยังไม่มีรูป Logo";
+
+    return;
+  }
+
+  siteLogoPreview.src =
+    url;
+
+  siteLogoPreviewWrap.classList.add(
+    "show"
+  );
+
+  siteLogoCurrent.textContent =
+    "รูปปัจจุบัน: " +
+    url;
+}
+
+/*
+ * =========================================
+ * SHOW EXISTING HERO
+ * =========================================
+ */
+
+function showSiteHeroExisting(
+  url
+) {
+  selectedSiteHeroFile =
+    null;
+
+  siteHeroFile.value =
+    "";
+
+  if (
+    siteHeroPreviewObjectUrl
+  ) {
+    URL.revokeObjectURL(
+      siteHeroPreviewObjectUrl
+    );
+
+    siteHeroPreviewObjectUrl =
+      "";
+  }
+
+  if (!url) {
+    siteHeroPreview.removeAttribute(
+      "src"
+    );
+
+    siteHeroPreviewWrap.classList.remove(
+      "show"
+    );
+
+    siteHeroCurrent.textContent =
+      "ยังไม่มีภาพ Hero";
+
+    return;
+  }
+
+  siteHeroPreview.src =
+    url;
+
+  siteHeroPreviewWrap.classList.add(
+    "show"
+  );
+
+  siteHeroCurrent.textContent =
+    "รูปปัจจุบัน: " +
+    url;
+}
+
+/*
+ * =========================================
+ * UPLOAD STATUS
+ * =========================================
+ */
+
+function showUploadStatus(
+  element,
+  text,
+  type
+) {
+  element.className =
+    "upload-status show " +
+    type;
+
+  element.textContent =
+    text;
+}
+
+function hideUploadStatus(
+  element
+) {
+  element.className =
+    "upload-status";
+
+  element.textContent =
+    "";
+}
+
+/*
+ * =========================================
+ * REMOVE SITE LOGO
+ * =========================================
+ */
+
+byId(
+  "removeSiteLogoButton"
+).addEventListener(
+  "click",
+  () => {
+    selectedSiteLogoFile =
+      null;
+
+    siteLogoFile.value =
+      "";
+
+    if (
+      siteLogoPreviewObjectUrl
+    ) {
+      URL.revokeObjectURL(
+        siteLogoPreviewObjectUrl
+      );
+
+      siteLogoPreviewObjectUrl =
+        "";
+    }
+
+    siteLogoPreview.removeAttribute(
+      "src"
+    );
+
+    siteLogoPreviewWrap.classList.remove(
+      "show"
+    );
+
+    siteLogoCurrent.textContent =
+      "Logo จะถูกล้างหลังจากกดบันทึก";
+
+    if (!currentSiteSettings) {
+      currentSiteSettings =
+        {};
+    }
+
+    currentSiteSettings.logoImageUrl =
+      "";
+
+    currentSiteSettings.logo_image_url =
+      "";
+
+    showUploadStatus(
+      siteLogoStatus,
+      "เตรียมล้างรูป Logo แล้ว กดบันทึกเพื่อยืนยัน",
+      "info"
+    );
+  }
+);
+
+/*
+ * =========================================
+ * REMOVE SITE HERO
+ * =========================================
+ */
+
+byId(
+  "removeSiteHeroButton"
+).addEventListener(
+  "click",
+  () => {
+    selectedSiteHeroFile =
+      null;
+
+    siteHeroFile.value =
+      "";
+
+    if (
+      siteHeroPreviewObjectUrl
+    ) {
+      URL.revokeObjectURL(
+        siteHeroPreviewObjectUrl
+      );
+
+      siteHeroPreviewObjectUrl =
+        "";
+    }
+
+    siteHeroPreview.removeAttribute(
+      "src"
+    );
+
+    siteHeroPreviewWrap.classList.remove(
+      "show"
+    );
+
+    siteHeroCurrent.textContent =
+      "Hero จะถูกล้างหลังจากกดบันทึก";
+
+    if (!currentSiteSettings) {
+      currentSiteSettings =
+        {};
+    }
+
+    currentSiteSettings.heroBackgroundUrl =
+      "";
+
+    currentSiteSettings.hero_background_url =
+      "";
+
+    showUploadStatus(
+      siteHeroStatus,
+      "เตรียมล้างภาพ Hero แล้ว กดบันทึกเพื่อยืนยัน",
+      "info"
+    );
+  }
+);
+/*
+ * =========================================
+ * UPLOAD SITE ASSET
+ * =========================================
+ */
+
+async function uploadSiteAsset(
+  file,
+  type
+) {
+  if (!file) {
+    return "";
+  }
+
+  const formData =
+    new FormData();
+
+  formData.append(
+    "file",
+    file,
+    file.name
+  );
+
+  formData.append(
+    "type",
+    type
+  );
+
+  const { data } =
+    await apiFetch(
+      "/api/admin/site-asset",
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+  const url =
+    data?.url ||
+    data?.assetUrl ||
+    data?.asset_url ||
+    "";
+
+  if (!url) {
+    throw new Error(
+      "ระบบไม่ได้ส่ง URL รูปกลับมา"
+    );
+  }
+
+  return url;
+}
+
+
+/*
+ * =========================================
+ * SAVE SITE SETTINGS
+ * =========================================
+ */
+
+byId(
+  "saveSiteSettingsButton"
+).addEventListener(
+  "click",
+  saveSiteSettings
+);
+
+
+async function saveSiteSettings() {
+  const button =
+    byId(
+      "saveSiteSettingsButton"
+    );
+
+  const oldText =
+    button.textContent;
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "กำลังบันทึก...";
+
+  try {
+    let logoImageUrl =
+      currentSiteSettings
+        ?.logoImageUrl ??
+      currentSiteSettings
+        ?.logo_image_url ??
+      "";
+
+    let heroBackgroundUrl =
+      currentSiteSettings
+        ?.heroBackgroundUrl ??
+      currentSiteSettings
+        ?.hero_background_url ??
+      "";
+
+    /*
+     * =========================================
+     * UPLOAD LOGO
+     * =========================================
+     */
+
+    if (
+      selectedSiteLogoFile
+    ) {
+      showUploadStatus(
+        siteLogoStatus,
+        "กำลังอัปโหลด Logo...",
+        "info"
+      );
+
+      logoImageUrl =
+        await uploadSiteAsset(
+          selectedSiteLogoFile,
+          "logo"
+        );
+
+      showUploadStatus(
+        siteLogoStatus,
+        "อัปโหลด Logo สำเร็จ",
+        "success"
+      );
+    }
+
+    /*
+     * =========================================
+     * UPLOAD HERO BACKGROUND
+     * =========================================
+     */
+
+    if (
+      selectedSiteHeroFile
+    ) {
+      showUploadStatus(
+        siteHeroStatus,
+        "กำลังอัปโหลดภาพพื้นหลัง...",
+        "info"
+      );
+
+      heroBackgroundUrl =
+        await uploadSiteAsset(
+          selectedSiteHeroFile,
+          "hero-background"
+        );
+
+      showUploadStatus(
+        siteHeroStatus,
+        "อัปโหลดภาพพื้นหลังสำเร็จ",
+        "success"
+      );
+    }
+
+    /*
+     * =========================================
+     * SETTINGS PAYLOAD
+     * =========================================
+     */
+
+    const settings = {
+      logoText:
+        siteLogoText.value.trim(),
+
+      logoImageUrl,
+
+      heroTitle:
+        siteHeroTitle.value.trim(),
+
+      heroSubtitle:
+        siteHeroSubtitle.value.trim(),
+
+      heroBackgroundUrl,
+
+      liveLink:
+        siteLiveLink.value.trim(),
+
+      replayLink:
+        siteReplayLink.value.trim(),
+
+      packageLink:
+        sitePackageLink.value.trim(),
+
+      contactLink:
+        siteContactLink.value.trim()
+    };
+
+    if (
+      !settings.logoText
+    ) {
+      settings.logoText =
+        "LIVEHUB TH";
+    }
+
+    if (
+      !settings.heroTitle
+    ) {
+      settings.heroTitle =
+        settings.logoText ||
+        "LIVEHUB TH";
+    }
+
+    /*
+     * =========================================
+     * SAVE TO WORKER
+     * =========================================
+     */
+
+    const { data } =
+      await apiFetch(
+        "/api/admin/site-settings",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(
+              settings
+            )
+        }
+      );
+
+    currentSiteSettings =
+      data?.settings ||
+      settings;
+
+    selectedSiteLogoFile =
+      null;
+
+    selectedSiteHeroFile =
+      null;
+
+    siteLogoFile.value =
+      "";
+
+    siteHeroFile.value =
+      "";
+
+    /*
+     * ใช้ URL จริงที่ระบบบันทึก
+     */
+
+    showSiteLogoExisting(
+      currentSiteSettings
+        ?.logoImageUrl ??
+      currentSiteSettings
+        ?.logo_image_url ??
+      logoImageUrl
+    );
+
+    showSiteHeroExisting(
+      currentSiteSettings
+        ?.heroBackgroundUrl ??
+      currentSiteSettings
+        ?.hero_background_url ??
+      heroBackgroundUrl
+    );
+
+    showMessage(
+      data?.message ||
+      "บันทึกการตั้งค่าหน้าเว็บไซต์สำเร็จ",
+      "success"
+    );
+
+  } catch (error) {
+    showMessage(
+      error?.message ||
+      "บันทึกการตั้งค่าหน้าเว็บไซต์ไม่สำเร็จ",
+      "error"
+    );
+
+  } finally {
+    button.disabled =
+      false;
+
+    button.textContent =
+      oldText;
+  }
+}
+
+
+/*
+ * =========================================
+ * RELOAD SITE SETTINGS
+ * =========================================
+ */
+
+byId(
+  "reloadSiteSettingsButton"
+).addEventListener(
+  "click",
+  async () => {
+    const button =
+      byId(
+        "reloadSiteSettingsButton"
+      );
+
+    const oldText =
+      button.textContent;
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "กำลังโหลด...";
+
+    try {
+      await loadSiteSettings();
+
+      showMessage(
+        "โหลดค่าหน้าเว็บไซต์ล่าสุดแล้ว",
+        "success"
+      );
+
+    } catch (error) {
+      showMessage(
+        error?.message ||
+        "โหลดการตั้งค่าไม่สำเร็จ",
+        "error"
+      );
+
+    } finally {
+      button.disabled =
+        false;
+
+      button.textContent =
+        oldText;
+    }
+  }
+);
+
+
+/*
+ * =========================================
+ * CONCERT COVER FILE
+ * =========================================
+ */
+
 concertCoverFile.addEventListener(
   "change",
   () => {
@@ -2121,6 +3523,9 @@ concertCoverFile.addEventListener(
       concertCoverFile.value =
         "";
 
+      selectedCoverFile =
+        null;
+
       showCoverStatus(
         "รองรับเฉพาะ JPG, PNG, WEBP และ GIF",
         "error"
@@ -2128,6 +3533,11 @@ concertCoverFile.addEventListener(
 
       return;
     }
+
+    /*
+     * หน้า Admin จำกัด 8 MB
+     * Worker รองรับได้ถึง 10 MB
+     */
 
     const maxSize =
       8 * 1024 * 1024;
@@ -2138,6 +3548,9 @@ concertCoverFile.addEventListener(
     ) {
       concertCoverFile.value =
         "";
+
+      selectedCoverFile =
+        null;
 
       showCoverStatus(
         "รูปมีขนาดเกิน 8 MB กรุณาเลือกรูปใหม่",
@@ -2177,6 +3590,13 @@ concertCoverFile.addEventListener(
   }
 );
 
+
+/*
+ * =========================================
+ * REMOVE CONCERT COVER
+ * =========================================
+ */
+
 byId(
   "removeCoverButton"
 ).addEventListener(
@@ -2187,6 +3607,7 @@ byId(
     );
   }
 );
+
 
 function clearCoverSelection(
   removeExisting = false
@@ -2223,7 +3644,7 @@ function clearCoverSelection(
       "";
 
     showCoverStatus(
-      "ล้างรูปหน้าปกแล้ว",
+      "ล้างรูปหน้าปกแล้ว กดบันทึกคอนเสิร์ตเพื่อยืนยัน",
       "info"
     );
 
@@ -2232,16 +3653,46 @@ function clearCoverSelection(
   }
 }
 
+
+/*
+ * =========================================
+ * EXISTING CONCERT COVER
+ * =========================================
+ */
+
 function showExistingCover(
   url
 ) {
-  clearCoverSelection(
-    false
-  );
+  selectedCoverFile =
+    null;
+
+  concertCoverFile.value =
+    "";
+
+  if (
+    coverPreviewObjectUrl
+  ) {
+    URL.revokeObjectURL(
+      coverPreviewObjectUrl
+    );
+
+    coverPreviewObjectUrl =
+      "";
+  }
 
   if (!url) {
     concertCover.value =
       "";
+
+    coverPreview.removeAttribute(
+      "src"
+    );
+
+    coverPreviewWrap.classList.remove(
+      "show"
+    );
+
+    hideCoverStatus();
 
     return;
   }
@@ -2255,11 +3706,14 @@ function showExistingCover(
   coverPreviewWrap.classList.add(
     "show"
   );
+
+  hideCoverStatus();
 }
+
 
 function showCoverStatus(
   text,
-  type
+  type = "info"
 ) {
   coverStatus.className =
     "cover-status show " +
@@ -2269,6 +3723,7 @@ function showCoverStatus(
     text;
 }
 
+
 function hideCoverStatus() {
   coverStatus.className =
     "cover-status";
@@ -2276,6 +3731,13 @@ function hideCoverStatus() {
   coverStatus.textContent =
     "";
 }
+
+
+/*
+ * =========================================
+ * UPLOAD CONCERT COVER
+ * =========================================
+ */
 
 async function uploadConcertCover() {
   if (
@@ -2317,7 +3779,7 @@ async function uploadConcertCover() {
 
   if (!url) {
     throw new Error(
-      "ระบบไม่ได้ส่ง URL รูปกลับมา"
+      "ระบบไม่ได้ส่ง URL รูปหน้าปกกลับมา"
     );
   }
 
@@ -2330,6 +3792,24 @@ async function uploadConcertCover() {
   concertCoverFile.value =
     "";
 
+  if (
+    coverPreviewObjectUrl
+  ) {
+    URL.revokeObjectURL(
+      coverPreviewObjectUrl
+    );
+
+    coverPreviewObjectUrl =
+      "";
+  }
+
+  coverPreview.src =
+    url;
+
+  coverPreviewWrap.classList.add(
+    "show"
+  );
+
   showCoverStatus(
     "อัปโหลดรูปหน้าปกสำเร็จ",
     "success"
@@ -2338,9 +3818,10 @@ async function uploadConcertCover() {
   return url;
 }
 
+
 /*
  * =========================================
- * ORDERS
+ * ORDER FILTER
  * =========================================
  */
 
@@ -2354,7 +3835,10 @@ document
         "click",
         async () => {
           currentOrderStatus =
-            button.dataset.orderStatus;
+            button
+              .dataset
+              .orderStatus ||
+            "pending";
 
           document
             .querySelectorAll(
@@ -2377,16 +3861,24 @@ document
     }
   );
 
+
 byId(
   "refreshOrdersButton"
 ).addEventListener(
   "click",
-  () => {
-    loadOrders(
+  async () => {
+    await loadOrders(
       currentOrderStatus
     );
   }
 );
+
+
+/*
+ * =========================================
+ * LOAD ORDERS
+ * =========================================
+ */
 
 async function loadOrders(
   status = "pending"
@@ -2424,9 +3916,17 @@ async function loadOrders(
   }
 }
 
+
+/*
+ * =========================================
+ * RENDER ORDERS
+ * =========================================
+ */
+
 function renderOrders() {
   if (
-    orders.length === 0
+    orders.length ===
+    0
   ) {
     orderList.innerHTML =
       '<div class="empty">ไม่พบคำสั่งซื้อในสถานะนี้</div>';
@@ -2454,7 +3954,9 @@ function renderOrders() {
       );
 
     /*
-     * ORDER HEAD
+     * =========================================
+     * HEAD
+     * =========================================
      */
 
     const head =
@@ -2506,7 +4008,9 @@ function renderOrders() {
     );
 
     /*
-     * BASIC ORDER INFO
+     * =========================================
+     * ORDER BASIC INFORMATION
+     * =========================================
      */
 
     const grid =
@@ -2516,6 +4020,17 @@ function renderOrders() {
 
     grid.className =
       "order-grid";
+
+    if (
+      order.concert_title
+    ) {
+      grid.appendChild(
+        createOrderDetail(
+          "คอนเสิร์ต",
+          order.concert_title
+        )
+      );
+    }
 
     grid.appendChild(
       createOrderDetail(
@@ -2556,6 +4071,19 @@ function renderOrders() {
         )
       )
     );
+
+    if (
+      order.video_quality
+    ) {
+      grid.appendChild(
+        createOrderDetail(
+          "ความคมชัด",
+          formatVideoQuality(
+            order.video_quality
+          )
+        )
+      );
+    }
 
     if (
       order.easyslip_amount !==
@@ -2615,7 +4143,9 @@ function renderOrders() {
     );
 
     /*
-     * ENTITLED SESSIONS
+     * =========================================
+     * SESSION RIGHTS
+     * =========================================
      */
 
     const entitlementBox =
@@ -2631,68 +4161,78 @@ function renderOrders() {
         order
       );
 
-    if (
-      entitledSessions.length >
-      0
-    ) {
-      let titleText =
-        "วันแสดงที่ลูกค้าได้รับสิทธิ์";
-
-      if (
-        order.access_type ===
-        "replay"
-      ) {
-        titleText =
-          "สิทธิ์ REPLAY ที่ลูกค้าได้รับ";
-      }
-
-      const title =
-        document.createElement(
-          "h4"
-        );
-
-      title.className =
-        "selected-session-title";
-
-      title.textContent =
-        titleText;
-
-      entitlementBox.appendChild(
-        title
+    const entitlementTitle =
+      document.createElement(
+        "h4"
       );
 
+    entitlementTitle.className =
+      "selected-session-title";
+
+    if (
+      order.access_type ===
+      "replay"
+    ) {
+      entitlementTitle.textContent =
+        "สิทธิ์ REPLAY ที่ลูกค้าได้รับ";
+
+    } else if (
+      order.access_type ===
+      "live_replay"
+    ) {
+      entitlementTitle.textContent =
+        "สิทธิ์ LIVE + REPLAY";
+
+    } else {
+      entitlementTitle.textContent =
+        "วันแสดงที่ลูกค้าได้รับสิทธิ์";
+    }
+
+    entitlementBox.appendChild(
+      entitlementTitle
+    );
+
+    /*
+     * Replay duration
+     */
+
+    if (
+      order.access_type ===
+        "replay" ||
+      order.access_type ===
+        "live_replay"
+    ) {
       const duration =
+        document.createElement(
+          "p"
+        );
+
+      duration.textContent =
+        "ระยะเวลา Replay: " +
         formatReplayDuration(
           order.replay_days,
           order.replay_months
         );
 
-      if (
-        order.access_type ===
-          "replay" ||
-        order.access_type ===
-          "live_replay"
-      ) {
-        const durationText =
-          document.createElement(
-            "p"
-          );
+      entitlementBox.appendChild(
+        duration
+      );
+    }
 
-        durationText.textContent =
-          "ระยะเวลา Replay: " +
-          duration;
+    /*
+     * Session list
+     */
 
-        entitlementBox.appendChild(
-          durationText
-        );
-      }
-
-      const sessionListElement =
+    if (
+      entitledSessions.length >
+      0
+    ) {
+      const list =
         document.createElement(
           "div"
         );
 
-      sessionListElement.className =
+      list.className =
         "order-session-list";
 
       for (
@@ -2726,11 +4266,13 @@ function renderOrders() {
 
         const start =
           session.live_starts_at ||
+          session.liveStartsAt ||
           session.session_starts_at ||
           null;
 
         const end =
           session.live_ends_at ||
+          session.liveEndsAt ||
           session.session_ends_at ||
           null;
 
@@ -2768,57 +4310,27 @@ function renderOrders() {
           );
         }
 
-        sessionListElement.appendChild(
+        list.appendChild(
           item
         );
       }
 
       entitlementBox.appendChild(
-        sessionListElement
+        list
       );
 
-    } else if (
-      order.access_type ===
-      "replay"
-    ) {
-      entitlementBox.innerHTML =
-        "<h4 class=\"selected-session-title\">" +
-        "สิทธิ์ REPLAY" +
-        "</h4>" +
-        "<p>ยังไม่พบรายการวันแสดงที่บันทึกไว้กับคำสั่งซื้อนี้</p>" +
-        "<p>ระยะเวลา Replay: " +
-        escapeHtml(
-          formatReplayDuration(
-            order.replay_days,
-            order.replay_months
-          )
-        ) +
-        "</p>";
-
     } else {
-      entitlementBox.innerHTML =
-        "<h4 class=\"selected-session-title\">" +
-        "วันแสดงที่ลูกค้าเลือก" +
-        "</h4>" +
-        "<p>" +
-        escapeHtml(
-          order.selected_session_name ||
-          "-"
-        ) +
-        "</p>" +
-        "<p>" +
-        escapeHtml(
-          formatDateTime(
-            order.selected_session_starts_at
-          )
-        ) +
-        " – " +
-        escapeHtml(
-          formatDateTime(
-            order.selected_session_ends_at
-          )
-        ) +
-        "</p>";
+      const noSession =
+        document.createElement(
+          "p"
+        );
+
+      noSession.textContent =
+        "ยังไม่พบข้อมูลวันแสดงที่บันทึกไว้กับคำสั่งซื้อนี้";
+
+      entitlementBox.appendChild(
+        noSession
+      );
     }
 
     article.appendChild(
@@ -2826,7 +4338,9 @@ function renderOrders() {
     );
 
     /*
+     * =========================================
      * ACCESS CODE
+     * =========================================
      */
 
     if (
@@ -2893,7 +4407,9 @@ function renderOrders() {
     }
 
     /*
-     * ACTION BUTTONS
+     * =========================================
+     * ACTIONS
+     * =========================================
      */
 
     const actions =
@@ -2903,6 +4419,10 @@ function renderOrders() {
 
     actions.className =
       "card-actions";
+
+    /*
+     * VIEW SLIP
+     */
 
     const slipButton =
       document.createElement(
@@ -2931,9 +4451,15 @@ function renderOrders() {
       slipButton
     );
 
+    /*
+     * APPROVE
+     */
+
     if (
-      order.status !==
-      "approved"
+      order.status ===
+        "pending" ||
+      order.status ===
+        "rejected"
     ) {
       const approve =
         document.createElement(
@@ -2965,9 +4491,13 @@ function renderOrders() {
       );
     }
 
+    /*
+     * REJECT
+     */
+
     if (
-      order.status !==
-      "rejected"
+      order.status ===
+        "pending"
     ) {
       const reject =
         document.createElement(
@@ -2999,6 +4529,112 @@ function renderOrders() {
       );
     }
 
+    /*
+     * CANCEL APPROVED ORDER
+     */
+
+    if (
+      order.status ===
+      "approved"
+    ) {
+      const cancel =
+        document.createElement(
+          "button"
+        );
+
+      cancel.type =
+        "button";
+
+      cancel.className =
+        "btn btn-danger btn-small";
+
+      cancel.textContent =
+        "ยกเลิกสิทธิ์";
+
+      cancel.addEventListener(
+        "click",
+        () => {
+          cancelOrder(
+            order,
+            cancel
+          );
+        }
+      );
+
+      actions.appendChild(
+        cancel
+      );
+
+      /*
+       * REGENERATE CODE
+       */
+
+      const regenerate =
+        document.createElement(
+          "button"
+        );
+
+      regenerate.type =
+        "button";
+
+      regenerate.className =
+        "btn btn-secondary btn-small";
+
+      regenerate.textContent =
+        "สร้างรหัสใหม่";
+
+      regenerate.addEventListener(
+        "click",
+        () => {
+          regenerateOrderCode(
+            order,
+            regenerate
+          );
+        }
+      );
+
+      actions.appendChild(
+        regenerate
+      );
+    }
+
+    /*
+     * REACTIVATE CANCELLED
+     */
+
+    if (
+      order.status ===
+      "cancelled"
+    ) {
+      const reactivate =
+        document.createElement(
+          "button"
+        );
+
+      reactivate.type =
+        "button";
+
+      reactivate.className =
+        "btn btn-success btn-small";
+
+      reactivate.textContent =
+        "เปิดสิทธิ์อีกครั้ง";
+
+      reactivate.addEventListener(
+        "click",
+        () => {
+          reactivateOrder(
+            order,
+            reactivate
+          );
+        }
+      );
+
+      actions.appendChild(
+        reactivate
+      );
+    }
+
     article.appendChild(
       actions
     );
@@ -3012,7 +4648,7 @@ function renderOrders() {
 
 /*
  * =========================================
- * NORMALIZE ORDER ENTITLED SESSIONS
+ * NORMALIZE ENTITLED SESSIONS
  * =========================================
  */
 
@@ -3058,13 +4694,15 @@ function normalizeEntitledSessions(
         }
 
       } catch {
-        // ignore
+        /*
+         * ข้ามค่าที่ไม่ใช่ JSON
+         */
       }
     }
   }
 
   /*
-   * รองรับ order เก่าที่มีเพียง selected_session
+   * รองรับ Order รุ่นเก่า
    */
 
   if (
@@ -3096,7 +4734,7 @@ function normalizeEntitledSessions(
 
 /*
  * =========================================
- * CREATE ORDER DETAIL
+ * ORDER DETAIL ITEM
  * =========================================
  */
 
@@ -3132,7 +4770,7 @@ function createOrderDetail(
     "order-detail-value";
 
   valueElement.textContent =
-    value;
+    value ?? "-";
 
   wrapper.appendChild(
     labelElement
@@ -3187,8 +4825,7 @@ async function changeOrderStatus(
         ) +
         "/status",
         {
-          method:
-            "POST",
+          method: "POST",
 
           headers: {
             "Content-Type":
@@ -3232,7 +4869,217 @@ async function changeOrderStatus(
 
 /*
  * =========================================
- * SLIP
+ * CANCEL ORDER
+ * =========================================
+ */
+
+async function cancelOrder(
+  order,
+  button
+) {
+  const confirmed =
+    confirm(
+      "ยืนยันยกเลิกคำสั่งซื้อและสิทธิ์รับชมของลูกค้ารายการนี้?"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const oldText =
+    button.textContent;
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "กำลังยกเลิก...";
+
+  try {
+    const { data } =
+      await apiFetch(
+        "/api/admin/orders/" +
+        encodeURIComponent(
+          order.id
+        ) +
+        "/cancel",
+        {
+          method: "POST"
+        }
+      );
+
+    showMessage(
+      data?.message ||
+      "ยกเลิกคำสั่งซื้อเรียบร้อยแล้ว",
+      "success"
+    );
+
+    await loadOrders(
+      currentOrderStatus
+    );
+
+  } catch (error) {
+    showMessage(
+      error?.message ||
+      "ยกเลิกคำสั่งซื้อไม่สำเร็จ",
+      "error"
+    );
+
+  } finally {
+    button.disabled =
+      false;
+
+    button.textContent =
+      oldText;
+  }
+}
+
+
+/*
+ * =========================================
+ * REACTIVATE ORDER
+ * =========================================
+ */
+
+async function reactivateOrder(
+  order,
+  button
+) {
+  const confirmed =
+    confirm(
+      "ยืนยันเปิดสิทธิ์คำสั่งซื้อนี้อีกครั้ง?"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const oldText =
+    button.textContent;
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "กำลังเปิดสิทธิ์...";
+
+  try {
+    const { data } =
+      await apiFetch(
+        "/api/admin/orders/" +
+        encodeURIComponent(
+          order.id
+        ) +
+        "/reactivate",
+        {
+          method: "POST"
+        }
+      );
+
+    showMessage(
+      data?.message ||
+      "เปิดสิทธิ์อีกครั้งสำเร็จ",
+      "success"
+    );
+
+    await loadOrders(
+      currentOrderStatus
+    );
+
+  } catch (error) {
+    showMessage(
+      error?.message ||
+      "เปิดสิทธิ์อีกครั้งไม่สำเร็จ",
+      "error"
+    );
+
+  } finally {
+    button.disabled =
+      false;
+
+    button.textContent =
+      oldText;
+  }
+}
+
+
+/*
+ * =========================================
+ * REGENERATE ACCESS CODE
+ * =========================================
+ */
+
+async function regenerateOrderCode(
+  order,
+  button
+) {
+  const confirmed =
+    confirm(
+      "ยืนยันสร้างรหัสเข้าชมใหม่?\n\nรหัสเดิมจะใช้งานไม่ได้ทันที"
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const oldText =
+    button.textContent;
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "กำลังสร้างรหัส...";
+
+  try {
+    const { data } =
+      await apiFetch(
+        "/api/admin/orders/" +
+        encodeURIComponent(
+          order.id
+        ) +
+        "/regenerate-code",
+        {
+          method: "POST"
+        }
+      );
+
+    showMessage(
+      data?.message ||
+      (
+        "สร้างรหัสใหม่สำเร็จ: " +
+        (
+          data?.accessCode ||
+          ""
+        )
+      ),
+      "success"
+    );
+
+    await loadOrders(
+      currentOrderStatus
+    );
+
+  } catch (error) {
+    showMessage(
+      error?.message ||
+      "สร้างรหัสใหม่ไม่สำเร็จ",
+      "error"
+    );
+
+  } finally {
+    button.disabled =
+      false;
+
+    button.textContent =
+      oldText;
+  }
+}
+
+
+/*
+ * =========================================
+ * OPEN SLIP
  * =========================================
  */
 
@@ -3254,6 +5101,9 @@ async function openSlip(
   slipLoading.classList.remove(
     "hidden"
   );
+
+  slipLoading.textContent =
+    "กำลังโหลดภาพสลิป...";
 
   slipImage.classList.add(
     "hidden"
@@ -3294,6 +5144,13 @@ async function openSlip(
   }
 }
 
+
+/*
+ * =========================================
+ * CLOSE SLIP
+ * =========================================
+ */
+
 function closeSlip() {
   slipModal.classList.remove(
     "show"
@@ -3326,12 +5183,14 @@ function closeSlip() {
   }
 }
 
+
 byId(
   "closeSlipButton"
 ).addEventListener(
   "click",
   closeSlip
 );
+
 
 slipModal.addEventListener(
   "click",
@@ -3344,8 +5203,6 @@ slipModal.addEventListener(
     }
   }
 );
-
-
 /*
  * =========================================
  * CONCERTS
@@ -3382,6 +5239,13 @@ async function loadConcerts() {
     );
   }
 }
+
+
+/*
+ * =========================================
+ * RENDER CONCERTS
+ * =========================================
+ */
 
 function renderConcerts() {
   if (
@@ -3457,6 +5321,10 @@ function renderConcerts() {
       );
     }
 
+    /*
+     * TITLE
+     */
+
     const title =
       document.createElement(
         "h3"
@@ -3468,6 +5336,14 @@ function renderConcerts() {
     title.textContent =
       concert.title ||
       "-";
+
+    card.appendChild(
+      title
+    );
+
+    /*
+     * STATUS
+     */
 
     const status =
       document.createElement(
@@ -3482,6 +5358,14 @@ function renderConcerts() {
       formatConcertStatus(
         concert.status
       );
+
+    card.appendChild(
+      status
+    );
+
+    /*
+     * DATE
+     */
 
     const date =
       document.createElement(
@@ -3500,6 +5384,14 @@ function renderConcerts() {
       formatDateTime(
         concert.live_ends_at
       );
+
+    card.appendChild(
+      date
+    );
+
+    /*
+     * COUNTS
+     */
 
     const counts =
       document.createElement(
@@ -3521,6 +5413,14 @@ function renderConcerts() {
         0
       ) +
       " รายการ";
+
+    card.appendChild(
+      counts
+    );
+
+    /*
+     * ACTIONS
+     */
 
     const actions =
       document.createElement(
@@ -3585,22 +5485,6 @@ function renderConcerts() {
     );
 
     card.appendChild(
-      title
-    );
-
-    card.appendChild(
-      status
-    );
-
-    card.appendChild(
-      date
-    );
-
-    card.appendChild(
-      counts
-    );
-
-    card.appendChild(
       actions
     );
 
@@ -3609,6 +5493,13 @@ function renderConcerts() {
     );
   }
 }
+
+
+/*
+ * =========================================
+ * NEW CONCERT BUTTON
+ * =========================================
+ */
 
 byId(
   "newConcertButton"
@@ -3626,12 +5517,14 @@ byId(
   }
 );
 
+
 byId(
   "saveConcertButton"
 ).addEventListener(
   "click",
   saveConcert
 );
+
 
 byId(
   "clearConcertFormButton"
@@ -3891,7 +5784,7 @@ function editConcert(
 
 /*
  * =========================================
- * RESET CONCERT
+ * RESET CONCERT FORM
  * =========================================
  */
 
@@ -4017,7 +5910,7 @@ async function selectConcert(
 
 /*
  * =========================================
- * SESSIONS
+ * LOAD SESSIONS
  * =========================================
  */
 
@@ -4054,6 +5947,13 @@ async function loadSessions(
     throw error;
   }
 }
+
+
+/*
+ * =========================================
+ * RENDER SESSIONS
+ * =========================================
+ */
 
 function renderSessions() {
   if (
@@ -4208,12 +6108,14 @@ function renderSessions() {
   }
 }
 
+
 byId(
   "saveSessionButton"
 ).addEventListener(
   "click",
   saveSession
 );
+
 
 byId(
   "clearSessionButton"
@@ -4465,7 +6367,7 @@ function editSession(
 
 /*
  * =========================================
- * RESET SESSION
+ * RESET SESSION FORM
  * =========================================
  */
 
@@ -4510,7 +6412,7 @@ function resetSessionForm() {
 
 /*
  * =========================================
- * PACKAGE SESSION CHOICES
+ * SESSION CHOICES FOR PACKAGE
  * =========================================
  */
 
@@ -4522,7 +6424,7 @@ function renderSessionChoices(
     0
   ) {
     packageSessionChoices.innerHTML =
-      '<div class="empty">ยังไม่มีวันแสดง กรุณาเพิ่ม DAY 1 / DAY 2 / DAY 3 ก่อน</div>';
+      '<div class="empty">ยังไม่มีวันแสดง กรุณาเพิ่ม DAY 1 / DAY 2 ก่อน</div>';
 
     updateSessionToolButtons();
 
@@ -4592,6 +6494,7 @@ function renderSessionChoices(
           input.checked
         );
 
+        syncSessionSelectionModeFromChecked();
         updatePackagePreview();
         updateSessionToolButtons();
       }
@@ -4661,69 +6564,83 @@ function renderSessionChoices(
 
 /*
  * =========================================
- * SELECT ALL / CLEAR ALL DAYS
+ * SELECT ALL / CLEAR ALL
  * =========================================
  */
 
-byId(
-  "selectAllSessionsButton"
-).addEventListener(
-  "click",
-  () => {
-    const checkboxes =
-      document.querySelectorAll(
-        ".package-session-checkbox"
-      );
-
-    checkboxes.forEach(
-      checkbox => {
-        checkbox.checked =
-          true;
-
-        checkbox
-          .closest(
-            ".session-choice"
-          )
-          ?.classList.add(
-            "checked"
-          );
-      }
+function selectAllPackageSessions() {
+  const checkboxes =
+    document.querySelectorAll(
+      ".package-session-checkbox"
     );
 
-    updatePackagePreview();
-    updateSessionToolButtons();
+  checkboxes.forEach(
+    checkbox => {
+      checkbox.checked =
+        true;
+
+      checkbox
+        .closest(
+          ".session-choice"
+        )
+        ?.classList.add(
+          "checked"
+        );
+    }
+  );
+
+  if (
+    byId(
+      "sessionSelectionMode"
+    )
+  ) {
+    byId(
+      "sessionSelectionMode"
+    ).value =
+      "all";
   }
-);
 
-byId(
-  "clearAllSessionsButton"
-).addEventListener(
-  "click",
-  () => {
-    const checkboxes =
-      document.querySelectorAll(
-        ".package-session-checkbox"
-      );
+  updatePackagePreview();
+  updateSessionToolButtons();
+}
 
-    checkboxes.forEach(
-      checkbox => {
-        checkbox.checked =
-          false;
 
-        checkbox
-          .closest(
-            ".session-choice"
-          )
-          ?.classList.remove(
-            "checked"
-          );
-      }
+function clearAllPackageSessions() {
+  const checkboxes =
+    document.querySelectorAll(
+      ".package-session-checkbox"
     );
 
-    updatePackagePreview();
-    updateSessionToolButtons();
+  checkboxes.forEach(
+    checkbox => {
+      checkbox.checked =
+        false;
+
+      checkbox
+        .closest(
+          ".session-choice"
+        )
+        ?.classList.remove(
+          "checked"
+        );
+    }
+  );
+
+  if (
+    byId(
+      "sessionSelectionMode"
+    )
+  ) {
+    byId(
+      "sessionSelectionMode"
+    ).value =
+      "single";
   }
-);
+
+  updatePackagePreview();
+  updateSessionToolButtons();
+}
+
 
 function getCheckedSessionIds() {
   return Array.from(
@@ -4735,6 +6652,7 @@ function getCheckedSessionIds() {
       input.value
   );
 }
+
 
 function getCheckedSessionObjects() {
   const ids =
@@ -4752,37 +6670,170 @@ function getCheckedSessionObjects() {
   );
 }
 
+
+/*
+ * =========================================
+ * SESSION SELECTION MODE
+ * =========================================
+ */
+
+function getSessionSelectionMode() {
+  const select =
+    byId(
+      "sessionSelectionMode"
+    );
+
+  if (!select) {
+    const checkedCount =
+      getCheckedSessionIds()
+        .length;
+
+    return checkedCount > 1
+      ? "all"
+      : "single";
+  }
+
+  return (
+    select.value ===
+    "all"
+      ? "all"
+      : "single"
+  );
+}
+
+
+function syncSessionSelectionModeFromChecked() {
+  const select =
+    byId(
+      "sessionSelectionMode"
+    );
+
+  if (!select) {
+    return;
+  }
+
+  const checkedCount =
+    getCheckedSessionIds()
+      .length;
+
+  /*
+   * ถ้าเลือกหลายวัน
+   * ให้เป็น ALL อัตโนมัติ
+   */
+
+  if (
+    checkedCount >
+    1
+  ) {
+    select.value =
+      "all";
+  }
+
+  /*
+   * ถ้าเหลือ 0-1 วัน
+   * คง single ได้
+   */
+
+  if (
+    checkedCount <=
+    1 &&
+    select.value !==
+    "all"
+  ) {
+    select.value =
+      "single";
+  }
+}
+
+
+/*
+ * =========================================
+ * UPDATE SESSION TOOL BUTTONS
+ * =========================================
+ */
+
 function updateSessionToolButtons() {
-  const selectAllButton =
+  const selectAll =
     byId(
       "selectAllSessionsButton"
     );
 
-  const clearButton =
+  const clear =
     byId(
       "clearAllSessionsButton"
     );
 
-  const total =
-    document.querySelectorAll(
-      ".package-session-checkbox"
-    ).length;
+  if (
+    !selectAll ||
+    !clear
+  ) {
+    return;
+  }
 
-  const selected =
-    document.querySelectorAll(
-      ".package-session-checkbox:checked"
-    ).length;
+  const all =
+    Array.from(
+      document.querySelectorAll(
+        ".package-session-checkbox"
+      )
+    );
 
-  selectAllButton.disabled =
-    total === 0 ||
-    selected === total;
+  const checked =
+    all.filter(
+      checkbox =>
+        checkbox.checked
+    );
 
-  clearButton.disabled =
-    selected === 0;
+  selectAll.disabled =
+    all.length ===
+      0 ||
+    checked.length ===
+      all.length;
+
+  clear.disabled =
+    checked.length ===
+    0;
 }
+
+
 /*
  * =========================================
- * PACKAGES
+ * PACKAGE SESSION TOOL BUTTONS
+ * =========================================
+ */
+
+const selectAllSessionsButton =
+  byId(
+    "selectAllSessionsButton"
+  );
+
+if (
+  selectAllSessionsButton
+) {
+  selectAllSessionsButton.addEventListener(
+    "click",
+    selectAllPackageSessions
+  );
+}
+
+
+const clearAllSessionsButton =
+  byId(
+    "clearAllSessionsButton"
+  );
+
+if (
+  clearAllSessionsButton
+) {
+  clearAllSessionsButton.addEventListener(
+    "click",
+    clearAllPackageSessions
+  );
+}
+
+
+/*
+ * =========================================
+ * LOAD PACKAGES
  * =========================================
  */
 
@@ -4871,6 +6922,10 @@ function renderPackages() {
       title
     );
 
+    /*
+     * PRICE
+     */
+
     const price =
       document.createElement(
         "p"
@@ -4892,6 +6947,10 @@ function renderPackages() {
       price
     );
 
+    /*
+     * ACCESS TYPE
+     */
+
     const access =
       document.createElement(
         "p"
@@ -4909,6 +6968,42 @@ function renderPackages() {
     card.appendChild(
       access
     );
+
+    /*
+     * SELECTION MODE
+     */
+
+    const selectionMode =
+      document.createElement(
+        "p"
+      );
+
+    selectionMode.className =
+      "card-text";
+
+    const packageSelectionMode =
+      packageItem
+        .session_selection_mode ||
+      packageItem
+        .sessionSelectionMode ||
+      "single";
+
+    selectionMode.textContent =
+      "รูปแบบวัน: " +
+      (
+        packageSelectionMode ===
+        "all"
+          ? "ได้ทุกวันที่กำหนด"
+          : "ลูกค้าเลือก 1 วัน"
+      );
+
+    card.appendChild(
+      selectionMode
+    );
+
+    /*
+     * REPLAY
+     */
 
     if (
       packageItem.access_type ===
@@ -4936,6 +7031,10 @@ function renderPackages() {
       );
     }
 
+    /*
+     * QUALITY
+     */
+
     const quality =
       document.createElement(
         "p"
@@ -4953,6 +7052,10 @@ function renderPackages() {
     card.appendChild(
       quality
     );
+
+    /*
+     * E-CARD
+     */
 
     const ecard =
       document.createElement(
@@ -5067,7 +7170,7 @@ function renderPackages() {
     );
 
     /*
-     * PACKAGE STATUS
+     * STATUS
      */
 
     const status =
@@ -5097,7 +7200,7 @@ function renderPackages() {
     );
 
     /*
-     * BUTTONS
+     * ACTIONS
      */
 
     const actions =
@@ -5176,7 +7279,7 @@ function renderPackages() {
 
 /*
  * =========================================
- * ACCESS TYPE
+ * ACCESS TYPE CHANGE
  * =========================================
  */
 
@@ -5196,7 +7299,44 @@ byId(
 
 /*
  * =========================================
- * SYNC PACKAGE UI
+ * SESSION SELECTION MODE CHANGE
+ * =========================================
+ */
+
+const sessionSelectionMode =
+  byId(
+    "sessionSelectionMode"
+  );
+
+if (
+  sessionSelectionMode
+) {
+  sessionSelectionMode.addEventListener(
+    "change",
+    () => {
+      const mode =
+        getSessionSelectionMode();
+
+      /*
+       * ALL = เลือกทุกวันที่กำหนด
+       */
+
+      if (
+        mode ===
+        "all"
+      ) {
+        selectAllPackageSessions();
+      }
+
+      updatePackagePreview();
+    }
+  );
+}
+
+
+/*
+ * =========================================
+ * SYNC PACKAGE TYPE UI
  * =========================================
  */
 
@@ -5262,7 +7402,7 @@ function syncPackageTypeUi(
   }
 
   /*
-   * ทุกประเภทเลือกวันได้
+   * LABEL
    */
 
   const label =
@@ -5292,7 +7432,7 @@ function syncPackageTypeUi(
   }
 
   /*
-   * เปลี่ยนข้อความ REPLAY NOTE
+   * REPLAY NOTE
    */
 
   const replayNote =
@@ -5312,7 +7452,7 @@ function syncPackageTypeUi(
       );
 
       replayNote.textContent =
-        "REPLAY เท่านั้น: เลือกได้ 1 วัน หลายวัน หรือทุกวันของคอนเสิร์ต สิทธิ์ Replay จะเริ่มนับตามระบบหลังชำระเงินและอนุมัติ";
+        "REPLAY เท่านั้น: เลือกได้ 1 วัน หลายวัน หรือทุกวันของคอนเสิร์ต และกำหนดรูปแบบสิทธิ์ว่าให้ลูกค้าเลือก 1 วัน หรือรับทุกวันที่กำหนดไว้";
 
     } else {
       replayNote.classList.remove(
@@ -5320,10 +7460,6 @@ function syncPackageTypeUi(
       );
     }
   }
-
-  /*
-   * Render checked days
-   */
 
   if (
     Array.isArray(
@@ -5350,12 +7486,14 @@ byId(
   updatePackagePreview
 );
 
+
 byId(
   "videoQuality"
 ).addEventListener(
   "change",
   updatePackagePreview
 );
+
 
 byId(
   "hasEcard"
@@ -5364,12 +7502,14 @@ byId(
   updatePackagePreview
 );
 
+
 byId(
   "savePackageButton"
 ).addEventListener(
   "click",
   savePackage
 );
+
 
 byId(
   "clearPackageButton"
@@ -5457,17 +7597,14 @@ async function savePackage() {
       ? 1
       : 0;
 
-  /*
-   * สำคัญ
-   * LIVE / LIVE+REPLAY / REPLAY
-   * ใช้ sessionIds ได้ทั้งหมด
-   */
-
   const sessionIds =
     getCheckedSessionIds();
 
+  const sessionSelectionMode =
+    getSessionSelectionMode();
+
   /*
-   * VALIDATE BASIC
+   * BASIC VALIDATION
    */
 
   if (!name) {
@@ -5562,21 +7699,41 @@ async function savePackage() {
   }
 
   /*
-   * ทุก Package ต้องมีอย่างน้อย 1 วัน
+   * SESSION REQUIRED
    */
 
   if (
     sessionIds.length ===
     0
   ) {
-    const message =
+    showMessage(
       accessType ===
       "replay"
         ? "กรุณาเลือกอย่างน้อย 1 วันคอนเสิร์ตสำหรับ REPLAY"
-        : "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน";
+        : "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
+      "error"
+    );
 
+    return;
+  }
+
+  /*
+   * SINGLE MODE
+   *
+   * Admin ผูกได้หลายวัน
+   * ลูกค้าเป็นคนเลือก 1 วันตอนซื้อ
+   */
+
+  if (
+    ![
+      "single",
+      "all"
+    ].includes(
+      sessionSelectionMode
+    )
+  ) {
     showMessage(
-      message,
+      "รูปแบบสิทธิ์วันไม่ถูกต้อง",
       "error"
     );
 
@@ -5638,6 +7795,8 @@ async function savePackage() {
               videoQuality,
 
               sessionIds,
+
+              sessionSelectionMode,
 
               isActive
             })
@@ -5760,7 +7919,31 @@ function editPackage(
     ) === 1;
 
   /*
-   * คืนค่าหลายวัน
+   * SESSION SELECTION MODE
+   */
+
+  const mode =
+    item.session_selection_mode ||
+    item.sessionSelectionMode ||
+    "single";
+
+  const modeSelect =
+    byId(
+      "sessionSelectionMode"
+    );
+
+  if (
+    modeSelect
+  ) {
+    modeSelect.value =
+      mode ===
+      "all"
+        ? "all"
+        : "single";
+  }
+
+  /*
+   * SELECTED DAYS
    */
 
   const selectedIds =
@@ -5776,7 +7959,7 @@ function editPackage(
   );
 
   /*
-   * Legacy replay days
+   * LEGACY REPLAY DAYS
    */
 
   const legacyReplayDays =
@@ -5944,6 +8127,18 @@ function resetPackageForm() {
   ).checked =
     true;
 
+  const modeSelect =
+    byId(
+      "sessionSelectionMode"
+    );
+
+  if (
+    modeSelect
+  ) {
+    modeSelect.value =
+      "single";
+  }
+
   const legacyNote =
     byId(
       "legacyReplayNote"
@@ -5972,10 +8167,6 @@ function resetPackageForm() {
       "show"
     );
   }
-
-  /*
-   * เอาเครื่องหมายเลือกวันทั้งหมดออก
-   */
 
   renderSessionChoices(
     []
@@ -6044,6 +8235,9 @@ function updatePackagePreview() {
   const selectedSessions =
     getCheckedSessionObjects();
 
+  const selectionMode =
+    getSessionSelectionMode();
+
   const items =
     [];
 
@@ -6078,6 +8272,17 @@ function updatePackagePreview() {
   }
 
   /*
+   * SESSION MODE
+   */
+
+  items.push(
+    selectionMode ===
+    "all"
+      ? "ได้รับสิทธิ์ทุกวันที่กำหนดไว้ในแพ็กเกจ"
+      : "ลูกค้าเลือกวันรับชม 1 วันจากวันที่แพ็กเกจกำหนด"
+  );
+
+  /*
    * DAYS
    */
 
@@ -6093,7 +8298,7 @@ function updatePackagePreview() {
       );
 
     items.push(
-      "วันที่ได้รับสิทธิ์: " +
+      "วันที่แพ็กเกจครอบคลุม: " +
       names.join(
         ", "
       )
@@ -6175,306 +8380,9 @@ function updatePackagePreview() {
     );
   }
 }
-
-
 /*
  * =========================================
- * PACKAGE SESSION SELECTION CHANGES
- * =========================================
- */
-
-packageSessionChoices.addEventListener(
-  "change",
-  event => {
-    if (
-      event.target.classList.contains(
-        "package-session-checkbox"
-      )
-    ) {
-      updatePackagePreview();
-      updateSessionToolButtons();
-    }
-  }
-);
-
-
-/*
- * =========================================
- * CREATE SESSION TOOL BUTTONS AUTOMATICALLY
- *
- * เพื่อให้ใช้ได้แม้ HTML ส่วนแรกยังไม่มี
- * ปุ่ม "เลือกทั้งหมด / ล้างทั้งหมด"
- * =========================================
- */
-
-function ensureSessionToolButtons() {
-  if (
-    byId(
-      "selectAllSessionsButton"
-    ) &&
-    byId(
-      "clearAllSessionsButton"
-    )
-  ) {
-    return;
-  }
-
-  const label =
-    byId(
-      "packageSessionLabel"
-    );
-
-  if (!label) {
-    return;
-  }
-
-  const container =
-    document.createElement(
-      "div"
-    );
-
-  container.style.display =
-    "flex";
-
-  container.style.flexWrap =
-    "wrap";
-
-  container.style.gap =
-    "10px";
-
-  container.style.margin =
-    "0 0 12px";
-
-  const selectAll =
-    document.createElement(
-      "button"
-    );
-
-  selectAll.id =
-    "selectAllSessionsButton";
-
-  selectAll.type =
-    "button";
-
-  selectAll.className =
-    "btn btn-secondary btn-small";
-
-  selectAll.textContent =
-    "เลือกทุกวัน";
-
-  const clear =
-    document.createElement(
-      "button"
-    );
-
-  clear.id =
-    "clearAllSessionsButton";
-
-  clear.type =
-    "button";
-
-  clear.className =
-    "btn btn-secondary btn-small";
-
-  clear.textContent =
-    "ล้างวันที่เลือก";
-
-  container.appendChild(
-    selectAll
-  );
-
-  container.appendChild(
-    clear
-  );
-
-  packageSessionChoices.parentNode.insertBefore(
-    container,
-    packageSessionChoices
-  );
-
-  selectAll.addEventListener(
-    "click",
-    selectAllPackageSessions
-  );
-
-  clear.addEventListener(
-    "click",
-    clearAllPackageSessions
-  );
-}
-
-
-/*
- * =========================================
- * SELECT ALL DAYS
- * =========================================
- */
-
-function selectAllPackageSessions() {
-  const checkboxes =
-    document.querySelectorAll(
-      ".package-session-checkbox"
-    );
-
-  checkboxes.forEach(
-    checkbox => {
-      checkbox.checked =
-        true;
-
-      const wrapper =
-        checkbox.closest(
-          ".session-choice"
-        );
-
-      if (
-        wrapper
-      ) {
-        wrapper.classList.add(
-          "checked"
-        );
-      }
-    }
-  );
-
-  updatePackagePreview();
-  updateSessionToolButtons();
-}
-
-
-/*
- * =========================================
- * CLEAR ALL DAYS
- * =========================================
- */
-
-function clearAllPackageSessions() {
-  const checkboxes =
-    document.querySelectorAll(
-      ".package-session-checkbox"
-    );
-
-  checkboxes.forEach(
-    checkbox => {
-      checkbox.checked =
-        false;
-
-      const wrapper =
-        checkbox.closest(
-          ".session-choice"
-        );
-
-      if (
-        wrapper
-      ) {
-        wrapper.classList.remove(
-          "checked"
-        );
-      }
-    }
-  );
-
-  updatePackagePreview();
-  updateSessionToolButtons();
-}
-
-
-/*
- * =========================================
- * SAFE TOOL BUTTON HANDLERS
- * =========================================
- */
-
-function bindSessionToolButtons() {
-  const selectAll =
-    byId(
-      "selectAllSessionsButton"
-    );
-
-  const clear =
-    byId(
-      "clearAllSessionsButton"
-    );
-
-  if (
-    selectAll &&
-    !selectAll.dataset.bound
-  ) {
-    selectAll.dataset.bound =
-      "1";
-
-    selectAll.addEventListener(
-      "click",
-      selectAllPackageSessions
-    );
-  }
-
-  if (
-    clear &&
-    !clear.dataset.bound
-  ) {
-    clear.dataset.bound =
-      "1";
-
-    clear.addEventListener(
-      "click",
-      clearAllPackageSessions
-    );
-  }
-}
-
-
-/*
- * =========================================
- * UPDATE TOOL BUTTONS
- * =========================================
- */
-
-function updateSessionToolButtons() {
-  const selectAll =
-    byId(
-      "selectAllSessionsButton"
-    );
-
-  const clear =
-    byId(
-      "clearAllSessionsButton"
-    );
-
-  if (
-    !selectAll ||
-    !clear
-  ) {
-    return;
-  }
-
-  const all =
-    Array.from(
-      document.querySelectorAll(
-        ".package-session-checkbox"
-      )
-    );
-
-  const checked =
-    all.filter(
-      checkbox =>
-        checkbox.checked
-    );
-
-  selectAll.disabled =
-    all.length ===
-      0 ||
-    checked.length ===
-      all.length;
-
-  clear.disabled =
-    checked.length ===
-    0;
-}
-
-
-/*
- * =========================================
- * REPLAY DURATION
+ * REPLAY DURATION FORMAT
  * =========================================
  */
 
@@ -6520,7 +8428,7 @@ function formatReplayDuration(
 
 /*
  * =========================================
- * STATUS FORMAT
+ * CONCERT STATUS FORMAT
  * =========================================
  */
 
@@ -6553,6 +8461,13 @@ function formatConcertStatus(
   );
 }
 
+
+/*
+ * =========================================
+ * ORDER STATUS FORMAT
+ * =========================================
+ */
+
 function formatOrderStatus(
   value
 ) {
@@ -6564,7 +8479,10 @@ function formatOrderStatus(
       "อนุมัติแล้ว",
 
     rejected:
-      "ปฏิเสธแล้ว"
+      "ปฏิเสธแล้ว",
+
+    cancelled:
+      "ยกเลิกแล้ว"
   };
 
   return (
@@ -6575,6 +8493,13 @@ function formatOrderStatus(
     "-"
   );
 }
+
+
+/*
+ * =========================================
+ * ORDER BADGE
+ * =========================================
+ */
 
 function getOrderStatusBadgeClass(
   value
@@ -6588,7 +8513,9 @@ function getOrderStatusBadgeClass(
 
   if (
     value ===
-    "rejected"
+    "rejected" ||
+    value ===
+    "cancelled"
   ) {
     return "badge-red";
   }
@@ -6606,21 +8533,38 @@ function getOrderStatusBadgeClass(
 function formatAccessType(
   value
 ) {
+  const accessType =
+    String(
+      value ||
+      ""
+    )
+      .trim()
+      .toLowerCase();
+
   if (
-    value ===
-    "live_replay"
+    accessType ===
+      "live_replay" ||
+    accessType ===
+      "live+replay"
   ) {
     return "LIVE + REPLAY";
   }
 
   if (
-    value ===
+    accessType ===
     "replay"
   ) {
     return "REPLAY เท่านั้น";
   }
 
-  return "LIVE เท่านั้น";
+  if (
+    accessType ===
+    "live"
+  ) {
+    return "LIVE เท่านั้น";
+  }
+
+  return "-";
 }
 
 
@@ -6658,6 +8602,7 @@ function normalizeQualityForSelect(
   return "1080p";
 }
 
+
 function formatVideoQuality(
   value
 ) {
@@ -6689,7 +8634,7 @@ function formatVideoQuality(
 
 /*
  * =========================================
- * DATE
+ * DATE FORMAT
  * =========================================
  */
 
@@ -6846,33 +8791,79 @@ function escapeHtml(
 
 /*
  * =========================================
- * INITIALIZE
+ * SITE SETTINGS
+ *
+ * ส่วนนี้จะทำงานเฉพาะเมื่อ
+ * PART ก่อนหน้ามีหน้า "ตั้งค่าเว็บไซต์"
  * =========================================
  */
 
-async function initialize() {
-  /*
-   * สร้างปุ่มเลือกทุกวันให้อัตโนมัติ
-   */
+async function loadSiteSettingsIfAvailable() {
+  const siteSettingsSection =
+    byId(
+      "siteSettingsSection"
+    );
 
-  ensureSessionToolButtons();
-
-  bindSessionToolButtons();
-
-  /*
-   * ตั้ง UI package เริ่มต้น
-   */
-
-  syncPackageTypeUi(
-    false
-  );
-
-  updatePackagePreview();
+  if (
+    !siteSettingsSection
+  ) {
+    return;
+  }
 
   /*
-   * โหลด ADMIN TOKEN
+   * ถ้ามีฟังก์ชัน loadSiteSettings
+   * จาก PART ก่อนหน้า
+   * ให้เรียกใช้งาน
    */
 
+  if (
+    typeof window
+      .loadSiteSettings ===
+    "function"
+  ) {
+    try {
+      await window
+        .loadSiteSettings();
+
+    } catch (error) {
+      console.error(
+        "Load site settings failed:",
+        error
+      );
+    }
+
+    return;
+  }
+
+  /*
+   * รองรับกรณีฟังก์ชันถูกประกาศ
+   * ใน global scope
+   */
+
+  try {
+    if (
+      typeof loadSiteSettings ===
+      "function"
+    ) {
+      await loadSiteSettings();
+    }
+
+  } catch (error) {
+    console.error(
+      "Load site settings failed:",
+      error
+    );
+  }
+}
+
+
+/*
+ * =========================================
+ * RESTORE ADMIN SESSION
+ * =========================================
+ */
+
+async function restoreAdminSession() {
   const savedToken =
     sessionStorage.getItem(
       "livehubAdminToken"
@@ -6881,7 +8872,15 @@ async function initialize() {
   if (
     !savedToken
   ) {
-    return;
+    loginPanel.classList.remove(
+      "hidden"
+    );
+
+    adminArea.classList.remove(
+      "show"
+    );
+
+    return false;
   }
 
   adminToken =
@@ -6897,6 +8896,10 @@ async function initialize() {
     "กำลังเข้าสู่ระบบ...";
 
   try {
+    /*
+     * ทดสอบ ADMIN TOKEN
+     */
+
     await apiFetch(
       "/api/admin/concerts"
     );
@@ -6911,6 +8914,10 @@ async function initialize() {
 
     clearMessage();
 
+    /*
+     * โหลดข้อมูลหลัก
+     */
+
     await Promise.all([
       loadConcerts(),
 
@@ -6918,6 +8925,15 @@ async function initialize() {
         currentOrderStatus
       )
     ]);
+
+    /*
+     * โหลด Site Settings
+     * หากมีส่วนนี้อยู่ใน HTML
+     */
+
+    await loadSiteSettingsIfAvailable();
+
+    return true;
 
   } catch (error) {
     adminToken =
@@ -6944,6 +8960,8 @@ async function initialize() {
       "error"
     );
 
+    return false;
+
   } finally {
     loginButton.disabled =
       false;
@@ -6951,6 +8969,185 @@ async function initialize() {
     loginButton.textContent =
       "เข้าสู่ระบบแอดมิน";
   }
+}
+
+
+/*
+ * =========================================
+ * INITIAL PACKAGE UI
+ * =========================================
+ */
+
+function initializePackageUi() {
+  /*
+   * ค่าเริ่มต้นประเภทสิทธิ์
+   */
+
+  if (
+    byId(
+      "accessType"
+    )
+  ) {
+    byId(
+      "accessType"
+    ).value =
+      byId(
+        "accessType"
+      ).value ||
+      "live";
+  }
+
+  /*
+   * ค่าเริ่มต้น
+   * sessionSelectionMode
+   */
+
+  const modeSelect =
+    byId(
+      "sessionSelectionMode"
+    );
+
+  if (
+    modeSelect &&
+    ![
+      "single",
+      "all"
+    ].includes(
+      modeSelect.value
+    )
+  ) {
+    modeSelect.value =
+      "single";
+  }
+
+  syncPackageTypeUi(
+    false
+  );
+
+  updatePackagePreview();
+
+  updateSessionToolButtons();
+}
+
+
+/*
+ * =========================================
+ * KEYBOARD SHORTCUTS
+ * =========================================
+ */
+
+document.addEventListener(
+  "keydown",
+  event => {
+    /*
+     * ESC ปิดรูปสลิป
+     */
+
+    if (
+      event.key ===
+        "Escape" &&
+      slipModal.classList.contains(
+        "show"
+      )
+    ) {
+      closeSlip();
+    }
+  }
+);
+
+
+/*
+ * =========================================
+ * WINDOW CLEANUP
+ * =========================================
+ */
+
+window.addEventListener(
+  "beforeunload",
+  () => {
+    /*
+     * ล้าง Object URL
+     * รูปหน้าปก
+     */
+
+    if (
+      coverPreviewObjectUrl
+    ) {
+      URL.revokeObjectURL(
+        coverPreviewObjectUrl
+      );
+
+      coverPreviewObjectUrl =
+        "";
+    }
+
+    /*
+     * ล้าง Object URL
+     * สลิป
+     */
+
+    if (
+      currentSlipObjectUrl
+    ) {
+      URL.revokeObjectURL(
+        currentSlipObjectUrl
+      );
+
+      currentSlipObjectUrl =
+        "";
+    }
+  }
+);
+
+
+/*
+ * =========================================
+ * JAVASCRIPT ERROR HANDLER
+ * =========================================
+ */
+
+window.addEventListener(
+  "error",
+  event => {
+    console.error(
+      "LIVEHUB ADMIN ERROR:",
+      event.error ||
+      event.message
+    );
+  }
+);
+
+
+window.addEventListener(
+  "unhandledrejection",
+  event => {
+    console.error(
+      "LIVEHUB ADMIN PROMISE ERROR:",
+      event.reason
+    );
+  }
+);
+
+
+/*
+ * =========================================
+ * INITIALIZE
+ * =========================================
+ */
+
+async function initialize() {
+  /*
+   * เตรียม UI แพ็กเกจ
+   */
+
+  initializePackageUi();
+
+  /*
+   * ตรวจ ADMIN TOKEN
+   * ที่เคยเก็บไว้ใน session
+   */
+
+  await restoreAdminSession();
 }
 
 
