@@ -2769,67 +2769,83 @@ async function createPayment(
     new Date()
       .toISOString();
 
-  const orderSnapshot = {
-    concert_id:
+  const entitledFinalSessionEnd =
+  entitledSessions
+    .map(
+      session =>
+        session.live_ends_at
+    )
+    .filter(Boolean)
+    .sort()
+    .at(-1) ||
+  null;
+
+
+const orderSnapshot = {
+  id:
+    orderId,
+
+  concert_id:
+    selectedPackage
+      .concert_id,
+
+  package_id:
+    selectedPackage.id,
+
+  package_name:
+    selectedPackage.name,
+
+  access_type:
+    accessType,
+
+  replay_days:
+    Number(
       selectedPackage
-        .concert_id,
+        .replay_days ||
+      0
+    ),
 
-    package_id:
-      selectedPackage.id,
-
-    package_name:
-      selectedPackage.name,
-
-    access_type:
-      accessType,
-
-    replay_days:
-      Number(
-        selectedPackage
-          .replay_days ||
-        0
-      ),
-
-    replay_months:
-      Number(
-        selectedPackage
-          .replay_months ||
-        0
-      ),
-
-    has_ecard:
-      Number(
-        selectedPackage
-          .has_ecard ||
-        0
-      ),
-
-    video_quality:
+  replay_months:
+    Number(
       selectedPackage
-        .video_quality ||
-      "1080p",
+        .replay_months ||
+      0
+    ),
 
-    selected_session_id:
-      selectedSession?.id ||
-      null,
+  has_ecard:
+    Number(
+      selectedPackage
+        .has_ecard ||
+      0
+    ),
 
-    selected_session_name:
-      selectedSession?.name ||
-      null,
+  video_quality:
+    selectedPackage
+      .video_quality ||
+    "1080p",
 
-    selected_session_starts_at:
-      selectedSession
-        ?.live_starts_at ||
-      null,
+  selected_session_id:
+    selectedSession?.id ||
+    null,
 
-    selected_session_ends_at:
-      selectedSession
-        ?.live_ends_at ||
-      null,
+  selected_session_name:
+    selectedSession?.name ||
+    null,
 
-    approved_at:
-      now,
-  };
+  selected_session_starts_at:
+    selectedSession
+      ?.live_starts_at ||
+    null,
+
+  selected_session_ends_at:
+    selectedSession
+      ?.live_ends_at ||
+    entitledFinalSessionEnd ||
+    null,
+
+  approved_at:
+    now,
+};
 
   /*
    * =========================================
@@ -5408,6 +5424,12 @@ async function updateOrderStatus(
     );
   }
 
+  /*
+   * =========================================
+   * REJECT
+   * =========================================
+   */
+
   if (
     newStatus ===
     "rejected"
@@ -5452,6 +5474,12 @@ async function updateOrderStatus(
     );
   }
 
+  /*
+   * =========================================
+   * APPROVE
+   * =========================================
+   */
+
   const approvedAt =
     order.approved_at ||
     new Date()
@@ -5461,26 +5489,11 @@ async function updateOrderStatus(
     order.access_code ||
     createAccessCode();
 
-  const accessExpiresAt =
-    order.access_expires_at ||
-    await calculateAccessExpiry(
-      {
-        ...order,
-        approved_at:
-          approvedAt,
-      },
-      env
-    );
-
-  if (
-    !accessExpiresAt
-  ) {
-    return errorResponse(
-      "ไม่สามารถคำนวณวันหมดอายุสิทธิ์ได้ กรุณาตรวจสอบข้อมูลแพ็กเกจ",
-      400,
-      corsHeaders
-    );
-  }
+  /*
+   * =========================================
+   * RESTORE / CREATE SESSION SNAPSHOT
+   * =========================================
+   */
 
   let existingSnapshots =
     await getOrderSessionSnapshots(
@@ -5495,18 +5508,12 @@ async function updateOrderStatus(
     let sessionsToSnapshot =
       [];
 
-    if (
-      order.access_type ===
-      "replay"
-    ) {
-      sessionsToSnapshot =
-        await getPackageEntitledSessions(
-          order.package_id,
-          order.concert_id,
-          env
-        );
+    /*
+     * ถ้ามีวันที่ลูกค้าเลือกไว้
+     * = สิทธิ์แบบ single
+     */
 
-    } else if (
+    if (
       order.selected_session_id
     ) {
       sessionsToSnapshot = [
@@ -5531,25 +5538,113 @@ async function updateOrderStatus(
             null,
         },
       ];
+
+    } else if (
+      order.package_id &&
+      order.concert_id
+    ) {
+      /*
+       * ไม่มี selected session
+       * ต้องตรวจว่า package เป็น all จริงหรือไม่
+       */
+
+      const packageData =
+        await env.DB.prepare(`
+          SELECT
+            session_selection_mode
+          FROM packages
+          WHERE id = ?
+            AND concert_id = ?
+          LIMIT 1
+        `)
+          .bind(
+            order.package_id,
+            order.concert_id
+          )
+          .first();
+
+      const selectionMode =
+        normalizeSessionSelectionMode(
+          packageData
+            ?.session_selection_mode
+        ) ||
+        "single";
+
+      if (
+        selectionMode ===
+        "all"
+      ) {
+        sessionsToSnapshot =
+          await getPackageEntitledSessions(
+            order.package_id,
+            order.concert_id,
+            env
+          );
+      }
     }
+
+    /*
+     * single แต่ไม่มี session
+     * หรือ all แต่ไม่มี session ที่ผูกไว้
+     */
 
     if (
-      sessionsToSnapshot.length >
+      sessionsToSnapshot.length ===
       0
     ) {
-      await saveOrderSessionSnapshots(
+      return errorResponse(
+        "ไม่สามารถระบุสิทธิ์วันรับชมของคำสั่งซื้อนี้ได้ กรุณาตรวจสอบแพ็กเกจและวันแสดง",
+        400,
+        corsHeaders
+      );
+    }
+
+    await saveOrderSessionSnapshots(
+      orderId,
+      sessionsToSnapshot,
+      env
+    );
+
+    existingSnapshots =
+      await getOrderSessionSnapshots(
         orderId,
-        sessionsToSnapshot,
         env
       );
-
-      existingSnapshots =
-        await getOrderSessionSnapshots(
-          orderId,
-          env
-        );
-    }
   }
+
+  /*
+   * =========================================
+   * CALCULATE EXPIRY
+   * =========================================
+   */
+
+  const accessExpiresAt =
+    order.access_expires_at ||
+    await calculateAccessExpiry(
+      {
+        ...order,
+
+        approved_at:
+          approvedAt,
+      },
+      env
+    );
+
+  if (
+    !accessExpiresAt
+  ) {
+    return errorResponse(
+      "ไม่สามารถคำนวณวันหมดอายุสิทธิ์ได้ กรุณาตรวจสอบข้อมูลแพ็กเกจ",
+      400,
+      corsHeaders
+    );
+  }
+
+  /*
+   * =========================================
+   * UPDATE ORDER
+   * =========================================
+   */
 
   await env.DB.prepare(`
     UPDATE orders
@@ -5568,14 +5663,25 @@ async function updateOrderStatus(
     )
     .run();
 
+  /*
+   * =========================================
+   * RESPONSE
+   * =========================================
+   */
+
   return jsonResponse(
     {
       success: true,
+
       orderId,
+
       status:
         "approved",
+
       accessCode,
+
       approvedAt,
+
       accessExpiresAt,
 
       selectedSession:
@@ -5600,8 +5706,6 @@ async function updateOrderStatus(
     corsHeaders
   );
 }
-
-
 /*
  * =========================================
  * CANCEL ORDER
@@ -5734,6 +5838,124 @@ async function reactivateAdminOrder(
     );
   }
 
+  /*
+   * =========================================
+   * RESTORE SESSION RIGHTS
+   * =========================================
+   */
+
+  let existingSnapshots =
+    await getOrderSessionSnapshots(
+      orderId,
+      env
+    );
+
+  if (
+    existingSnapshots.length ===
+    0
+  ) {
+    let sessionsToSnapshot =
+      [];
+
+    /*
+     * SINGLE
+     */
+
+    if (
+      order.selected_session_id
+    ) {
+      sessionsToSnapshot = [
+        {
+          id:
+            order.selected_session_id,
+
+          name:
+            order.selected_session_name ||
+            "",
+
+          live_starts_at:
+            order.selected_session_starts_at ||
+            null,
+
+          live_ends_at:
+            order.selected_session_ends_at ||
+            null,
+        },
+      ];
+
+    } else if (
+      order.package_id &&
+      order.concert_id
+    ) {
+      /*
+       * ALL
+       */
+
+      const packageData =
+        await env.DB.prepare(`
+          SELECT
+            session_selection_mode
+          FROM packages
+          WHERE id = ?
+            AND concert_id = ?
+          LIMIT 1
+        `)
+          .bind(
+            order.package_id,
+            order.concert_id
+          )
+          .first();
+
+      const selectionMode =
+        normalizeSessionSelectionMode(
+          packageData
+            ?.session_selection_mode
+        ) ||
+        "single";
+
+      if (
+        selectionMode ===
+        "all"
+      ) {
+        sessionsToSnapshot =
+          await getPackageEntitledSessions(
+            order.package_id,
+            order.concert_id,
+            env
+          );
+      }
+    }
+
+    if (
+      sessionsToSnapshot.length ===
+      0
+    ) {
+      return errorResponse(
+        "ไม่สามารถระบุสิทธิ์วันรับชมของคำสั่งซื้อนี้ได้ กรุณาตรวจสอบแพ็กเกจและวันแสดง",
+        400,
+        corsHeaders
+      );
+    }
+
+    await saveOrderSessionSnapshots(
+      orderId,
+      sessionsToSnapshot,
+      env
+    );
+
+    existingSnapshots =
+      await getOrderSessionSnapshots(
+        orderId,
+        env
+      );
+  }
+
+  /*
+   * =========================================
+   * NEW APPROVAL
+   * =========================================
+   */
+
   const approvedAt =
     new Date()
       .toISOString();
@@ -5763,6 +5985,25 @@ async function reactivateAdminOrder(
     );
   }
 
+  /*
+   * ปิด viewing session เก่า
+   */
+
+  await env.DB.prepare(`
+    UPDATE viewing_sessions
+    SET is_active = 0
+    WHERE order_id = ?
+      AND is_active = 1
+  `)
+    .bind(
+      orderId
+    )
+    .run();
+
+  /*
+   * เปิดสิทธิ์ใหม่
+   */
+
   await env.DB.prepare(`
     UPDATE orders
     SET
@@ -5783,12 +6024,32 @@ async function reactivateAdminOrder(
   return jsonResponse(
     {
       success: true,
+
       orderId,
+
       status:
         "approved",
+
       accessCode,
+
       approvedAt,
+
       accessExpiresAt,
+
+      selectedSession:
+        mapSelectedSession(
+          order
+        ),
+
+      entitledSessions:
+        mapEntitledSessions(
+          existingSnapshots
+        ),
+
+      package:
+        mapOrderPackage(
+          order
+        ),
 
       message:
         "เปิดสิทธิ์คำสั่งซื้ออีกครั้งเรียบร้อยแล้ว",
@@ -5797,7 +6058,6 @@ async function reactivateAdminOrder(
     corsHeaders
   );
 }
-
 
 /*
  * =========================================
@@ -6301,49 +6561,82 @@ async function calculateAccessExpiry(
    */
 
   let finalSessionEnd =
-    order
-      .selected_session_ends_at ||
+  order
+    .selected_session_ends_at ||
+  null;
+
+/*
+ * =========================================
+ * ใช้ ORDER SNAPSHOT ก่อน
+ * =========================================
+ */
+
+if (
+  !finalSessionEnd &&
+  order.id &&
+  env?.DB
+) {
+  const snapshotResult =
+    await env.DB.prepare(`
+      SELECT
+        MAX(
+          live_ends_at
+        ) AS final_end
+      FROM order_sessions
+      WHERE order_id = ?
+    `)
+      .bind(
+        order.id
+      )
+      .first();
+
+  finalSessionEnd =
+    snapshotResult?.final_end ||
     null;
+}
 
-  /*
-   * fallback จาก package
-   */
+/*
+ * =========================================
+ * fallback จาก package
+ * =========================================
+ */
 
-  if (
-    !finalSessionEnd &&
-    order.package_id &&
-    env?.DB
-  ) {
-    const result =
-      await env.DB.prepare(`
-        SELECT
-          MAX(
-            s.live_ends_at
-          ) AS final_end
+if (
+  !finalSessionEnd &&
+  order.package_id &&
+  env?.DB
+) {
+  const result =
+    await env.DB.prepare(`
+      SELECT
+        MAX(
+          s.live_ends_at
+        ) AS final_end
 
-        FROM package_sessions ps
+      FROM package_sessions ps
 
-        INNER JOIN concert_sessions s
-          ON s.id =
-            ps.session_id
+      INNER JOIN concert_sessions s
+        ON s.id =
+          ps.session_id
 
-        WHERE
-          ps.package_id = ?
-          AND s.is_active = 1
-      `)
-        .bind(
-          order.package_id
-        )
-        .first();
+      WHERE
+        ps.package_id = ?
+        AND s.is_active = 1
+    `)
+      .bind(
+        order.package_id
+      )
+      .first();
 
-    finalSessionEnd =
-      result?.final_end ||
-      null;
-  }
-
-  /*
-   * fallback จาก concert
-   */
+  finalSessionEnd =
+    result?.final_end ||
+    null;
+}
+/*
+ * =========================================
+ * fallback จาก concert
+ * =========================================
+ */
 
   if (
     !finalSessionEnd &&
@@ -7613,7 +7906,6 @@ async function verifyLineSignature(
   );
 }
 
-
 /*
  * =========================================
  * NORMALIZATION
@@ -7697,6 +7989,94 @@ function validateConcertInput(
 }
 
 
+/*
+ * =========================================
+ * SESSION NORMALIZATION
+ * =========================================
+ */
+
+function normalizeSessionInput(
+  body = {}
+) {
+  return {
+    concertId:
+      cleanText(
+        body.concertId ??
+        body.concert_id
+      ),
+
+    name:
+      cleanText(
+        body.name
+      ),
+
+    liveStartsAt:
+      normalizeDate(
+        body.liveStartsAt ??
+        body.live_starts_at
+      ),
+
+    liveEndsAt:
+      normalizeDate(
+        body.liveEndsAt ??
+        body.live_ends_at
+      ),
+
+    sortOrder:
+      normalizeNonNegativeInteger(
+        body.sortOrder ??
+        body.sort_order,
+        0
+      ),
+
+    isActive:
+      normalizeBooleanNumber(
+        body.isActive ??
+        body.is_active,
+        1
+      ),
+  };
+}
+
+
+function validateSessionInput(
+  input
+) {
+  if (
+    !input.concertId ||
+    !input.name
+  ) {
+    return "กรุณากรอกข้อมูลวันแสดงให้ครบ";
+  }
+
+  if (
+    !input.liveStartsAt ||
+    !input.liveEndsAt
+  ) {
+    return "กรุณากำหนดเวลาเริ่มและจบ";
+  }
+
+  if (
+    new Date(
+      input.liveEndsAt
+    ).getTime() <=
+    new Date(
+      input.liveStartsAt
+    ).getTime()
+  ) {
+    return "เวลาจบต้องอยู่หลังเวลาเริ่ม";
+  }
+
+  return "";
+}
+
+
+/*
+ * =========================================
+ * PACKAGE NORMALIZATION
+ * =========================================
+ */
+
 function normalizePackageInput(
   body = {}
 ) {
@@ -7753,11 +8133,15 @@ function normalizePackageInput(
       ),
 
     sessionSelectionMode:
-      normalizeSessionSelectionMode(
+  (
+    body.sessionSelectionMode === undefined &&
+    body.session_selection_mode === undefined
+  )
+    ? "single"
+    : normalizeSessionSelectionMode(
         body.sessionSelectionMode ??
         body.session_selection_mode
-      ) ||
-      "single",
+      ),
 
     sessionIds:
       normalizeIdArray(
@@ -7780,8 +8164,8 @@ function normalizeSessionSelectionMode(
 ) {
   const mode =
     String(
-      value ||
-      "single"
+      value ??
+      ""
     )
       .trim()
       .toLowerCase();
@@ -7794,117 +8178,6 @@ function normalizeSessionSelectionMode(
   )
     ? mode
     : "";
-}
-
-function validateSessionInput(
-  input
-) {
-  if (
-    !input.concertId ||
-    !input.name
-  ) {
-    return "กรุณากรอกข้อมูลวันแสดงให้ครบ";
-  }
-
-  if (
-    !input.liveStartsAt ||
-    !input.liveEndsAt
-  ) {
-    return "กรุณากำหนดเวลาเริ่มและจบ";
-  }
-
-  if (
-    new Date(
-      input.liveEndsAt
-    ).getTime() <=
-    new Date(
-      input.liveStartsAt
-    ).getTime()
-  ) {
-    return "เวลาจบต้องอยู่หลังเวลาเริ่ม";
-  }
-if (
-  ![
-    "single",
-    "all",
-  ].includes(
-    input.sessionSelectionMode
-  )
-) {
-  return "รูปแบบการเลือกวันไม่ถูกต้อง";
-}
-  return "";
-}
-
-
-function normalizePackageInput(
-  body = {}
-) {
-  const accessType =
-    normalizeAccessType(
-      body.accessType ??
-      body.access_type
-    );
-
-  return {
-    concertId:
-      cleanText(
-        body.concertId ??
-        body.concert_id
-      ),
-
-    name:
-      cleanText(
-        body.name
-      ),
-
-    price:
-      normalizePrice(
-        body.price
-      ),
-
-    accessType,
-
-    replayDays:
-      normalizeReplayDays(
-        body.replayDays ??
-        body.replay_days,
-        accessType
-      ),
-
-    replayMonths:
-      normalizeReplayMonths(
-        body.replayMonths ??
-        body.replay_months,
-        accessType
-      ),
-
-    hasEcard:
-      normalizeBooleanNumber(
-        body.hasEcard ??
-        body.has_ecard,
-        0
-      ),
-
-    videoQuality:
-      normalizeVideoQuality(
-        body.videoQuality ??
-        body.video_quality
-      ),
-
-    sessionIds:
-      normalizeIdArray(
-        body.sessionIds ??
-        body.session_ids
-      ),
-
-    isActive:
-      normalizeBooleanNumber(
-        body.isActive ??
-        body.is_active,
-        1
-      ),
-  };
 }
 
 
@@ -7991,9 +8264,26 @@ function validatePackageInput(
     return "ความคมชัดไม่ถูกต้อง";
   }
 
+  if (
+    ![
+      "single",
+      "all",
+    ].includes(
+      input.sessionSelectionMode
+    )
+  ) {
+    return "รูปแบบการเลือกวันไม่ถูกต้อง";
+  }
+
   return "";
 }
 
+
+/*
+ * =========================================
+ * PRICE
+ * =========================================
+ */
 
 function normalizePrice(
   value
@@ -8028,6 +8318,12 @@ function normalizePrice(
 }
 
 
+/*
+ * =========================================
+ * ACCESS TYPE
+ * =========================================
+ */
+
 function normalizeAccessType(
   value
 ) {
@@ -8056,6 +8352,12 @@ function normalizeAccessType(
     : "";
 }
 
+
+/*
+ * =========================================
+ * REPLAY
+ * =========================================
+ */
 
 function normalizeReplayDays(
   value,
@@ -8139,6 +8441,12 @@ function normalizeReplayMonths(
 }
 
 
+/*
+ * =========================================
+ * VIDEO QUALITY
+ * =========================================
+ */
+
 function normalizeVideoQuality(
   value
 ) {
@@ -8168,6 +8476,12 @@ function normalizeVideoQuality(
       : quality;
 }
 
+
+/*
+ * =========================================
+ * INTEGER
+ * =========================================
+ */
 
 function normalizeNonNegativeInteger(
   value,
@@ -8220,6 +8534,12 @@ function normalizePositiveInteger(
 }
 
 
+/*
+ * =========================================
+ * BOOLEAN
+ * =========================================
+ */
+
 function normalizeBooleanNumber(
   value,
   defaultValue
@@ -8253,6 +8573,12 @@ function normalizeBooleanNumber(
 }
 
 
+/*
+ * =========================================
+ * ID ARRAY
+ * =========================================
+ */
+
 function normalizeIdArray(
   value
 ) {
@@ -8281,6 +8607,12 @@ function normalizeIdArray(
   ];
 }
 
+
+/*
+ * =========================================
+ * DATE
+ * =========================================
+ */
 
 function normalizeDate(
   value
@@ -8311,6 +8643,12 @@ function normalizeDate(
 }
 
 
+/*
+ * =========================================
+ * CONCERT STATUS
+ * =========================================
+ */
+
 function normalizeConcertStatus(
   value
 ) {
@@ -8332,8 +8670,6 @@ function normalizeConcertStatus(
     ? status
     : "";
 }
-
-
 /*
  * =========================================
  * IDS
