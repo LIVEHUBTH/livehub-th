@@ -540,6 +540,7 @@ async function getPublicConcerts(
           )
           ORDER BY live_starts_at DESC
         `).all()
+
       : await env.DB.prepare(`
           SELECT
             id,
@@ -575,7 +576,8 @@ async function getPublicConcerts(
           live_ends_at,
           sort_order
         FROM concert_sessions
-        WHERE concert_id = ?
+        WHERE
+          concert_id = ?
           AND is_active = 1
         ORDER BY
           sort_order ASC,
@@ -588,6 +590,7 @@ async function getPublicConcerts(
 
     const packagesResult =
       mode === "replay"
+
         ? await env.DB.prepare(`
             SELECT
               id,
@@ -597,9 +600,11 @@ async function getPublicConcerts(
               replay_days,
               replay_months,
               has_ecard,
-              video_quality
+              video_quality,
+              session_selection_mode
             FROM packages
-            WHERE concert_id = ?
+            WHERE
+              concert_id = ?
               AND is_active = 1
               AND access_type = 'replay'
             ORDER BY
@@ -620,9 +625,11 @@ async function getPublicConcerts(
               replay_days,
               replay_months,
               has_ecard,
-              video_quality
+              video_quality,
+              session_selection_mode
             FROM packages
-            WHERE concert_id = ?
+            WHERE
+              concert_id = ?
               AND is_active = 1
               AND access_type IN (
                 'live',
@@ -638,8 +645,20 @@ async function getPublicConcerts(
             .all();
 
     concert.sessions =
-      sessionsResult.results ||
-      [];
+      (
+        sessionsResult.results ||
+        []
+      ).map(
+        session => ({
+          ...session,
+
+          sort_order:
+            Number(
+              session.sort_order ||
+              0
+            ),
+        })
+      );
 
     concert.packages =
       packagesResult.results ||
@@ -712,6 +731,39 @@ async function getPublicConcerts(
       packageItem.video_quality =
         packageItem.video_quality ||
         "1080p";
+
+      packageItem.session_selection_mode =
+        normalizeSessionSelectionMode(
+          packageItem
+            .session_selection_mode
+        ) ||
+        "single";
+
+      /*
+       * API aliases สำหรับหน้าเว็บลูกค้า
+       */
+
+      packageItem.accessType =
+        packageItem.access_type;
+
+      packageItem.replayDays =
+        packageItem.replay_days;
+
+      packageItem.replayMonths =
+        packageItem.replay_months;
+
+      packageItem.hasEcard =
+        packageItem.has_ecard === 1;
+
+      packageItem.videoQuality =
+        packageItem.video_quality;
+
+      packageItem.sessionIds =
+        packageItem.session_ids;
+
+      packageItem.sessionSelectionMode =
+        packageItem
+          .session_selection_mode;
     }
 
     concerts.push(
@@ -729,7 +781,6 @@ async function getPublicConcerts(
     corsHeaders
   );
 }
-
 
 /*
  * =========================================
@@ -1556,6 +1607,7 @@ async function getPackages(
             replay_months,
             has_ecard,
             video_quality,
+            session_selection_mode,
             is_active,
             created_at,
             updated_at
@@ -1579,6 +1631,7 @@ async function getPackages(
             replay_months,
             has_ecard,
             video_quality,
+            session_selection_mode,
             is_active,
             created_at,
             updated_at
@@ -1657,6 +1710,17 @@ async function getPackages(
     packageItem.video_quality =
       packageItem.video_quality ||
       "1080p";
+
+    packageItem.session_selection_mode =
+      normalizeSessionSelectionMode(
+        packageItem
+          .session_selection_mode
+      ) ||
+      "single";
+
+    packageItem.sessionSelectionMode =
+      packageItem
+        .session_selection_mode;
   }
 
   return jsonResponse(
@@ -1704,11 +1768,8 @@ async function createPackage(
     return errorResponse(
       input.accessType ===
         "replay"
-
-        ? "กรุณาเลือกวันของ REPLAY อย่างน้อย 1 วัน"
-
+        ? "กรุณาเลือกวันที่สามารถรับชม REPLAY อย่างน้อย 1 วัน"
         : "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
-
       400,
       corsHeaders
     );
@@ -1771,12 +1832,13 @@ async function createPackage(
       replay_months,
       has_ecard,
       video_quality,
+      session_selection_mode,
       is_active,
       created_at,
       updated_at
     )
     VALUES (
-      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+      ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
     )
   `)
     .bind(
@@ -1789,6 +1851,7 @@ async function createPackage(
       input.replayMonths,
       input.hasEcard,
       input.videoQuality,
+      input.sessionSelectionMode,
       input.isActive,
       now,
       now
@@ -1852,6 +1915,9 @@ async function createPackage(
         sessionIds:
           input.sessionIds,
 
+        sessionSelectionMode:
+          input.sessionSelectionMode,
+
         isActive:
           input.isActive,
       },
@@ -1863,7 +1929,6 @@ async function createPackage(
     corsHeaders
   );
 }
-
 
 async function updatePackage(
   packageId,
@@ -1883,7 +1948,8 @@ async function updatePackage(
     await env.DB.prepare(`
       SELECT
         id,
-        concert_id
+        concert_id,
+        session_selection_mode
       FROM packages
       WHERE id = ?
       LIMIT 1
@@ -1901,13 +1967,31 @@ async function updatePackage(
     );
   }
 
+  const body =
+    await readJson(
+      request
+    );
+
+  /*
+   * ถ้าหน้า Admin รุ่นเก่ายังไม่ได้ส่ง
+   * sessionSelectionMode มา
+   * ให้คงค่าของเดิมเอาไว้
+   */
+  if (
+    body.sessionSelectionMode ===
+      undefined &&
+    body.session_selection_mode ===
+      undefined
+  ) {
+    body.sessionSelectionMode =
+      existing
+        .session_selection_mode ||
+      "single";
+  }
+
   const input =
     normalizePackageInput({
-      ...(
-        await readJson(
-          request
-        )
-      ),
+      ...body,
 
       concertId:
         existing.concert_id,
@@ -1946,11 +2030,8 @@ async function updatePackage(
     return errorResponse(
       input.accessType ===
         "replay"
-
-        ? "กรุณาเลือกวันของ REPLAY อย่างน้อย 1 วัน"
-
+        ? "กรุณาเลือกวันที่สามารถรับชม REPLAY อย่างน้อย 1 วัน"
         : "กรุณาเลือกวันแสดงอย่างน้อย 1 วัน",
-
       400,
       corsHeaders
     );
@@ -1983,6 +2064,7 @@ async function updatePackage(
       replay_months = ?,
       has_ecard = ?,
       video_quality = ?,
+      session_selection_mode = ?,
       is_active = ?,
       updated_at = ?
     WHERE id = ?
@@ -1995,6 +2077,7 @@ async function updatePackage(
       input.replayMonths,
       input.hasEcard,
       input.videoQuality,
+      input.sessionSelectionMode,
       input.isActive,
       new Date()
         .toISOString(),
@@ -2044,6 +2127,9 @@ async function updatePackage(
 
         sessionIds:
           input.sessionIds,
+
+        sessionSelectionMode:
+          input.sessionSelectionMode,
 
         isActive:
           input.isActive,
@@ -2247,7 +2333,7 @@ async function createPayment(
 
   /*
    * =========================================
-   * VERIFY LINE LINK TOKEN
+   * LINE LINK
    * =========================================
    */
 
@@ -2316,7 +2402,7 @@ async function createPayment(
 
   /*
    * =========================================
-   * GET PACKAGE
+   * PACKAGE
    * =========================================
    */
 
@@ -2332,6 +2418,7 @@ async function createPayment(
         p.replay_months,
         p.has_ecard,
         p.video_quality,
+        p.session_selection_mode,
         p.is_active,
 
         c.status
@@ -2373,10 +2460,22 @@ async function createPayment(
     );
   }
 
+  const accessType =
+    normalizeAccessType(
+      selectedPackage
+        .access_type
+    );
+
   const isReplayOnly =
-    selectedPackage
-      .access_type ===
+    accessType ===
     "replay";
+
+  const sessionSelectionMode =
+    normalizeSessionSelectionMode(
+      selectedPackage
+        .session_selection_mode
+    ) ||
+    "single";
 
   const allowedConcertStatuses =
     isReplayOnly
@@ -2401,7 +2500,6 @@ async function createPayment(
       isReplayOnly
         ? "รีเพลย์นี้ยังไม่เปิดขาย"
         : "คอนเสิร์ตนี้ยังไม่เปิดขาย",
-
       400,
       corsHeaders
     );
@@ -2409,7 +2507,7 @@ async function createPayment(
 
   /*
    * =========================================
-   * VERIFY PRICE
+   * PRICE
    * =========================================
    */
 
@@ -2431,9 +2529,30 @@ async function createPayment(
 
   /*
    * =========================================
-   * SESSION RIGHTS
+   * AVAILABLE SESSIONS
    * =========================================
    */
+
+  const availableSessions =
+    await getPackageEntitledSessions(
+      packageId,
+      selectedPackage
+        .concert_id,
+      env
+    );
+
+  if (
+    availableSessions.length ===
+    0
+  ) {
+    return errorResponse(
+      isReplayOnly
+        ? "แพ็กเกจ REPLAY นี้ยังไม่ได้กำหนดวันที่รับชม"
+        : "แพ็กเกจนี้ยังไม่ได้กำหนดวันแสดง",
+      400,
+      corsHeaders
+    );
+  }
 
   let selectedSession =
     null;
@@ -2441,76 +2560,48 @@ async function createPayment(
   let entitledSessions =
     [];
 
+  /*
+   * =========================================
+   * SINGLE
+   *
+   * Admin สามารถผูก 15 + 16 ได้
+   * แต่ลูกค้าต้องเลือกเองเพียง 1 วัน
+   * =========================================
+   */
+
   if (
-    isReplayOnly
+    sessionSelectionMode ===
+    "single"
   ) {
-    entitledSessions =
-      await getPackageEntitledSessions(
-        packageId,
-        selectedPackage
-          .concert_id,
-        env
-      );
-
-    if (
-      entitledSessions.length ===
-      0
-    ) {
-      return errorResponse(
-        "แพ็กเกจ REPLAY นี้ยังไม่ได้กำหนดวันที่รับชม",
-        400,
-        corsHeaders
-      );
-    }
-
-  } else {
     if (
       !sessionId
     ) {
       return errorResponse(
-        "กรุณาเลือกวันแสดง",
+        isReplayOnly
+          ? "กรุณาเลือกวันที่ต้องการรับชม REPLAY"
+          : "กรุณาเลือกวันแสดง",
         400,
         corsHeaders
       );
     }
 
     selectedSession =
-      await env.DB.prepare(`
-        SELECT
-          s.id,
-          s.concert_id,
-          s.name,
-          s.live_starts_at,
-          s.live_ends_at,
-          s.sort_order
-
-        FROM package_sessions ps
-
-        INNER JOIN concert_sessions s
-          ON s.id =
-            ps.session_id
-
-        WHERE
-          ps.package_id = ?
-          AND s.id = ?
-          AND s.concert_id = ?
-          AND s.is_active = 1
-
-        LIMIT 1
-      `)
-        .bind(
-          packageId,
-          sessionId,
-          selectedPackage
-            .concert_id
-        )
-        .first();
+      availableSessions.find(
+        session =>
+          cleanText(
+            session.id
+          ) ===
+          sessionId
+      ) ||
+      null;
 
     if (
       !selectedSession
     ) {
       return errorResponse(
-        "วันแสดงที่เลือกไม่อยู่ในสิทธิ์ของแพ็กเกจนี้",
+        isReplayOnly
+          ? "วันที่เลือกไม่อยู่ในสิทธิ์ของแพ็กเกจ REPLAY นี้"
+          : "วันแสดงที่เลือกไม่อยู่ในสิทธิ์ของแพ็กเกจนี้",
         400,
         corsHeaders
       );
@@ -2523,7 +2614,27 @@ async function createPayment(
 
   /*
    * =========================================
-   * CREATE ORDER ID
+   * ALL
+   *
+   * ลูกค้าไม่ต้องเลือกวัน
+   * ได้ทุก session ที่ Admin ผูกไว้
+   * =========================================
+   */
+
+  if (
+    sessionSelectionMode ===
+    "all"
+  ) {
+    entitledSessions =
+      availableSessions;
+
+    selectedSession =
+      null;
+  }
+
+  /*
+   * =========================================
+   * ORDER ID
    * =========================================
    */
 
@@ -2534,7 +2645,7 @@ async function createPayment(
 
   /*
    * =========================================
-   * VERIFY EASYSLIP
+   * EASYSLIP
    * =========================================
    */
 
@@ -2564,16 +2675,6 @@ async function createPayment(
     );
   }
 
-  /*
-   * =========================================
-   * VERIFY RECEIVER ACCOUNT
-   *
-   * EasySlip v2 ส่ง matchedAccount
-   * เป็น object บัญชีที่ match ได้
-   * หรือ null ถ้าไม่ match
-   * =========================================
-   */
-
   if (
     !easySlip
       .matchedAccountMatched
@@ -2585,12 +2686,6 @@ async function createPayment(
     );
   }
 
-  /*
-   * =========================================
-   * DUPLICATE
-   * =========================================
-   */
-
   if (
     easySlip.isDuplicate
   ) {
@@ -2600,12 +2695,6 @@ async function createPayment(
       corsHeaders
     );
   }
-
-  /*
-   * =========================================
-   * VERIFY AMOUNT
-   * =========================================
-   */
 
   if (
     !easySlip
@@ -2627,17 +2716,10 @@ async function createPayment(
         "th-TH"
       ) +
       " บาท",
-
       400,
       corsHeaders
     );
   }
-
-  /*
-   * =========================================
-   * TRANSACTION REFERENCE
-   * =========================================
-   */
 
   if (
     !easySlip.transRef
@@ -2651,7 +2733,7 @@ async function createPayment(
 
   /*
    * =========================================
-   * DUPLICATE CHECK IN D1
+   * DUPLICATE D1
    * =========================================
    */
 
@@ -2659,8 +2741,7 @@ async function createPayment(
     await env.DB.prepare(`
       SELECT id
       FROM orders
-      WHERE
-        easyslip_trans_ref = ?
+      WHERE easyslip_trans_ref = ?
       LIMIT 1
     `)
       .bind(
@@ -2680,20 +2761,9 @@ async function createPayment(
 
   /*
    * =========================================
-   * PREPARE ORDER
+   * ORDER SNAPSHOT
    * =========================================
    */
-
-  const extension =
-    getImageExtension(
-      slip.type
-    );
-
-  const slipKey =
-    "slips/" +
-    orderId +
-    "." +
-    extension;
 
   const now =
     new Date()
@@ -2711,8 +2781,7 @@ async function createPayment(
       selectedPackage.name,
 
     access_type:
-      selectedPackage
-        .access_type,
+      accessType,
 
     replay_days:
       Number(
@@ -2764,7 +2833,7 @@ async function createPayment(
 
   /*
    * =========================================
-   * ACCESS EXPIRY
+   * EXPIRY
    * =========================================
    */
 
@@ -2789,9 +2858,20 @@ async function createPayment(
 
   /*
    * =========================================
-   * UPLOAD SLIP
+   * R2 SLIP
    * =========================================
    */
+
+  const extension =
+    getImageExtension(
+      slip.type
+    );
+
+  const slipKey =
+    "slips/" +
+    orderId +
+    "." +
+    extension;
 
   const slipBytes =
     await slip.arrayBuffer();
@@ -2810,6 +2890,8 @@ async function createPayment(
 
         packageId:
           selectedPackage.id,
+
+        sessionSelectionMode,
 
         sessionId:
           selectedSession?.id ||
@@ -2994,7 +3076,7 @@ async function createPayment(
 
   /*
    * =========================================
-   * SNAPSHOT RIGHTS
+   * SNAPSHOT ACTUAL RIGHTS
    * =========================================
    */
 
@@ -3050,7 +3132,7 @@ async function createPayment(
 
   /*
    * =========================================
-   * LINE LINK
+   * LINE
    * =========================================
    */
 
@@ -3079,7 +3161,6 @@ async function createPayment(
       DO UPDATE SET
         order_id =
           excluded.order_id,
-
         updated_at =
           excluded.updated_at
     `)
@@ -3102,9 +3183,9 @@ async function createPayment(
           packageName:
             selectedPackage.name,
 
-          accessType:
-            selectedPackage
-              .access_type,
+          accessType,
+
+          sessionSelectionMode,
 
           sessionName:
             selectedSession?.name ||
@@ -3180,6 +3261,8 @@ async function createPayment(
 
       lineNotificationSent,
 
+      sessionSelectionMode,
+
       selectedSession:
         selectedSession
           ? {
@@ -3233,9 +3316,9 @@ async function createPayment(
             selectedPackage.price
           ),
 
-        accessType:
-          selectedPackage
-            .access_type,
+        accessType,
+
+        sessionSelectionMode,
 
         replayDays:
           Number(
@@ -3296,7 +3379,6 @@ async function createPayment(
     corsHeaders
   );
 }
-
 
 /*
  * =========================================
@@ -7615,9 +7697,15 @@ function validateConcertInput(
 }
 
 
-function normalizeSessionInput(
+function normalizePackageInput(
   body = {}
 ) {
+  const accessType =
+    normalizeAccessType(
+      body.accessType ??
+      body.access_type
+    );
+
   return {
     concertId:
       cleanText(
@@ -7630,23 +7718,51 @@ function normalizeSessionInput(
         body.name
       ),
 
-    liveStartsAt:
-      normalizeDate(
-        body.liveStartsAt ??
-        body.live_starts_at
+    price:
+      normalizePrice(
+        body.price
       ),
 
-    liveEndsAt:
-      normalizeDate(
-        body.liveEndsAt ??
-        body.live_ends_at
+    accessType,
+
+    replayDays:
+      normalizeReplayDays(
+        body.replayDays ??
+        body.replay_days,
+        accessType
       ),
 
-    sortOrder:
-      normalizeNonNegativeInteger(
-        body.sortOrder ??
-        body.sort_order,
+    replayMonths:
+      normalizeReplayMonths(
+        body.replayMonths ??
+        body.replay_months,
+        accessType
+      ),
+
+    hasEcard:
+      normalizeBooleanNumber(
+        body.hasEcard ??
+        body.has_ecard,
         0
+      ),
+
+    videoQuality:
+      normalizeVideoQuality(
+        body.videoQuality ??
+        body.video_quality
+      ),
+
+    sessionSelectionMode:
+      normalizeSessionSelectionMode(
+        body.sessionSelectionMode ??
+        body.session_selection_mode
+      ) ||
+      "single",
+
+    sessionIds:
+      normalizeIdArray(
+        body.sessionIds ??
+        body.session_ids
       ),
 
     isActive:
@@ -7658,6 +7774,27 @@ function normalizeSessionInput(
   };
 }
 
+
+function normalizeSessionSelectionMode(
+  value
+) {
+  const mode =
+    String(
+      value ||
+      "single"
+    )
+      .trim()
+      .toLowerCase();
+
+  return [
+    "single",
+    "all",
+  ].includes(
+    mode
+  )
+    ? mode
+    : "";
+}
 
 function validateSessionInput(
   input
@@ -7686,7 +7823,16 @@ function validateSessionInput(
   ) {
     return "เวลาจบต้องอยู่หลังเวลาเริ่ม";
   }
-
+if (
+  ![
+    "single",
+    "all",
+  ].includes(
+    input.sessionSelectionMode
+  )
+) {
+  return "รูปแบบการเลือกวันไม่ถูกต้อง";
+}
   return "";
 }
 
