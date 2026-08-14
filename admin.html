@@ -3316,48 +3316,49 @@ async function saveSiteSettings() {
      * =========================================
      */
 
-    const settings = {
-      logoText:
-        siteLogoText.value.trim(),
+const settings = {
+  logo_text:
+    siteLogoText.value.trim(),
 
-      logoImageUrl,
+  logo_image_url:
+    logoImageUrl,
 
-      heroTitle:
-        siteHeroTitle.value.trim(),
+  hero_title:
+    siteHeroTitle.value.trim(),
 
-      heroSubtitle:
-        siteHeroSubtitle.value.trim(),
+  hero_subtitle:
+    siteHeroSubtitle.value.trim(),
 
-      heroBackgroundUrl,
+  hero_background_url:
+    heroBackgroundUrl,
 
-      liveLink:
-        siteLiveLink.value.trim(),
+  live_link:
+    siteLiveLink.value.trim(),
 
-      replayLink:
-        siteReplayLink.value.trim(),
+  replay_link:
+    siteReplayLink.value.trim(),
 
-      packageLink:
-        sitePackageLink.value.trim(),
+  package_link:
+    sitePackageLink.value.trim(),
 
-      contactLink:
-        siteContactLink.value.trim()
-    };
+  contact_link:
+    siteContactLink.value.trim()
+};
 
-    if (
-      !settings.logoText
-    ) {
-      settings.logoText =
-        "LIVEHUB TH";
-    }
+if (
+  !settings.logo_text
+) {
+  settings.logo_text =
+    "LIVEHUB TH";
+}
 
-    if (
-      !settings.heroTitle
-    ) {
-      settings.heroTitle =
-        settings.logoText ||
-        "LIVEHUB TH";
-    }
-
+if (
+  !settings.hero_title
+) {
+  settings.hero_title =
+    settings.logo_text ||
+    "LIVEHUB TH";
+}
     /*
      * =========================================
      * SAVE TO WORKER
