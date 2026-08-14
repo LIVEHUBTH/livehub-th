@@ -9870,29 +9870,31 @@ async function updateSiteSettings(
         );
 
       await env.DB.prepare(`
-        INSERT INTO site_settings (
-          setting_key,
-          setting_value,
-          updated_at
-        )
-        VALUES (
-          ?, ?, ?
-        )
+  INSERT INTO site_settings (
+    setting_key,
+    setting_value,
+    created_at,
+    updated_at
+  )
+  VALUES (
+    ?, ?, ?, ?
+  )
 
-        ON CONFLICT(setting_key)
-        DO UPDATE SET
-          setting_value =
-            excluded.setting_value,
-          updated_at =
-            excluded.updated_at
-      `)
-        .bind(
-          key,
-          settingValue,
-          now
-        )
-        .run();
-    }
+  ON CONFLICT(setting_key)
+  DO UPDATE SET
+    setting_value =
+      excluded.setting_value,
+    updated_at =
+      excluded.updated_at
+`)
+  .bind(
+    key,
+    settingValue,
+    now,
+    now
+  )
+  .run();
+ }
 
     const result =
       await env.DB.prepare(`
