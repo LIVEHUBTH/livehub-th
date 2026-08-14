@@ -221,9 +221,30 @@ if (
       }
 /*
  * =========================================
- * ADMIN SITE ASSETS
+ * ADMIN SITE SETTINGS / ASSETS
  * =========================================
  */
+
+if (
+  path === "/api/admin/site-settings" &&
+  request.method === "GET"
+) {
+  return await getAdminSiteSettings(
+    env,
+    corsHeaders
+  );
+}
+
+if (
+  path === "/api/admin/site-settings" &&
+  request.method === "POST"
+) {
+  return await updateSiteSettings(
+    request,
+    env,
+    corsHeaders
+  );
+}
 
 if (
   path === "/api/admin/site-assets" &&
@@ -234,8 +255,7 @@ if (
     env,
     corsHeaders
   );
-}
-      /*
+}      /*
        * =========================================
        * ADMIN CONCERT COVER
        * =========================================
@@ -9857,6 +9877,241 @@ async function getSiteSettings(
         ok: false,
         error: "ไม่สามารถโหลดการตั้งค่าเว็บไซต์ได้"
       },
+      500,
+      corsHeaders
+    );
+  }
+}
+
+/*
+ * =========================================
+ * ADMIN SITE SETTINGS
+ * =========================================
+ */
+
+async function getAdminSiteSettings(
+  env,
+  corsHeaders
+) {
+  try {
+    const result =
+      await env.DB.prepare(`
+        SELECT
+          setting_key,
+          setting_value
+        FROM site_settings
+        ORDER BY setting_key ASC
+      `).all();
+
+    const settings = {};
+
+    for (
+      const item
+      of (
+        result.results ||
+        []
+      )
+    ) {
+      settings[
+        item.setting_key
+      ] =
+        item.setting_value;
+    }
+
+    return jsonResponse(
+      {
+        success: true,
+        ok: true,
+        settings
+      },
+      200,
+      corsHeaders
+    );
+
+  } catch (error) {
+    console.error(
+      "getAdminSiteSettings error:",
+      error
+    );
+
+    return errorResponse(
+      "ไม่สามารถโหลดการตั้งค่าเว็บไซต์ได้",
+      500,
+      corsHeaders
+    );
+  }
+}
+
+
+/*
+ * =========================================
+ * UPDATE SITE SETTINGS
+ * =========================================
+ */
+
+async function updateSiteSettings(
+  request,
+  env,
+  corsHeaders
+) {
+  let body;
+
+  try {
+    body =
+      await request.json();
+
+  } catch {
+    return errorResponse(
+      "ข้อมูลการตั้งค่าไม่ถูกต้อง",
+      400,
+      corsHeaders
+    );
+  }
+
+  const allowedKeys = [
+    "logo_text",
+    "logo_image_url",
+    "hero_title",
+    "hero_subtitle",
+    "hero_background_url",
+    "live_link",
+    "replay_link",
+    "package_link",
+    "contact_link"
+  ];
+
+  const settings =
+    body?.settings &&
+    typeof body.settings ===
+      "object"
+      ? body.settings
+      : body;
+
+  if (
+    !settings ||
+    typeof settings !==
+      "object" ||
+    Array.isArray(
+      settings
+    )
+  ) {
+    return errorResponse(
+      "ไม่พบข้อมูลการตั้งค่าเว็บไซต์",
+      400,
+      corsHeaders
+    );
+  }
+
+  const entries =
+    Object.entries(
+      settings
+    ).filter(
+      ([key]) =>
+        allowedKeys.includes(
+          key
+        )
+    );
+
+  if (
+    entries.length ===
+    0
+  ) {
+    return errorResponse(
+      "ไม่มีข้อมูลที่สามารถบันทึกได้",
+      400,
+      corsHeaders
+    );
+  }
+
+  try {
+    const now =
+      new Date()
+        .toISOString();
+
+    for (
+      const [
+        key,
+        value
+      ]
+      of entries
+    ) {
+      const settingValue =
+        cleanText(
+          value
+        );
+
+      await env.DB.prepare(`
+        INSERT INTO site_settings (
+          setting_key,
+          setting_value,
+          updated_at
+        )
+        VALUES (
+          ?, ?, ?
+        )
+
+        ON CONFLICT(setting_key)
+        DO UPDATE SET
+          setting_value =
+            excluded.setting_value,
+          updated_at =
+            excluded.updated_at
+      `)
+        .bind(
+          key,
+          settingValue,
+          now
+        )
+        .run();
+    }
+
+    const result =
+      await env.DB.prepare(`
+        SELECT
+          setting_key,
+          setting_value
+        FROM site_settings
+        ORDER BY setting_key ASC
+      `).all();
+
+    const savedSettings = {};
+
+    for (
+      const item
+      of (
+        result.results ||
+        []
+      )
+    ) {
+      savedSettings[
+        item.setting_key
+      ] =
+        item.setting_value;
+    }
+
+    return jsonResponse(
+      {
+        success: true,
+        ok: true,
+
+        settings:
+          savedSettings,
+
+        message:
+          "บันทึกการตั้งค่าเว็บไซต์สำเร็จ"
+      },
+      200,
+      corsHeaders
+    );
+
+  } catch (error) {
+    console.error(
+      "updateSiteSettings error:",
+      error
+    );
+
+    return errorResponse(
+      "ไม่สามารถบันทึกการตั้งค่าเว็บไซต์ได้",
       500,
       corsHeaders
     );
