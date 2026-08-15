@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>LIVE CONCERT | LIVEHUB TH</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css?v=6"
+  >
+
+  <style>
+    .events-main {
+      min-height: 75vh;
+      padding: 60px 28px 90px;
+    }
+
+    .events-container {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+    }
+
+    .events-heading {
+      margin-bottom: 34px;
+    }
+
+    .events-label {
+      margin: 0 0 10px;
+      color: #ff0a83;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 3px;
+    }
+
+    .events-title {
+      margin: 0;
+      color: #ffffff;
+      font-size: clamp(42px, 7vw, 82px);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -3px;
+    }
+
+    .events-title span {
+      color: #ff0a83;
+    }
+
+    .events-description {
+      max-width: 650px;
+      margin: 22px 0 0;
+      color: #b7b7bd;
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .events-tools {
+      display: flex;
+      gap: 14px;
+      margin: 35px 0 40px;
+    }
+
+    .events-search {
+      display: flex;
+      flex: 1;
+      min-height: 58px;
+      overflow: hidden;
+      background: #090909;
+      border: 1px solid #333338;
+      border-radius: 16px;
+    }
+
+    .events-search:focus-within {
+      border-color: #ff0a83;
+      box-shadow: 0 0 0 3px rgba(255, 10, 131, 0.13);
+    }
+
+    .events-search span {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      color: #ff0a83;
+      font-size: 25px;
+    }
+
+    .events-search input {
+      flex: 1;
+      min-width: 0;
+      padding: 0 12px 0 0;
+      color: #ffffff;
+      background: transparent;
+      border: 0;
+      outline: 0;
+      font: inherit;
+      font-size: 17px;
+    }
+
+    .events-search input::placeholder {
+      color: #77777d;
+    }
+
+    .events-search button {
+      min-width: 125px;
+      margin: 7px;
+      padding: 0 22px;
+      color: #ffffff;
+      background: linear-gradient(135deg, #ff0a83, #ed0068);
+      border: 0;
+      border-radius: 12px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .events-count {
+      margin: 0 0 20px;
+      color: #a7a7ad;
+      font-size: 15px;
+    }
+
+    .events-count strong {
+      color: #ffffff;
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .event-card {
+      overflow: hidden;
+      color: #ffffff;
+      background: linear-gradient(180deg, #111116, #080809);
+      border: 1px solid #29292e;
+      border-radius: 20px;
+      cursor: pointer;
+      transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+    }
+
+    .event-card:hover {
+      transform: translateY(-5px);
+      border-color: #ff0a83;
+      box-shadow: 0 16px 40px rgba(255, 10, 131, 0.14);
+    }
+
+    .event-cover {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background:
+        radial-gradient(circle at center, #3b0b25, #090909 70%);
+      background-position: center;
+      background-size: cover;
+    }
+
+    .event-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      padding: 8px 12px;
+      color: #ffffff;
+      background: #ff0a83;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      box-shadow: 0 0 20px rgba(255, 10, 131, 0.45);
+    }
+
+    .event-badge.replay {
+      background: #24242a;
+      border: 1px solid #ff0a83;
+    }
+
+    .event-content {
+      padding: 22px;
+    }
+
+    .event-type {
+      margin: 0 0 8px;
+      color: #ff0a83;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+    }
+
+    .event-name {
+      min-height: 58px;
+      margin: 0;
+      font-size: 23px;
+      line-height: 1.25;
+    }
+
+    .event-meta {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+      color: #b7b7bd;
+      font-size: 14px;
+    }
+
+    .event-action {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid #29292e;
+    }
+
+    .event-price {
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .event-button {
+      padding: 10px 15px;
+      color: #ffffff;
+      background: #ff0a83;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .events-message {
+      grid-column: 1 / -1;
+      min-height: 240px;
+      display: grid;
+      place-items: center;
+      padding: 40px 20px;
+      color: #a7a7ad;
+      text-align: center;
+      background: #0a0a0c;
+      border: 1px dashed #333338;
+      border-radius: 20px;
+    }
+
+    .events-message strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #ffffff;
+      font-size: 21px;
+    }
+
+    @media (max-width: 900px) {
+      .events-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .events-main {
+        padding: 42px 22px 70px;
+      }
+
+      .events-title {
+        font-size: 47px;
+        letter-spacing: -2px;
+      }
+
+      .events-description {
+        font-size: 16px;
+      }
+
+      .events-tools {
+        margin-top: 28px;
+      }
+
+      .events-search {
+        min-height: 56px;
+      }
+
+      .events-search button {
+        min-width: 92px;
+        padding: 0 15px;
+      }
+
+      .events-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .event-cover {
+        aspect-ratio: 16 / 9;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <header>
+
+      <a
+        href="index.html"
+        class="site-logo"
+        aria-label="กลับหน้าแรก"
+      >
+
+        <img
+          id="siteLogoImage"
+          src="logo.PNG"
+          alt="LIVEHUB TH Logo"
+          class="site-logo-image"
+        >
+
+        <div class="site-logo-text">
+
+          <div
+            class="site-logo-name"
+            id="siteLogoText"
+          >
+            LIVE<span>HUB TH</span>
+          </div>
+
+          <div class="site-logo-subtitle">
+            LIVE CONCERTS & EVENTS
+          </div>
+
+        </div>
+
+      </a>
+
+      <button
+        class="mobile-menu-button"
+        id="mobileMenuButton"
+        type="button"
+        aria-controls="mainNavigation"
+        aria-expanded="false"
+      >
+        ☰ เมนู
+      </button>
+
+      <nav id="mainNavigation">
+
+        <a href="index.html">
+          หน้าแรก
+        </a>
+
+        <a
+          href="events.html?mode=live"
+          id="navLiveLink"
+        >
+          LIVE CONCERT
+        </a>
+
+        <a
+          href="events.html?mode=replay"
+          id="navReplayLink"
+        >
+          REPLAY CONCERT
+        </a>
+
+        <a href="index.html#packages">
+          แพ็กเกจ
+        </a>
+
+        <a href="index.html#contact">
+          ติดต่อ
+        </a>
+
+      </nav>
+
+    </header>
+
+    <main class="events-main">
+
+      <div class="events-container">
+
+        <section class="events-heading">
+
+          <p
+            class="events-label"
+            id="eventsLabel"
+          >
+            LIVE NOW & UPCOMING
+          </p>
+
+          <h1
+            class="events-title"
+            id="eventsTitle"
+          >
+            LIVE <span>CONCERT</span>
+          </h1>
+
+          <p
+            class="events-description"
+            id="eventsDescription"
+          >
+            เลือกชมคอนเสิร์ตสดที่คุณชื่นชอบ
+            พร้อมรับชมภาพคมชัดระดับ 1080p
+          </p>
+
+        </section>
+
+        <div class="events-tools">
+
+          <form
+            class="events-search"
+            id="eventsSearchForm"
+            role="search"
+          >
+
+            <span aria-hidden="true">⌕</span>
+
+            <input
+              type="search"
+              id="eventsSearchInput"
+              placeholder="ค้นหาคอนเสิร์ต..."
+              autocomplete="off"
+            >
+
+            <button type="submit">
+              ค้นหา
+            </button>
+
+          </form>
+
+        </div>
+
+        <p
+          class="events-count"
+          id="eventsCount"
+        >
+          กำลังโหลดรายการคอนเสิร์ต...
+        </p>
+
+        <section
+          class="events-grid"
+          id="eventsGrid"
+          aria-live="polite"
+        >
+
+          <div class="events-message">
+            <div>
+              <strong>กำลังโหลดคอนเสิร์ต</strong>
+              กรุณารอสักครู่...
+            </div>
+          </div>
+
+        </section>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+    const SITE_API_BASE =
+      "https://livehub-payment-api.livehubth.workers.dev";
+
+    const searchParams =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const pageMode =
+      searchParams.get("mode") === "replay"
+        ? "replay"
+        : "live";
+
+    let allConcerts = [];
+
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      async () => {
+
+        setPageMode();
+        initializeMobileMenu();
+        initializeSearch();
+
+        await Promise.allSettled([
+          loadSiteSettings(),
+          loadConcerts()
+        ]);
+
+      }
+    );
+
+
+    function setPageMode() {
+
+      const isReplay =
+        pageMode === "replay";
+
+      document.title =
+        isReplay
+          ? "REPLAY CONCERT | LIVEHUB TH"
+          : "LIVE CONCERT | LIVEHUB TH";
+
+      document.getElementById(
+        "eventsLabel"
+      ).textContent =
+        isReplay
+          ? "WATCH AGAIN"
+          : "LIVE NOW & UPCOMING";
+
+      document.getElementById(
+        "eventsTitle"
+      ).innerHTML =
+        isReplay
+          ? "REPLAY <span>CONCERT</span>"
+          : "LIVE <span>CONCERT</span>";
+
+      document.getElementById(
+        "eventsDescription"
+      ).textContent =
+        isReplay
+          ? "รับชมคอนเสิร์ตย้อนหลังได้ทุกที่ทุกเวลา ภาพคมชัดระดับ 1080p"
+          : "เลือกชมคอนเสิร์ตสดที่คุณชื่นชอบ พร้อมรับชมภาพคมชัดระดับ 1080p";
+
+      document.getElementById(
+        isReplay
+          ? "navReplayLink"
+          : "navLiveLink"
+      ).classList.add(
+        "active"
+      );
+
+    }
+
+
+    function initializeMobileMenu() {
+
+      const button =
+        document.getElementById(
+          "mobileMenuButton"
+        );
+
+      const navigation =
+        document.getElementById(
+          "mainNavigation"
+        );
+
+      if (!button || !navigation) {
+        return;
+      }
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          const isOpen =
+            navigation.classList.toggle(
+              "open"
+            );
+
+          button.setAttribute(
+            "aria-expanded",
+            String(isOpen)
+          );
+
+        }
+      );
+
+    }
+
+
+    async function loadSiteSettings() {
+
+      try {
+
+        const response =
+          await fetch(
+            SITE_API_BASE +
+            "/api/site-settings",
+            {
+              cache: "no-store"
+            }
+          );
+
+        const result =
+          await response.json();
+
+        if (
+          !response.ok ||
+          !result?.settings
+        ) {
+          return;
+        }
+
+        const settings =
+          result.settings;
+
+        const logoImage =
+          document.getElementById(
+            "siteLogoImage"
+          );
+
+        if (
+          logoImage &&
+          settings.logo_image_url
+        ) {
+          logoImage.src =
+            settings.logo_image_url;
+        }
+
+      } catch (error) {
+
+        console.error(
+          "loadSiteSettings:",
+          error
+        );
+
+      }
+
+    }
+
+
+    async function loadConcerts() {
+
+      const grid =
+        document.getElementById(
+          "eventsGrid"
+        );
+
+      try {
+
+        const response =
+          await fetch(
+            SITE_API_BASE +
+            "/api/concerts?mode=" +
+            encodeURIComponent(
+              pageMode
+            ),
+            {
+              cache: "no-store"
+            }
+          );
+
+        const result =
+          await response.json();
+
+        if (
+          !response.ok ||
+          !result?.success
+        ) {
+          throw new Error(
+            result?.message ||
+            "โหลดข้อมูลไม่สำเร็จ"
+          );
+        }
+
+        allConcerts =
+          Array.isArray(
+            result.concerts
+          )
+            ? result.concerts
+            : [];
+
+        renderConcerts(
+          allConcerts
+        );
+
+      } catch (error) {
+
+        console.error(
+          "loadConcerts:",
+          error
+        );
+
+        grid.innerHTML =
+          `
+            <div class="events-message">
+              <div>
+                <strong>ไม่สามารถโหลดคอนเสิร์ตได้</strong>
+                กรุณาลองเปิดหน้านี้ใหม่อีกครั้ง
+              </div>
+            </div>
+          `;
+
+        updateCount(0);
+
+      }
+
+    }
+
+
+    function initializeSearch() {
+
+      const form =
+        document.getElementById(
+          "eventsSearchForm"
+        );
+
+      const input =
+        document.getElementById(
+          "eventsSearchInput"
+        );
+
+      const search = () => {
+
+        const keyword =
+          String(
+            input.value || ""
+          )
+            .trim()
+            .toLocaleLowerCase(
+              "th"
+            );
+
+        if (!keyword) {
+          renderConcerts(
+            allConcerts
+          );
+          return;
+        }
+
+        const filtered =
+          allConcerts.filter(
+            concert => {
+
+              const text = [
+                concert.title,
+                concert.description,
+                concert.status
+              ]
+                .map(
+                  value =>
+                    String(
+                      value || ""
+                    ).toLocaleLowerCase(
+                      "th"
+                    )
+                )
+                .join(" ");
+
+              return text.includes(
+                keyword
+              );
+
+            }
+          );
+
+        renderConcerts(
+          filtered,
+          keyword
+        );
+
+      };
+
+      form.addEventListener(
+        "submit",
+        event => {
+          event.preventDefault();
+          search();
+        }
+      );
+
+      input.addEventListener(
+        "input",
+        search
+      );
+
+    }
+
+
+    function renderConcerts(
+      concerts,
+      keyword = ""
+    ) {
+
+      const grid =
+        document.getElementById(
+          "eventsGrid"
+        );
+
+      grid.replaceChildren();
+
+      updateCount(
+        concerts.length
+      );
+
+      if (!concerts.length) {
+
+        grid.innerHTML =
+          `
+            <div class="events-message">
+              <div>
+                <strong>
+                  ${
+                    keyword
+                      ? "ไม่พบคอนเสิร์ตที่ค้นหา"
+                      : "ยังไม่มีคอนเสิร์ตในขณะนี้"
+                  }
+                </strong>
+                ${
+                  keyword
+                    ? "ลองค้นหาด้วยชื่ออื่นอีกครั้ง"
+                    : "ติดตามประกาศคอนเสิร์ตใหม่เร็ว ๆ นี้"
+                }
+              </div>
+            </div>
+          `;
+
+        return;
+
+      }
+
+      concerts.forEach(
+        concert => {
+          grid.appendChild(
+            createConcertCard(
+              concert
+            )
+          );
+        }
+      );
+
+    }
+
+
+    function createConcertCard(
+      concert
+    ) {
+
+      const article =
+        document.createElement(
+          "article"
+        );
+
+      article.className =
+        "event-card";
+
+      article.tabIndex = 0;
+
+
+      const cover =
+        document.createElement(
+          "div"
+        );
+
+      cover.className =
+        "event-cover";
+
+      if (concert.cover_image_url) {
+        cover.style.backgroundImage =
+          `url("${concert.cover_image_url}")`;
+      }
+
+
+      const badge =
+        document.createElement(
+          "span"
+        );
+
+      badge.className =
+        "event-badge" +
+        (
+          pageMode === "replay"
+            ? " replay"
+            : ""
+        );
+
+      badge.textContent =
+        pageMode === "replay"
+          ? "▶ REPLAY"
+          : concert.status === "live"
+            ? "● LIVE"
+            : "★ เปิดขาย";
+
+      cover.appendChild(
+        badge
+      );
+
+
+      const content =
+        document.createElement(
+          "div"
+        );
+
+      content.className =
+        "event-content";
+
+
+      const type =
+        document.createElement(
+          "p"
+        );
+
+      type.className =
+        "event-type";
+
+      type.textContent =
+        pageMode === "replay"
+          ? "REPLAY CONCERT"
+          : "LIVE CONCERT";
+
+
+      const title =
+        document.createElement(
+          "h2"
+        );
+
+      title.className =
+        "event-name";
+
+      title.textContent =
+        concert.title ||
+        "LIVEHUB TH CONCERT";
+
+
+      const meta =
+        document.createElement(
+          "div"
+        );
+
+      meta.className =
+        "event-meta";
+
+      const date =
+        formatConcertDate(
+          concert.live_starts_at
+        );
+
+      const time =
+        formatConcertTime(
+          concert.live_starts_at
+        );
+
+      if (date) {
+        meta.appendChild(
+          createMetaItem(
+            "▣ " + date
+          )
+        );
+      }
+
+      if (time) {
+        meta.appendChild(
+          createMetaItem(
+            "◷ " + time
+          )
+        );
+      }
+
+
+      const action =
+        document.createElement(
+          "div"
+        );
+
+      action.className =
+        "event-action";
+
+
+      const price =
+        document.createElement(
+          "span"
+        );
+
+      price.className =
+        "event-price";
+
+      price.textContent =
+        concert.min_price
+          ? "เริ่มต้น ฿" +
+            Number(
+              concert.min_price
+            ).toLocaleString(
+              "th-TH"
+            )
+          : "เลือกแพ็กเกจ";
+
+
+      const button =
+        document.createElement(
+          "span"
+        );
+
+      button.className =
+        "event-button";
+
+      button.textContent =
+        pageMode === "replay"
+          ? "ดูรายละเอียด"
+          : "เลือกบัตร";
+
+
+      action.append(
+        price,
+        button
+      );
+
+      content.append(
+        type,
+        title,
+        meta,
+        action
+      );
+
+      article.append(
+        cover,
+        content
+      );
+
+
+      const openConcert = () => {
+
+        if (!concert.id) {
+          return;
+        }
+
+        window.location.href =
+          (
+            pageMode === "replay"
+              ? "replay.html"
+              : "tickets.html"
+          ) +
+          "?concertId=" +
+          encodeURIComponent(
+            concert.id
+          ) +
+          "&mode=" +
+          pageMode;
+
+      };
+
+
+      article.addEventListener(
+        "click",
+        openConcert
+      );
+
+      article.addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key === "Enter" ||
+            event.key === " "
+          ) {
+            event.preventDefault();
+            openConcert();
+          }
+
+        }
+      );
+
+      return article;
+
+    }
+
+
+    function createMetaItem(
+      text
+    ) {
+
+      const span =
+        document.createElement(
+          "span"
+        );
+
+      span.textContent =
+        text;
+
+      return span;
+
+    }
+
+
+    function updateCount(
+      count
+    ) {
+
+      document.getElementById(
+        "eventsCount"
+      ).innerHTML =
+        `พบทั้งหมด <strong>${count}</strong> คอนเสิร์ต`;
+
+    }
+
+
+    function formatConcertDate(
+      value
+    ) {
+
+      if (!value) {
+        return "";
+      }
+
+      const date =
+        new Date(value);
+
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+        return "";
+      }
+
+      return new Intl.DateTimeFormat(
+        "th-TH",
+        {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          timeZone: "Asia/Bangkok"
+        }
+      ).format(date);
+
+    }
+
+
+    function formatConcertTime(
+      value
+    ) {
+
+      if (!value) {
+        return "";
+      }
+
+      const date =
+        new Date(value);
+
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
+        return "";
+      }
+
+      return new Intl.DateTimeFormat(
+        "th-TH",
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+          timeZone: "Asia/Bangkok"
+        }
+      ).format(date) + " น.";
+
+    }
+  </script>
+
+</body>
+</html>
