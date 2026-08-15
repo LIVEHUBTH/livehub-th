@@ -929,7 +929,12 @@ function applyHeroSettings(
     settings.hero_subtitle
   ) {
     heroSubtitle.textContent =
-      settings.hero_subtitle;
+  String(
+    settings.hero_subtitle
+  ).replace(
+    "และรีเพลย์",
+    "\nและรีเพลย์"
+  );
   }
 
   if (
