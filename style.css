@@ -1455,3 +1455,164 @@ nav a.active {
     min-width: 100%;
   }
 }
+/* =================================
+   FINAL HEADER + SEARCH + IPAD
+================================= */
+
+/*
+ * เอากรอบใหญ่รอบ Header ออก
+ */
+
+header {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+  align-items: center;
+  gap: 12px;
+  padding-left: 0;
+  padding-right: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+
+/*
+ * ช่องค้นหาแสดงทุกอุปกรณ์
+ * รวม Desktop และ iPad แนวนอน
+ */
+
+.concert-search {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 56px;
+  margin-top: 5px;
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+  border: 1px solid #383838;
+  border-radius: 14px;
+  background: #080808;
+}
+
+.concert-search:focus-within {
+  border-color: #ff0b72;
+  box-shadow:
+    0 0 0 2px
+    rgba(255, 11, 114, 0.12);
+}
+
+.concert-search-icon {
+  padding-left: 12px;
+  color: #ff0b72;
+  font-size: 29px;
+  line-height: 1;
+}
+
+.concert-search input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 4px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #ffffff;
+  font: inherit;
+  font-size: 17px;
+}
+
+.concert-search input::placeholder {
+  color: #8d8d8d;
+}
+
+.concert-search button {
+  min-height: 46px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: 11px;
+  background:
+    linear-gradient(
+      135deg,
+      #ff0b72,
+      #e8005e
+    );
+  color: #ffffff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+
+/*
+ * iPad แนวตั้งและแนวนอน
+ * คอนเสิร์ต 3 ใบ
+ * แพ็กเกจ 3 ใบ
+ */
+
+@media
+  (min-width: 601px)
+  and
+  (max-width: 1366px) {
+
+  .concert-grid,
+  .package-grid {
+    display: flex;
+    grid-template-columns: none;
+    gap: 14px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-inline:
+      contain;
+    -webkit-overflow-scrolling:
+      touch;
+    scrollbar-width: none;
+  }
+
+  .concert-grid::-webkit-scrollbar,
+  .package-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .concert-card,
+  .package-card {
+    flex:
+      0 0
+      calc(
+        (100% - 28px) / 3
+      );
+
+    width:
+      calc(
+        (100% - 28px) / 3
+      );
+
+    min-width:
+      calc(
+        (100% - 28px) / 3
+      );
+
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
+
+
+/*
+ * มือถือยังคงแสดงทีละ 1 ใบ
+ */
+
+@media (max-width: 600px) {
+  .concert-card,
+  .package-card {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 100%;
+  }
+}
