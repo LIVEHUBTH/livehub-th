@@ -1616,3 +1616,229 @@ header {
     min-width: 100%;
   }
 }
+/* =================================
+   HERO FINAL BALANCE
+================================= */
+
+/*
+ * Desktop และ iPad
+ */
+
+@media (min-width: 601px) {
+  .hero {
+    min-height: 500px;
+    display: grid;
+    grid-template-columns:
+      minmax(0, 0.88fr)
+      minmax(0, 1.22fr);
+    align-items: stretch;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+    border-radius: 20px;
+    background: #050505;
+  }
+
+  /*
+   * ป้องกันภาพพื้นหลังชุดเก่า
+   * ซ้อนกับภาพฝั่งขวา
+   */
+
+  .hero::before {
+    display: none;
+  }
+
+  .hero-content {
+    width: 100%;
+    max-width: none;
+    align-self: center;
+    padding:
+      54px
+      24px
+      54px
+      38px;
+  }
+
+  .hero h1 {
+    width: max-content;
+    max-width: 100%;
+    line-height: 0.95;
+    letter-spacing: -3px;
+    white-space: nowrap;
+  }
+
+  .hero-description {
+    max-width: 440px;
+    margin-top: 22px;
+    font-size:
+      clamp(
+        22px,
+        2.35vw,
+        31px
+      );
+    line-height: 1.35;
+  }
+
+  .hero-buttons {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+    gap: 14px;
+    max-width: 430px;
+  }
+
+  .hero-buttons .button {
+    width: 100%;
+    padding: 14px 12px;
+    text-align: center;
+  }
+
+  /*
+   * ภาพเวทีเต็มพื้นที่ด้านขวา
+   */
+
+  .hero-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    align-self: stretch;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 67% 61%;
+  }
+
+  .hero-image::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        90deg,
+        #050505 0%,
+        rgba(5, 5, 5, 0.78) 8%,
+        rgba(5, 5, 5, 0.18) 25%,
+        rgba(5, 5, 5, 0) 45%
+      );
+    pointer-events: none;
+  }
+}
+
+
+/*
+ * iPad ปรับสัดส่วนไม่ให้ข้อความ
+ * หรือภาพเวทีเบียดกัน
+ */
+
+@media
+  (min-width: 601px)
+  and
+  (max-width: 1366px) {
+
+  .hero {
+    min-height: 460px;
+    grid-template-columns:
+      minmax(0, 0.9fr)
+      minmax(0, 1.1fr);
+  }
+
+  .hero-content {
+    padding:
+      44px
+      18px
+      44px
+      32px;
+  }
+
+  .hero-description {
+    max-width: 390px;
+    font-size:
+      clamp(
+        20px,
+        2.5vw,
+        28px
+      );
+  }
+
+  .hero-buttons {
+    max-width: 390px;
+  }
+
+  .hero-image {
+    min-height: 460px;
+    background-position: 67% 61%;
+  }
+}
+
+
+/*
+ * มือถือยังเรียงข้อความและภาพ
+ * ลงมาด้านล่าง
+ */
+
+@media (max-width: 600px) {
+  .hero {
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    display: none;
+  }
+
+  .hero-content {
+    width: 100%;
+    max-width: none;
+    padding:
+      38px
+      18px
+      28px;
+  }
+
+  .hero h1 {
+    width: auto;
+    max-width: 100%;
+    letter-spacing: -2px;
+    white-space: nowrap;
+  }
+
+  .hero-description {
+    max-width: 100%;
+    font-size: 19px;
+    line-height: 1.45;
+  }
+
+  .hero-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    max-width: none;
+  }
+
+  .hero-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 310px;
+    background-size: cover;
+    background-position: 67% 61%;
+  }
+
+  .hero-image::before {
+    background:
+      linear-gradient(
+        180deg,
+        #050505 0%,
+        rgba(5, 5, 5, 0.2) 18%,
+        rgba(5, 5, 5, 0) 45%
+      );
+  }
+}
