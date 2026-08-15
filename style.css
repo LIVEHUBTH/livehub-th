@@ -936,3 +936,182 @@ nav a.active {
     padding: 22px 18px;
   }
 }
+/* =========================
+   MOBILE FINAL POLISH
+========================= */
+
+@media (max-width: 600px) {
+  header {
+    gap: 12px;
+  }
+
+  .site-logo {
+    gap: 10px;
+  }
+
+  .site-logo-image {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+  }
+
+  .site-logo-subtitle {
+    font-size: 9px;
+  }
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: visible;
+    gap: 8px 18px;
+    padding-bottom: 2px;
+  }
+
+  nav a {
+    font-size: 13px;
+    padding: 7px 0;
+  }
+
+  .hero-content {
+    padding: 38px 18px 26px;
+  }
+
+  .hero-description {
+    font-size: 19px;
+    line-height: 1.45;
+  }
+
+  .hero-image {
+    min-height: 250px;
+    background-position: 67% 61%;
+  }
+
+  .feature-card {
+    padding: 15px;
+  }
+
+  .feature-icon {
+    width: 56px;
+    height: 56px;
+    flex-basis: 56px;
+  }
+
+  .feature-content h2 {
+    font-size: 20px;
+  }
+
+  .feature-content p {
+    font-size: 13px;
+  }
+
+  .section-title {
+    gap: 12px;
+  }
+
+  .section-title h2 {
+    font-size: 23px;
+  }
+
+  .package-heading {
+    margin-bottom: 14px;
+  }
+
+  .package-heading h2 {
+    font-size: 25px;
+  }
+
+  .package-card {
+    min-height: 340px;
+    padding: 20px 16px 16px;
+  }
+
+  .package-card h3 {
+    font-size: 22px;
+  }
+
+  .package-subtitle {
+    min-height: 38px;
+    font-size: 13px;
+  }
+
+  .package-price {
+    margin-top: 12px;
+  }
+
+  .package-price strong {
+    font-size: 50px;
+  }
+
+  .package-price span {
+    font-size: 18px;
+  }
+
+  .package-days {
+    font-size: 15px;
+  }
+
+  .package-card ul {
+    margin-top: 17px;
+    margin-bottom: 18px;
+  }
+
+  .package-card li {
+    margin-bottom: 7px;
+    font-size: 13px;
+  }
+
+  .package-button {
+    padding: 12px 10px;
+    font-size: 16px;
+  }
+
+  .service-strip {
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .strip-item {
+    font-size: 17px;
+  }
+
+  .strip-icon {
+    font-size: 23px;
+  }
+
+  .footer {
+    padding: 20px 16px;
+    gap: 18px;
+  }
+
+  .footer-logo {
+    font-size: 26px;
+  }
+
+  .footer-description {
+    font-size: 13px;
+  }
+
+  .footer-contact {
+    gap: 14px;
+    padding: 18px 0;
+  }
+
+  .qr-placeholder {
+    width: 92px;
+    height: 92px;
+    flex-basis: 92px;
+  }
+
+  .contact-text strong {
+    font-size: 19px;
+  }
+
+  .social-links a {
+    padding: 9px 11px;
+    font-size: 13px;
+  }
+
+  .copyright {
+    font-size: 12px;
+  }
+}
