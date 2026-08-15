@@ -15,101 +15,120 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.hero {
-  min-height: 600px;
-  display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  gap: 30px;
-  align-items: center;
-  position: relative;
-}
-
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(0, 0, 0, 0.96) 0%,
-      rgba(0, 0, 0, 0.72) 45%,
-      rgba(0, 0, 0, 0.18) 100%
-    ),
-    url("background-hero.PNG") center / cover no-repeat;
-  border-radius: 20px;
-  z-index: 0;
-}
-
-.hero-content,
-.hero-image {
-  position: relative;
-  z-index: 1;
-}
 .page {
   width: min(1180px, 92%);
   margin: 0 auto;
 }
+
+
+/* =========================
+   HEADER
+========================= */
 
 header {
   margin-top: 16px;
   padding: 14px 22px;
   border: 1px solid #292929;
   border-radius: 18px;
-  background: rgba(5, 5, 5, 0.92);
+  background: rgba(5, 5, 5, 0.96);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 28px;
+}
+
+.site-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+  text-decoration: none;
+  flex: 0 0 auto;
+}
+
+.site-logo-image {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  display: block;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+.site-logo-text {
+  line-height: 1.05;
+}
+
+.site-logo-name {
+  font-size: 27px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.site-logo-name span {
+  color: #ff0b72;
+}
+
+.site-logo-subtitle {
+  margin-top: 5px;
+  color: #ffffff;
+  font-size: 11px;
+  letter-spacing: 0.8px;
 }
 
 nav {
   display: flex;
+  align-items: center;
+  justify-content: flex-end;
   gap: 28px;
 }
 
 nav a {
   color: #ffffff;
   text-decoration: none;
-  padding: 8px 0;
+  padding: 9px 0;
+  font-size: 16px;
+  white-space: nowrap;
 }
 
 nav a.active {
   border-bottom: 3px solid #ff0b72;
 }
 
+
+/* =========================
+   HERO
+========================= */
+
 .hero {
-  min-height: 600px;
+  min-height: 520px;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  align-items: stretch;
   position: relative;
-  display: flex;
-  align-items: center;
   overflow: hidden;
   border-radius: 20px;
-  padding: 60px;
+  background: #050505;
 }
 
 .hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(0, 0, 0, 0.96) 0%,
-      rgba(0, 0, 0, 0.78) 42%,
-      rgba(0, 0, 0, 0.28) 100%
-    ),
-    url("background-hero.PNG") center / cover no-repeat;
-  z-index: 0;
+  display: none;
 }
 
 .hero-content {
   position: relative;
-  z-index: 1;
-  max-width: 560px;
+  z-index: 2;
+  padding: 72px 28px 72px 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
+
 .hero h1 {
-  font-size: clamp(58px, 8vw, 108px);
+  font-size: clamp(58px, 7vw, 82px);
   line-height: 0.95;
   letter-spacing: -4px;
+  white-space: nowrap;
 }
 
 .hero h1 span {
@@ -117,34 +136,64 @@ nav a.active {
 }
 
 .hero-description {
-  margin-top: 22px;
+  margin-top: 24px;
   color: #e6e6e6;
-  font-size: clamp(22px, 3vw, 36px);
+  font-size: clamp(22px, 2.7vw, 32px);
   line-height: 1.35;
 }
 
 .hero-buttons {
   margin-top: 30px;
   display: flex;
+  align-items: center;
   gap: 15px;
 }
 
 .button {
-  display: inline-block;
-  padding: 15px 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 175px;
+  padding: 15px 24px;
   border: 2px solid #ff0b72;
   border-radius: 12px;
   color: #ffffff;
   text-decoration: none;
   font-size: 18px;
+  white-space: nowrap;
 }
 
 .button-primary {
-  background: linear-gradient(135deg, #ff0b72, #e8005e);
+  background: linear-gradient(
+    135deg,
+    #ff0b72,
+    #e8005e
+  );
 }
 
 .hero-image {
-  display: none;
+  display: block;
+  min-height: 520px;
+  position: relative;
+  z-index: 1;
+  background-image: url("background-hero.PNG");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.hero-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    #050505 0%,
+    rgba(5, 5, 5, 0.72) 12%,
+    rgba(5, 5, 5, 0.12) 42%,
+    rgba(5, 5, 5, 0) 100%
+  );
+  pointer-events: none;
 }
 /* จุดเด่นของบริการ */
 .features {
