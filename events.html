@@ -452,6 +452,46 @@
         aspect-ratio: 16 / 9;
       }
     }
+
+  /* โปร่งใสและไม่มีกรอบ */
+.events-heading,
+.event-feature,
+.events-search {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.events-heading {
+  max-width: none;
+  padding: 0 !important;
+}
+
+.event-feature {
+  padding: 10px 6px !important;
+}
+
+.events-search {
+  border-bottom: none !important;
+}
+
+.events-search button {
+  min-width: auto;
+  padding: 0 16px;
+  color: #ff0a83;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.events-search:focus-within {
+  border: none !important;
+  box-shadow: none !important;
+}  
   </style>
 </head>
 
@@ -1350,46 +1390,3 @@
 
 </body>
 </html>
-/* แสดงข้อความและเครื่องมือแบบโปร่งใส ไม่มีกรอบ */
-.events-heading,
-.event-feature,
-.events-search {
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-/* เอาระยะภายในกล่องหัวข้อออก */
-.events-heading {
-  max-width: none;
-  padding: 0 !important;
-}
-
-/* ป้ายข้อมูล 3 อัน */
-.event-feature {
-  padding: 10px 6px !important;
-}
-
-/* ช่องค้นหา */
-.events-search {
-  border-bottom: none !important;
-}
-/* ปุ่มค้นหาให้โปร่งใส */
-.events-search button {
-  min-width: auto;
-  padding: 0 16px;
-  color: #ff0a83;
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-
-/* ไม่แสดงกรอบเมื่อแตะช่องค้นหา */
-.events-search:focus-within {
-  border-color: #ff0a83 !important;
-  box-shadow: none !important;
-}
