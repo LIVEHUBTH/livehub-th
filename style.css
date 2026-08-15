@@ -177,7 +177,7 @@ nav a.active {
   position: relative;
   z-index: 1;
   background-image: url("background-hero.PNG");
-  background-position: center;
+  background-position: 80% 56%;
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -862,7 +862,7 @@ nav a.active {
 
   .hero-image {
     min-height: 280px;
-    background-position: center;
+    background-position: 80% 56%;
   }
 
   .hero-image::before {
