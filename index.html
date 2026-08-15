@@ -973,54 +973,74 @@ function renderBrandText(
   const normalizedText =
     String(
       text ||
-      ""
-    ).trim();
-
-  const liveText =
-    normalizedText
-      .slice(
-        0,
-        4
+      "LIVEHUB TH"
+    )
+      .trim()
+      .replace(
+        /\s+/g,
+        ""
       );
-
-  const hubText =
-    normalizedText
-      .slice(
-        4
-      );
-
-  element.replaceChildren();
 
   const livePart =
     document.createElement(
       "span"
     );
 
+  livePart.className =
+    "brand-live";
+
   livePart.textContent =
-    liveText ||
+    normalizedText.slice(
+      0,
+      4
+    ) ||
     "LIVE";
 
   livePart.style.color =
     liveColor;
+
 
   const hubPart =
     document.createElement(
       "span"
     );
 
+  hubPart.className =
+    "brand-hub";
+
   hubPart.textContent =
-    hubText ||
-    "HUB TH";
+    normalizedText.slice(
+      4,
+      7
+    ) ||
+    "HUB";
 
   hubPart.style.color =
     hubColor;
 
-  element.appendChild(
-    livePart
-  );
 
-  element.appendChild(
-    hubPart
+  const thPart =
+    document.createElement(
+      "span"
+    );
+
+  thPart.className =
+    "brand-th";
+
+  thPart.textContent =
+    normalizedText.slice(
+      7
+    ) ||
+    "TH";
+
+  thPart.style.color =
+    hubColor;
+
+
+  element.replaceChildren(
+    livePart,
+    hubPart,
+    thPart
   );
 }
 
@@ -1056,7 +1076,7 @@ function applyPixelSize(
   const responsiveSize =
   element.id ===
   "heroTitle"
-    ? `clamp(44px, 6vw, ${safeSize}px)`
+    ? `clamp(58px, 8vw, ${safeSize}px)`
     : `clamp(20px, 4vw, ${safeSize}px)`;
 
 
