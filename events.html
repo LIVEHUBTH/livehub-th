@@ -17,18 +17,81 @@
 
   <style>
     .events-main {
-      min-height: 75vh;
-      padding: 60px 28px 90px;
-    }
+  position: relative;
+  min-height: 75vh;
+  padding: 60px 28px 90px;
+  overflow: hidden;
+  isolation: isolate;
+  background: #050505;
+}
 
+.events-main::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  top: 0;
+  left: 50%;
+  width: min(1500px, 100%);
+  height: 760px;
+  transform: translateX(-50%);
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(5, 5, 5, 0.18) 0%,
+      rgba(5, 5, 5, 0.42) 42%,
+      #050505 100%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(5, 5, 5, 0.62) 0%,
+      rgba(5, 5, 5, 0.20) 50%,
+      rgba(5, 5, 5, 0.58) 100%
+    ),
+    url("background-hero.PNG");
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.events-main::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 760px;
+  background:
+    radial-gradient(
+      circle at 50% 25%,
+      rgba(255, 10, 131, 0.16),
+      transparent 48%
+    );
+  pointer-events: none;
+}
     .events-container {
       width: min(1180px, 100%);
       margin: 0 auto;
     }
 
     .events-heading {
-      margin-bottom: 34px;
-    }
+  max-width: 780px;
+  margin-bottom: 30px;
+  padding: 32px 28px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(5, 5, 5, 0.78),
+      rgba(16, 3, 11, 0.56)
+    );
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 22px;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.38),
+    inset 0 0 40px rgba(255, 10, 131, 0.04);
+}
 
     .events-label {
       margin: 0 0 10px;
@@ -252,7 +315,68 @@
       color: #ffffff;
       font-size: 21px;
     }
+    .event-features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 30px 0 0;
+}
 
+.event-feature {
+  min-height: 105px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 18px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(8, 8, 10, 0.90),
+      rgba(19, 5, 13, 0.76)
+    );
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.32);
+}
+
+.event-feature-icon {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  display: grid;
+  place-items: center;
+  color: #ff0a83;
+  border: 2px solid #ff0a83;
+  border-radius: 50%;
+}
+
+.event-feature-icon span {
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.event-feature-icon .person-icon,
+.event-feature-icon .replay-icon {
+  font-size: 29px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.event-feature strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #ffffff;
+  font-size: 17px;
+}
+
+.event-feature small {
+  display: block;
+  color: #a7a7ad;
+  font-size: 13px;
+  line-height: 1.45;
+}
     @media (max-width: 900px) {
       .events-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -260,10 +384,44 @@
     }
 
     @media (max-width: 600px) {
-      .events-main {
-        padding: 42px 22px 70px;
-      }
+     .event-features {
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 24px;
+}
 
+.event-feature {
+  min-height: 82px;
+  padding: 13px 15px;
+}
+
+.event-feature-icon {
+  width: 51px;
+  height: 51px;
+  flex-basis: 51px;
+}
+
+.event-feature strong {
+  font-size: 16px;
+}
+
+.event-feature small {
+  font-size: 12px;
+}
+      .events-main {
+  padding: 34px 22px 70px;
+}
+
+.events-main::before,
+.events-main::after {
+  height: 680px;
+}
+
+.events-heading {
+  padding: 25px 20px;
+  border-radius: 18px;
+}
+   
       .events-title {
         font-size: 47px;
         letter-spacing: -2px;
@@ -404,7 +562,48 @@
           </p>
 
         </section>
+        <div class="event-features">
 
+  <div class="event-feature">
+
+    <div class="event-feature-icon">
+      <span>1080P</span>
+    </div>
+
+    <div>
+      <strong>ภาพคมชัด</strong>
+      <small>รับชมระดับ Full HD</small>
+    </div>
+
+  </div>
+
+  <div class="event-feature">
+
+    <div class="event-feature-icon">
+      <span class="person-icon">♙</span>
+    </div>
+
+    <div>
+      <strong>เข้าใช้ง่าย</strong>
+      <small>รองรับมือถือและระบบสมาชิก</small>
+    </div>
+
+  </div>
+
+  <div class="event-feature">
+
+    <div class="event-feature-icon">
+      <span class="replay-icon">↶</span>
+    </div>
+
+    <div>
+      <strong>มีรีเพลย์</strong>
+      <small>กลับมารับชมย้อนหลังได้</small>
+    </div>
+
+  </div>
+
+</div>
         <div class="events-tools">
 
           <form
