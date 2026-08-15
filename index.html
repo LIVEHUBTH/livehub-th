@@ -778,141 +778,247 @@
      */
 
     function applyLogoSettings(
-      settings
-    ) {
+  settings
+) {
+  const logoImage =
+    document.getElementById(
+      "siteLogoImage"
+    );
 
-      const logoImage =
-        document.getElementById(
-          "siteLogoImage"
-        );
+  const logoText =
+    document.getElementById(
+      "siteLogoText"
+    );
 
+  if (
+    logoImage &&
+    settings.logo_image_url
+  ) {
+    logoImage.src =
+      settings.logo_image_url;
+  }
 
-      const logoText =
-        document.getElementById(
-          "siteLogoText"
-        );
+  if (!logoText) {
+    return;
+  }
 
+  const text =
+    String(
+      settings.logo_text ||
+      "LIVEHUB TH"
+    ).trim();
 
-      if (
-        logoImage &&
-        settings.logo_image_url
-      ) {
+  renderBrandText(
+    logoText,
+    text,
+    settings.logo_live_color ||
+      "#ffffff",
+    settings.logo_hub_color ||
+      "#ff0a83"
+  );
 
-        logoImage.src =
-          settings.logo_image_url;
-
-      }
-
-
-      if (
-        logoText &&
-        settings.logo_text
-      ) {
-
-        logoText.textContent =
-          settings.logo_text;
-
-      }
-
-    }
-
-
-    /*
-     * =========================================
-     * HERO
-     * =========================================
-     */
-
-    function applyHeroSettings(
-      settings
-    ) {
-
-      const heroTitle =
-        document.getElementById(
-          "heroTitle"
-        );
+  applyPixelSize(
+    logoText,
+    settings.logo_font_size,
+    16,
+    120
+  );
+}
 
 
-      const heroSubtitle =
-        document.getElementById(
-          "heroSubtitle"
-        );
+/*
+ * =========================================
+ * HERO
+ * =========================================
+ */
+
+function applyHeroSettings(
+  settings
+) {
+  const heroTitle =
+    document.getElementById(
+      "heroTitle"
+    );
+
+  const heroSubtitle =
+    document.getElementById(
+      "heroSubtitle"
+    );
+
+  const heroBackground =
+    document.getElementById(
+      "heroBackground"
+    );
+
+  const heroLiveLink =
+    document.getElementById(
+      "heroLiveLink"
+    );
+
+  const heroReplayLink =
+    document.getElementById(
+      "heroReplayLink"
+    );
+
+  if (heroTitle) {
+    const title =
+      String(
+        settings.hero_title ||
+        "LIVEHUB TH"
+      ).trim();
+
+    renderBrandText(
+      heroTitle,
+      title,
+      settings.hero_live_color ||
+        "#ffffff",
+      settings.hero_hub_color ||
+        "#ff0a83"
+    );
+
+    applyPixelSize(
+      heroTitle,
+      settings.hero_font_size,
+      32,
+      140
+    );
+  }
+
+  if (
+    heroSubtitle &&
+    settings.hero_subtitle
+  ) {
+    heroSubtitle.textContent =
+      settings.hero_subtitle;
+  }
+
+  if (
+    heroBackground &&
+    settings.hero_background_url
+  ) {
+    heroBackground.style.backgroundImage =
+      `url("${settings.hero_background_url}")`;
+  }
+
+  if (
+    heroLiveLink &&
+    settings.live_link
+  ) {
+    heroLiveLink.href =
+      settings.live_link;
+  }
+
+  if (
+    heroReplayLink &&
+    settings.replay_link
+  ) {
+    heroReplayLink.href =
+      settings.replay_link;
+  }
+}
 
 
-      const heroBackground =
-        document.getElementById(
-          "heroBackground"
-        );
+/*
+ * =========================================
+ * BRAND TEXT HELPERS
+ * =========================================
+ */
+
+function renderBrandText(
+  element,
+  text,
+  liveColor,
+  hubColor
+) {
+  const normalizedText =
+    String(
+      text ||
+      ""
+    ).trim();
+
+  const liveText =
+    normalizedText
+      .slice(
+        0,
+        4
+      );
+
+  const hubText =
+    normalizedText
+      .slice(
+        4
+      );
+
+  element.replaceChildren();
+
+  const livePart =
+    document.createElement(
+      "span"
+    );
+
+  livePart.textContent =
+    liveText ||
+    "LIVE";
+
+  livePart.style.color =
+    liveColor;
+
+  const hubPart =
+    document.createElement(
+      "span"
+    );
+
+  hubPart.textContent =
+    hubText ||
+    "HUB TH";
+
+  hubPart.style.color =
+    hubColor;
+
+  element.appendChild(
+    livePart
+  );
+
+  element.appendChild(
+    hubPart
+  );
+}
 
 
-      const heroLiveLink =
-        document.getElementById(
-          "heroLiveLink"
-        );
+function applyPixelSize(
+  element,
+  value,
+  minimum,
+  maximum
+) {
+  const size =
+    Number(
+      value
+    );
 
+  if (
+    !Number.isFinite(
+      size
+    )
+  ) {
+    return;
+  }
 
-      const heroReplayLink =
-        document.getElementById(
-          "heroReplayLink"
-        );
+  const safeSize =
+    Math.min(
+      Math.max(
+        size,
+        minimum
+      ),
+      maximum
+    );
 
-
-      if (
-        heroTitle &&
-        settings.hero_title
-      ) {
-
-        heroTitle.textContent =
-          settings.hero_title;
-
-      }
-
-
-      if (
-        heroSubtitle &&
-        settings.hero_subtitle
-      ) {
-
-        heroSubtitle.textContent =
-          settings.hero_subtitle;
-
-      }
-
-
-      if (
-        heroBackground &&
-        settings.hero_background_url
-      ) {
-
-        heroBackground.style.backgroundImage =
-          `url("${settings.hero_background_url}")`;
-
-      }
-
-
-      if (
-        heroLiveLink &&
-        settings.live_link
-      ) {
-
-        heroLiveLink.href =
-          settings.live_link;
-
-      }
-
-
-      if (
-        heroReplayLink &&
-        settings.replay_link
-      ) {
-
-        heroReplayLink.href =
-          settings.replay_link;
-
-      }
-
-    }
-
+  element.style.setProperty(
+    "font-size",
+    safeSize + "px",
+    "important"
+  );
+}
 
     /*
      * =========================================
