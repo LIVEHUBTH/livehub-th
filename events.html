@@ -491,7 +491,20 @@
 .events-search:focus-within {
   border: none !important;
   box-shadow: none !important;
-}  
+}
+
+.events-search:focus-within {
+  border-color: #ff0a83 !important;
+  box-shadow:
+    0 0 0 3px rgba(255, 10, 131, 0.12) !important;
+}
+
+@media (max-width: 600px) {
+  .events-search button {
+    min-width: 92px;
+    padding: 0 15px;
+  }
+}
   </style>
 </head>
 
