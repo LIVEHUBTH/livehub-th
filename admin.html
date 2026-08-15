@@ -1239,7 +1239,54 @@
             >
 
           </div>
+<div class="field">
 
+  <label for="siteLogoLiveColor">
+    สีคำว่า LIVE
+  </label>
+
+  <input
+    id="siteLogoLiveColor"
+    type="color"
+    value="#ffffff"
+  >
+
+</div>
+
+<div class="field">
+
+  <label for="siteLogoHubColor">
+    สีคำว่า HUB TH
+  </label>
+
+  <input
+    id="siteLogoHubColor"
+    type="color"
+    value="#ff0a83"
+  >
+
+</div>
+
+<div class="field full">
+
+  <label for="siteLogoFontSize">
+    ขนาดข้อความ Logo
+  </label>
+
+  <input
+    id="siteLogoFontSize"
+    type="number"
+    min="20"
+    max="120"
+    step="1"
+    value="38"
+  >
+
+  <span class="hint">
+    หน่วยเป็น px เช่น 38
+  </span>
+
+</div>
           <div class="field full">
 
             <label for="siteLogoFile">
@@ -1336,7 +1383,54 @@
             ></textarea>
 
           </div>
+<div class="field">
 
+  <label for="siteHeroLiveColor">
+    สีคำว่า LIVE
+  </label>
+
+  <input
+    id="siteHeroLiveColor"
+    type="color"
+    value="#ffffff"
+  >
+
+</div>
+
+<div class="field">
+
+  <label for="siteHeroHubColor">
+    สีคำว่า HUB TH
+  </label>
+
+  <input
+    id="siteHeroHubColor"
+    type="color"
+    value="#ff0a83"
+  >
+
+</div>
+
+<div class="field full">
+
+  <label for="siteHeroFontSize">
+    ขนาดหัวข้อใหญ่
+  </label>
+
+  <input
+    id="siteHeroFontSize"
+    type="number"
+    min="30"
+    max="140"
+    step="1"
+    value="82"
+  >
+
+  <span class="hint">
+    หน่วยเป็น px เช่น 82
+  </span>
+
+</div>
           <div class="field full">
 
             <label for="siteHeroFile">
@@ -2398,7 +2492,14 @@ const siteHeroTitle =
 
 const siteHeroSubtitle =
   byId("siteHeroSubtitle");
+const siteHeroLiveColor =
+  byId("siteHeroLiveColor");
 
+const siteHeroHubColor =
+  byId("siteHeroHubColor");
+
+const siteHeroFontSize =
+  byId("siteHeroFontSize");
 const siteHeroFile =
   byId("siteHeroFile");
 
@@ -2699,7 +2800,20 @@ function applySiteSettingsToForm(
     settings.heroSubtitle ||
     settings.hero_subtitle ||
     "ศูนย์รวมไลฟ์สตรีมคอนเสิร์ตและรีเพลย์คอนเสิร์ต";
+  siteHeroLiveColor.value =
+  settings.heroLiveColor ||
+  settings.hero_live_color ||
+  "#ffffff";
 
+siteHeroHubColor.value =
+  settings.heroHubColor ||
+  settings.hero_hub_color ||
+  "#ff0a83";
+
+siteHeroFontSize.value =
+  settings.heroFontSize ||
+  settings.hero_font_size ||
+  82;
   siteLiveLink.value =
     settings.liveLink ||
     settings.live_link ||
@@ -3328,7 +3442,15 @@ const settings = {
 
   hero_subtitle:
     siteHeroSubtitle.value.trim(),
+ 
+  hero_live_color:
+  siteHeroLiveColor.value,
 
+hero_hub_color:
+  siteHeroHubColor.value,
+
+hero_font_size:
+  Number(siteHeroFontSize.value) || 82,
   hero_background_url:
     heroBackgroundUrl,
 
