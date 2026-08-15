@@ -111,7 +111,36 @@
   </a>
 
 </nav>
+<form
+  class="concert-search"
+  id="concertSearchForm"
+  role="search"
+>
+  <label
+    class="visually-hidden"
+    for="concertSearchInput"
+  >
+    ค้นหาคอนเสิร์ต
+  </label>
 
+  <span
+    class="concert-search-icon"
+    aria-hidden="true"
+  >
+    ⌕
+  </span>
+
+  <input
+    type="search"
+    id="concertSearchInput"
+    placeholder="ค้นหาคอนเสิร์ต..."
+    autocomplete="off"
+  >
+
+  <button type="submit">
+    ค้นหา
+  </button>
+</form>
 </header>
 
 <main>
@@ -688,6 +717,8 @@
 
     const SITE_API_BASE =
       "https://livehub-payment-api.livehubth.workers.dev";
+    let recommendedConcerts =
+  [];
 
 
     /*
@@ -699,7 +730,7 @@
     document.addEventListener(
       "DOMContentLoaded",
       async () => {
-
+        initializeConcertSearch();
         await Promise.allSettled([
           loadSiteSettings(),
           loadRecommendedConcerts()
@@ -1191,44 +1222,13 @@ element.style.setProperty(
           )
             ? result.concerts
             : [];
+        
+recommendedConcerts =
+  concerts;
 
-
-        grid.innerHTML =
-          "";
-
-
-        if (
-          concerts.length === 0
-        ) {
-
-          grid.innerHTML =
-            `
-              <div class="concert-loading">
-                ยังไม่มีคอนเสิร์ตที่เปิดขาย
-              </div>
-            `;
-
-          return;
-
-        }
-
-
-        concerts
-          .slice(
-            0,
-            3
-          )
-          .forEach(
-            concert => {
-
-              grid.appendChild(
-                createConcertCard(
-                  concert
-                )
-              );
-
-            }
-          );
+renderRecommendedConcerts(
+  recommendedConcerts
+);
 
       } catch (error) {
 
@@ -1249,7 +1249,147 @@ element.style.setProperty(
 
     }
 
+/*
+ * =========================================
+ * CONCERT SEARCH
+ * =========================================
+ */
 
+function initializeConcertSearch() {
+  const form =
+    document.getElementById(
+      "concertSearchForm"
+    );
+
+  const input =
+    document.getElementById(
+      "concertSearchInput"
+    );
+
+  if (
+    !form ||
+    !input
+  ) {
+    return;
+  }
+
+  const search = () => {
+    const keyword =
+      String(
+        input.value ||
+        ""
+      )
+        .trim()
+        .toLocaleLowerCase(
+          "th"
+        );
+
+    if (!keyword) {
+      renderRecommendedConcerts(
+        recommendedConcerts
+      );
+
+      return;
+    }
+
+    const filteredConcerts =
+      recommendedConcerts.filter(
+        concert => {
+          const searchableText = [
+            concert.title,
+            concert.description,
+            concert.status
+          ]
+            .map(
+              value =>
+                String(
+                  value ||
+                  ""
+                )
+                  .toLocaleLowerCase(
+                    "th"
+                  )
+            )
+            .join(" ");
+
+          return searchableText.includes(
+            keyword
+          );
+        }
+      );
+
+    renderRecommendedConcerts(
+      filteredConcerts,
+      keyword
+    );
+  };
+
+  form.addEventListener(
+    "submit",
+    event => {
+      event.preventDefault();
+      search();
+    }
+  );
+
+  input.addEventListener(
+    "input",
+    search
+  );
+}
+
+
+function renderRecommendedConcerts(
+  concerts,
+  keyword = ""
+) {
+  const grid =
+    document.getElementById(
+      "recommendedConcertGrid"
+    );
+
+  if (!grid) {
+    return;
+  }
+
+  grid.replaceChildren();
+
+  if (
+    !Array.isArray(
+      concerts
+    ) ||
+    concerts.length === 0
+  ) {
+    const emptyMessage =
+      document.createElement(
+        "div"
+      );
+
+    emptyMessage.className =
+      "concert-loading";
+
+    emptyMessage.textContent =
+      keyword
+        ? `ไม่พบคอนเสิร์ต “${keyword}”`
+        : "ยังไม่มีคอนเสิร์ตที่เปิดขาย";
+
+    grid.appendChild(
+      emptyMessage
+    );
+
+    return;
+  }
+
+  concerts.forEach(
+    concert => {
+      grid.appendChild(
+        createConcertCard(
+          concert
+        )
+      );
+    }
+  );
+}
     /*
      * =========================================
      * CREATE CONCERT CARD
