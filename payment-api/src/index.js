@@ -9798,16 +9798,27 @@ async function updateSiteSettings(
   }
 
   const allowedKeys = [
-    "logo_text",
-    "logo_image_url",
-    "hero_title",
-    "hero_subtitle",
-    "hero_background_url",
-    "live_link",
-    "replay_link",
-    "package_link",
-    "contact_link"
-  ];
+  "logo_text",
+  "logo_image_url",
+
+  "logo_live_color",
+  "logo_hub_color",
+  "logo_font_size",
+
+  "hero_title",
+  "hero_subtitle",
+
+  "hero_live_color",
+  "hero_hub_color",
+  "hero_font_size",
+
+  "hero_background_url",
+
+  "live_link",
+  "replay_link",
+  "package_link",
+  "contact_link"
+];
 
   const settings =
     body?.settings &&
