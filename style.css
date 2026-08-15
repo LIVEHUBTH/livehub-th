@@ -2002,3 +2002,56 @@ header {
     max-width: 390px;
   }
 }
+/* =================================
+   HERO TITLE AND TH BALANCE
+================================= */
+
+.brand-live,
+.brand-hub,
+.brand-th {
+  display: inline-block;
+  line-height: inherit;
+}
+
+/* TH ในโลโก้ด้านบน */
+
+.site-logo-name .brand-th {
+  margin-left: 0.14em;
+  font-size: 0.72em;
+  vertical-align: 0.08em;
+  letter-spacing: 0;
+}
+
+/* หัวข้อใหญ่ */
+
+#heroTitle {
+  white-space: nowrap;
+}
+
+/* TH ในหัวข้อใหญ่ */
+
+#heroTitle .brand-th {
+  margin-left: 0.12em;
+  font-size: 0.58em;
+  vertical-align: 0.1em;
+  letter-spacing: -1px;
+}
+
+/* ลดพื้นที่ว่างเหนือข้อความ */
+
+@media (min-width: 601px) {
+  .hero-content {
+    align-self: start;
+    padding-top: 58px;
+  }
+}
+
+@media
+  (min-width: 601px)
+  and
+  (max-width: 1366px) {
+
+  .hero-content {
+    padding-top: 48px;
+  }
+}
