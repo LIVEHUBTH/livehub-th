@@ -1013,11 +1013,18 @@ function applyPixelSize(
       maximum
     );
 
-  element.style.setProperty(
-    "font-size",
-    safeSize + "px",
-    "important"
-  );
+  const responsiveSize =
+  element.id ===
+  "heroTitle"
+    ? `clamp(44px, 6vw, ${safeSize}px)`
+    : `clamp(20px, 4vw, ${safeSize}px)`;
+
+
+element.style.setProperty(
+  "font-size",
+  responsiveSize,
+  "important"
+);
 }
 
     /*
