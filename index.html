@@ -63,49 +63,58 @@
       </a>
 
 
-      <nav>
+      <button
+  type="button"
+  class="mobile-menu-button"
+  id="mobileMenuButton"
+  aria-controls="mainNavigation"
+  aria-expanded="false"
+>
+  ☰ เมนู
+</button>
 
-        <a
-          href="#home"
-          class="active"
-        >
-          หน้าแรก
-        </a>
+<nav id="mainNavigation">
 
-        <a
-          id="navLiveLink"
-          href="events.html?mode=live"
-        >
-          LIVE CONCERT
-        </a>
+  <a
+    href="#home"
+    class="active"
+  >
+    หน้าแรก
+  </a>
 
-        <a
-          id="navReplayLink"
-          href="events.html?mode=replay"
-        >
-          REPLAY CONCERT
-        </a>
+  <a
+    id="navLiveLink"
+    href="events.html?mode=live"
+  >
+    LIVE CONCERT
+  </a>
 
-        <a
-          id="navPackageLink"
-          href="#packages"
-        >
-          แพ็กเกจ
-        </a>
+  <a
+    id="navReplayLink"
+    href="events.html?mode=replay"
+  >
+    REPLAY CONCERT
+  </a>
 
-        <a
-          id="navContactLink"
-          href="#contact"
-        >
-          ติดต่อ
-        </a>
+  <a
+    id="navPackageLink"
+    href="#packages"
+  >
+    แพ็กเกจ
+  </a>
 
-      </nav>
+  <a
+    id="navContactLink"
+    href="#contact"
+  >
+    ติดต่อ
+  </a>
 
-    </header>
+</nav>
 
+</header>
 
-    <main>
+<main>
 
       <!-- =========================
            HERO
@@ -1579,5 +1588,66 @@ element.style.setProperty(
 
   </script>
 
+  <script>
+    (() => {
+      const menuButton =
+        document.getElementById(
+          "mobileMenuButton"
+        );
+
+      const navigation =
+        document.getElementById(
+          "mainNavigation"
+        );
+
+      if (
+        !menuButton ||
+        !navigation
+      ) {
+        return;
+      }
+
+      menuButton.addEventListener(
+        "click",
+        () => {
+          const isOpen =
+            navigation.classList.toggle(
+              "menu-open"
+            );
+
+          menuButton.setAttribute(
+            "aria-expanded",
+            String(isOpen)
+          );
+
+          menuButton.textContent =
+            isOpen
+              ? "✕ ปิดเมนู"
+              : "☰ เมนู";
+        }
+      );
+
+      navigation
+        .querySelectorAll("a")
+        .forEach(link => {
+          link.addEventListener(
+            "click",
+            () => {
+              navigation.classList.remove(
+                "menu-open"
+              );
+
+              menuButton.setAttribute(
+                "aria-expanded",
+                "false"
+              );
+
+              menuButton.textContent =
+                "☰ เมนู";
+            }
+          );
+        });
+    })();
+  </script>
 </body>
 </html>
