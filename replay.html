@@ -1441,6 +1441,255 @@
           240px;
       }
     }
+
+    /* ========================================
+   REPLAY RESPONSIVE HEADER AND MENU
+======================================== */
+
+.header {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  padding: 20px 4px 24px;
+  margin-bottom: 27px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.site-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  width: fit-content;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.site-logo-image {
+  width: 62px;
+  height: 62px;
+  flex: 0 0 62px;
+  object-fit: contain;
+}
+
+.site-logo-text {
+  min-width: 0;
+}
+
+.site-logo-name {
+  color: #ffffff;
+  font-size: 31px;
+  font-weight: 900;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.site-logo-name span {
+  color: var(--pink);
+}
+
+.site-logo-subtitle {
+  margin-top: 7px;
+  color: #b8b8bd;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* ปุ่มคำว่า เมนู และเส้นสามขีด */
+.replay-menu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  min-width: 108px;
+  margin: 0;
+  padding: 10px 4px;
+  color: #ffffff;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.replay-menu-button::after {
+  content: "";
+  width: 34px;
+  height: 24px;
+  flex: 0 0 34px;
+  background:
+    linear-gradient(
+      to bottom,
+      var(--pink) 0,
+      var(--pink) 3px,
+      transparent 3px,
+      transparent 10px,
+      var(--pink) 10px,
+      var(--pink) 13px,
+      transparent 13px,
+      transparent 20px,
+      var(--pink) 20px,
+      var(--pink) 23px,
+      transparent 23px
+    );
+}
+
+/* รายการเมนู */
+.replay-navigation {
+  display: none;
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-top: 4px;
+  padding: 0;
+  overflow: hidden;
+  background: rgba(8, 8, 9, 0.97);
+  border: 1px solid #292929;
+  border-radius: 17px;
+}
+
+.replay-navigation.open {
+  display: flex;
+  flex-direction: column;
+}
+
+.replay-navigation a {
+  display: block;
+  width: 100%;
+  padding: 17px 20px;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 800;
+  border-bottom: 1px solid #292929;
+}
+
+.replay-navigation a:hover,
+.replay-navigation a:focus {
+  color: var(--pink);
+  background: rgba(255, 7, 131, 0.07);
+}
+
+.replay-navigation a:last-child {
+  border-bottom: 0;
+}
+
+/* iPad */
+@media (max-width: 900px) {
+  .header {
+    padding: 18px 3px 22px;
+  }
+
+  .site-logo-image {
+    width: 56px;
+    height: 56px;
+    flex-basis: 56px;
+  }
+
+  .site-logo-name {
+    font-size: 27px;
+  }
+
+  .site-logo-subtitle {
+    font-size: 11px;
+  }
+
+  .replay-menu-button {
+    min-width: 102px;
+    gap: 13px;
+    font-size: 17px;
+  }
+
+  .replay-menu-button::after {
+    width: 31px;
+    height: 22px;
+    flex-basis: 31px;
+    background:
+      linear-gradient(
+        to bottom,
+        var(--pink) 0,
+        var(--pink) 3px,
+        transparent 3px,
+        transparent 9px,
+        var(--pink) 9px,
+        var(--pink) 12px,
+        transparent 12px,
+        transparent 18px,
+        var(--pink) 18px,
+        var(--pink) 21px,
+        transparent 21px
+      );
+  }
+}
+
+/* โทรศัพท์ */
+@media (max-width: 600px) {
+  .header {
+    gap: 10px;
+    padding: 14px 2px 19px;
+  }
+
+  .site-logo {
+    gap: 9px;
+  }
+
+  .site-logo-image {
+    width: 45px;
+    height: 45px;
+    flex-basis: 45px;
+  }
+
+  .site-logo-name {
+    font-size: 21px;
+  }
+
+  .site-logo-subtitle {
+    margin-top: 5px;
+    font-size: 8px;
+    letter-spacing: 0.7px;
+  }
+
+  .replay-menu-button {
+    min-width: 88px;
+    gap: 10px;
+    padding: 9px 2px;
+    font-size: 16px;
+  }
+
+  .replay-menu-button::after {
+    width: 28px;
+    height: 20px;
+    flex-basis: 28px;
+    background:
+      linear-gradient(
+        to bottom,
+        var(--pink) 0,
+        var(--pink) 3px,
+        transparent 3px,
+        transparent 8px,
+        var(--pink) 8px,
+        var(--pink) 11px,
+        transparent 11px,
+        transparent 16px,
+        var(--pink) 16px,
+        var(--pink) 19px,
+        transparent 19px
+      );
+  }
+
+  .replay-navigation a {
+    padding: 15px 17px;
+    font-size: 15px;
+  }
+}
   </style>
 </head>
 
@@ -1450,26 +1699,67 @@
 
   <header class="header">
 
-    <div>
-      <h1 class="brand">
-        LIVE <span>HUB TH</span>
-      </h1>
-
-      <p class="brand-sub">
-        LIVE CONCERTS & REPLAY
-      </p>
-    </div>
-
-    <a
-      class="home-button"
-      href="index.html"
-      id="homeLink"
+  <a
+    href="index.html"
+    class="site-logo"
+    id="homeLink"
+    aria-label="กลับหน้าแรก"
+  >
+    <img
+      src="logo.PNG"
+      alt="LIVEHUB TH Logo"
+      class="site-logo-image"
     >
+
+    <div class="site-logo-text">
+
+      <div class="site-logo-name">
+        LIVE<span>HUB TH</span>
+      </div>
+
+      <div class="site-logo-subtitle">
+        LIVE CONCERTS & EVENTS
+      </div>
+
+    </div>
+  </a>
+
+  <button
+    class="replay-menu-button"
+    id="replayMenuButton"
+    type="button"
+    aria-controls="replayNavigation"
+    aria-expanded="false"
+  >
+    เมนู
+  </button>
+
+  <nav
+    class="replay-navigation"
+    id="replayNavigation"
+  >
+    <a href="index.html">
       หน้าแรก
     </a>
 
-  </header>
+    <a href="events.html?mode=live">
+      LIVE CONCERT
+    </a>
 
+    <a href="events.html?mode=replay">
+      REPLAY CONCERT
+    </a>
+
+    <a href="index.html#packages">
+      แพ็กเกจ
+    </a>
+
+    <a href="index.html#contact">
+      ติดต่อ
+    </a>
+  </nav>
+
+</header>
   <section class="hero">
 
     <span class="hero-badge">
@@ -3155,5 +3445,90 @@ loadReplay();
 
 </script>
 
+<script>
+(() => {
+  const menuButton =
+    document.getElementById(
+      "replayMenuButton"
+    );
+
+  const navigation =
+    document.getElementById(
+      "replayNavigation"
+    );
+
+  if (
+    !menuButton ||
+    !navigation
+  ) {
+    return;
+  }
+
+  const closeMenu = () => {
+    navigation.classList.remove(
+      "open"
+    );
+
+    menuButton.setAttribute(
+      "aria-expanded",
+      "false"
+    );
+  };
+
+  menuButton.addEventListener(
+    "click",
+    event => {
+      event.stopPropagation();
+
+      const isOpen =
+        navigation.classList.toggle(
+          "open"
+        );
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        String(isOpen)
+      );
+    }
+  );
+
+  navigation
+    .querySelectorAll("a")
+    .forEach(link => {
+      link.addEventListener(
+        "click",
+        closeMenu
+      );
+    });
+
+  document.addEventListener(
+    "click",
+    event => {
+      if (
+        !navigation.contains(
+          event.target
+        ) &&
+        !menuButton.contains(
+          event.target
+        )
+      ) {
+        closeMenu();
+      }
+    }
+  );
+
+  document.addEventListener(
+    "keydown",
+    event => {
+      if (
+        event.key ===
+        "Escape"
+      ) {
+        closeMenu();
+      }
+    }
+  );
+})();
+</script>
 </body>
 </html>
