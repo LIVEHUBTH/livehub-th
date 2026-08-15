@@ -920,6 +920,174 @@
         font-size: 39px;
       }
     }
+    /* =================================
+   TICKETS RESPONSIVE MENU
+================================= */
+
+.site-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding-left: 0;
+  padding-right: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.tickets-menu-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  min-width: 106px;
+  padding: 10px 4px;
+  border: 0;
+  background: transparent;
+  color: transparent;
+  font-size: 0;
+  cursor: pointer;
+}
+
+.tickets-menu-button::before {
+  content: "เมนู";
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.tickets-menu-button::after {
+  content: "";
+  width: 34px;
+  height: 24px;
+  flex: 0 0 34px;
+  background:
+    linear-gradient(
+      to bottom,
+      #ff0b72 0,
+      #ff0b72 3px,
+      transparent 3px,
+      transparent 10px,
+      #ff0b72 10px,
+      #ff0b72 13px,
+      transparent 13px,
+      transparent 20px,
+      #ff0b72 20px,
+      #ff0b72 23px,
+      transparent 23px
+    );
+}
+
+.tickets-navigation {
+  display: none;
+  grid-column: 1 / -1;
+}
+
+.tickets-navigation.open {
+  display: flex;
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px 0;
+  flex-direction: column;
+  gap: 0;
+  background: rgba(8, 8, 8, 0.97);
+  border: 1px solid #292929;
+  border-radius: 12px;
+}
+
+.tickets-navigation a {
+  width: 100%;
+  padding: 13px 16px;
+  color: #ffffff;
+  border-bottom: 1px solid #222222;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tickets-navigation a:hover {
+  color: #ff0b72;
+  background: rgba(255, 11, 114, 0.07);
+}
+
+.tickets-navigation a:last-child {
+  border-bottom: 0;
+}
+
+@media (min-width: 601px) and (max-width: 1366px) {
+  .tickets-menu-button {
+    min-width: 100px;
+    gap: 12px;
+  }
+
+  .tickets-menu-button::before {
+    font-size: 17px;
+  }
+
+  .tickets-menu-button::after {
+    width: 31px;
+    height: 22px;
+    flex-basis: 31px;
+    background:
+      linear-gradient(
+        to bottom,
+        #ff0b72 0,
+        #ff0b72 3px,
+        transparent 3px,
+        transparent 9px,
+        #ff0b72 9px,
+        #ff0b72 12px,
+        transparent 12px,
+        transparent 18px,
+        #ff0b72 18px,
+        #ff0b72 21px,
+        transparent 21px
+      );
+  }
+}
+
+@media (max-width: 600px) {
+  .site-header {
+    padding: 12px 0;
+  }
+
+  .brand-main {
+    font-size: 28px;
+  }
+
+  .tickets-menu-button {
+    min-width: 88px;
+    gap: 10px;
+    padding-right: 2px;
+  }
+
+  .tickets-menu-button::before {
+    font-size: 16px;
+  }
+
+  .tickets-menu-button::after {
+    width: 28px;
+    height: 20px;
+    flex-basis: 28px;
+    background:
+      linear-gradient(
+        to bottom,
+        #ff0b72 0,
+        #ff0b72 3px,
+        transparent 3px,
+        transparent 8px,
+        #ff0b72 8px,
+        #ff0b72 11px,
+        transparent 11px,
+        transparent 16px,
+        #ff0b72 16px,
+        #ff0b72 19px,
+        transparent 19px
+      );
+  }
+}
   </style>
 </head>
 
@@ -939,12 +1107,42 @@
         </p>
       </div>
 
-      <a
-        class="home-button"
-        href="index.html"
-      >
-        หน้าแรก
-      </a>
+      <button
+  class="tickets-menu-button"
+  id="ticketsMenuButton"
+  type="button"
+  aria-controls="ticketsNavigation"
+  aria-expanded="false"
+>
+  เมนู
+</button>
+
+<nav
+  class="tickets-navigation"
+  id="ticketsNavigation"
+>
+
+  <a href="index.html">
+    หน้าแรก
+  </a>
+
+  <a href="events.html?mode=live">
+    LIVE CONCERT
+  </a>
+
+  <a href="events.html?mode=replay">
+    REPLAY CONCERT
+  </a>
+
+  <a href="index.html#packages">
+    แพ็กเกจ
+  </a>
+
+  <a href="index.html#contact">
+    ติดต่อ
+  </a>
+
+</nav>
 
     </header>
 
@@ -3100,6 +3298,89 @@ window.addEventListener(
 
 loadConcerts();
 
+</script>
+
+<script>
+  (() => {
+    const menuButton =
+      document.getElementById(
+        "ticketsMenuButton"
+      );
+
+    const navigation =
+      document.getElementById(
+        "ticketsNavigation"
+      );
+
+    if (
+      !menuButton ||
+      !navigation
+    ) {
+      return;
+    }
+
+    const closeMenu = () => {
+      navigation.classList.remove(
+        "open"
+      );
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+    };
+
+    menuButton.addEventListener(
+      "click",
+      event => {
+        event.stopPropagation();
+
+        const isOpen =
+          navigation.classList.toggle(
+            "open"
+          );
+
+        menuButton.setAttribute(
+          "aria-expanded",
+          String(isOpen)
+        );
+      }
+    );
+
+    navigation
+      .querySelectorAll("a")
+      .forEach(link => {
+        link.addEventListener(
+          "click",
+          closeMenu
+        );
+      });
+
+    document.addEventListener(
+      "click",
+      event => {
+        if (
+          !navigation.contains(
+            event.target
+          ) &&
+          !menuButton.contains(
+            event.target
+          )
+        ) {
+          closeMenu();
+        }
+      }
+    );
+
+    document.addEventListener(
+      "keydown",
+      event => {
+        if (event.key === "Escape") {
+          closeMenu();
+        }
+      }
+    );
+  })();
 </script>
 
 </body>
