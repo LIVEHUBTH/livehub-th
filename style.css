@@ -177,7 +177,7 @@ nav a.active {
   position: relative;
   z-index: 1;
   background-image: url("background-hero.PNG");
-  background-position: 90% 60%;
+  background-position: 90% 70%;
   background-size: cover;
   background-repeat: no-repeat;
 }
