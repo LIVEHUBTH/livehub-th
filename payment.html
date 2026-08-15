@@ -12,7 +12,7 @@
 
   <link
     rel="stylesheet"
-    href="style.css?v=19"
+    href="style.css?v=20"
   >
   <style>
     .payment-page {
@@ -278,6 +278,89 @@
 
 #paymentNavigation a:last-child {
   border-bottom: 0;
+}
+
+/* ========================================
+   LIVE CONCERT SHARED STAGE BACKGROUND
+======================================== */
+
+body {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background: #050505 !important;
+}
+
+/* ภาพเวทีเหมือนหน้า LIVE CONCERT */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+
+  background-image:
+    url("background-hero.PNG");
+
+  background-repeat:
+    no-repeat;
+
+  background-position:
+    center right;
+
+  background-size:
+    cover;
+}
+
+/* ชั้นสีดำโปร่ง เพื่อให้อ่านข้อความง่าย */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(5, 5, 5, 0.97) 0%,
+      rgba(5, 5, 5, 0.88) 38%,
+      rgba(5, 5, 5, 0.68) 67%,
+      rgba(5, 5, 5, 0.50) 100%
+    );
+}
+
+/* ให้พื้นที่รอบเนื้อหาโปร่ง เห็นเวทีด้านหลัง */
+.page,
+.payment-page {
+  background:
+    transparent !important;
+}
+
+/* iPad */
+@media (max-width: 900px) {
+  body::before {
+    background-position:
+      64% center;
+  }
+
+  body::after {
+    background:
+      rgba(5, 5, 5, 0.66);
+  }
+}
+
+/* โทรศัพท์ */
+@media (max-width: 600px) {
+  body::before {
+    background-position:
+      70% center;
+  }
+
+  body::after {
+    background:
+      rgba(5, 5, 5, 0.72);
+  }
 }
   </style>
 </head>
