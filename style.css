@@ -1204,3 +1204,42 @@ nav a.active {
     scroll-snap-stop: always;
   }
 }
+/* =================================
+   MOBILE + IPAD HEADER MENU POSITION
+================================= */
+
+@media (max-width: 1024px) {
+  header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .site-logo {
+    min-width: 0;
+  }
+
+  .mobile-menu-button {
+    width: auto;
+    min-width: 100px;
+    margin-top: 0;
+    padding: 11px 15px;
+    justify-self: end;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  #mainNavigation {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .mobile-menu-button {
+    min-width: 88px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+}
