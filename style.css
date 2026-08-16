@@ -2215,3 +2215,14 @@ header {
       );
   }
 }
+/* ทำ TH ในโลโก้ให้เล็กเหมือนหน้าแรก */
+.site-logo-name .logo-th,
+.brand-main .logo-th {
+  display: inline-block;
+  margin-left: 3px;
+  font-size: 0.58em !important;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+  vertical-align: 0.08em;
+}
