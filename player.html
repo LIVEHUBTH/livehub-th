@@ -368,6 +368,60 @@ body::after {
     background: rgba(5, 5, 7, 0.70) !important;
   }
 }
+
+/* โลโก้แบบไม่มีกรอบ */
+.header {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.site-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 13px;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.site-logo-image {
+  width: 58px;
+  height: auto;
+  object-fit: contain;
+}
+
+.site-logo-name {
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.site-logo-name span {
+  color: #ff0783;
+}
+
+.site-logo-subtitle {
+  margin-top: 7px;
+  color: #b5b5bb;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+}
+
+@media (max-width: 700px) {
+  .site-logo-image {
+    width: 48px;
+  }
+
+  .site-logo-name {
+    font-size: 23px;
+  }
+
+  .site-logo-subtitle {
+    font-size: 10px;
+  }
+}
   </style>
 </head>
 
@@ -377,15 +431,27 @@ body::after {
 
     <header class="header">
 
-      <div>
-        <div class="brand">
-          LIVE <span>HUB TH</span>
-        </div>
+      <a
+  href="index.html"
+  class="site-logo"
+  aria-label="กลับหน้าแรก"
+>
+  <img
+    src="logo.PNG"
+    alt="LIVEHUB TH Logo"
+    class="site-logo-image"
+  >
 
-        <div class="tagline">
-          LIVE CONCERTS & EVENTS
-        </div>
-      </div>
+  <div class="site-logo-text">
+    <div class="site-logo-name">
+      LIVE<span>HUB TH</span>
+    </div>
+
+    <div class="site-logo-subtitle">
+      LIVE CONCERTS & EVENTS
+    </div>
+  </div>
+</a>
 
       <a
         class="back-link"
