@@ -1169,6 +1169,154 @@ body::after {
       rgba(5, 5, 5, 0.74);
   }
 }
+
+/* =================================
+   TRANSPARENT TICKETS LAYOUT
+================================= */
+
+/* ล็อกพื้นหลัง ไม่ให้เลื่อนตามเนื้อหา */
+body::before,
+body::after {
+  position: fixed !important;
+}
+
+/* เอากรอบและเส้นยาวของส่วนหลักออก */
+.hero,
+.section,
+.concert-card {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* กล่องหัวข้อโปร่งใส อ่านข้อความชัด */
+.hero {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(20, 3, 12, 0.48),
+      rgba(5, 5, 5, 0.36)
+    ) !important;
+
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* พื้นที่รายการคอนเสิร์ตโปร่งใส */
+.section {
+  background:
+    rgba(5, 5, 5, 0.30) !important;
+
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* เอาเส้นกลางระหว่างภาพกับข้อความออก */
+.concert-card {
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+/* ทำมุมภาพปกโค้ง */
+.concert-cover {
+  overflow: hidden !important;
+  border: none !important;
+  border-radius: 24px !important;
+  box-shadow:
+    0 18px 45px
+    rgba(0, 0, 0, 0.28);
+}
+
+.concert-cover img {
+  display: block;
+  width: 100%;
+  border-radius: 24px !important;
+}
+
+/* กล่องข้อความใต้ภาพโปร่งใส */
+.concert-content {
+  margin-top: 14px;
+  padding: 24px !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(5, 5, 7, 0.64),
+      rgba(10, 3, 8, 0.46)
+    ) !important;
+
+  border: none !important;
+  border-radius: 22px;
+
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* กล่องแพ็กเกจโปร่งใส แต่ข้อความยังชัด */
+.package-card {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(10, 10, 13, 0.70),
+      rgba(18, 5, 12, 0.48)
+    ) !important;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.16) !important;
+
+  box-shadow: none !important;
+
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* เมื่อเลือกแพ็กเกจ ให้คงเส้นชมพู */
+.package-card.selected {
+  border-color:
+    var(--pink) !important;
+
+  box-shadow:
+    0 0 0 2px
+    rgba(255, 7, 131, 0.10) !important;
+}
+
+/* ส่วนชำระเงินและกล่องข้อมูลโปร่งใส */
+.selected-summary,
+.session-section,
+.payment-qr-card,
+.payment-notice,
+.slip-preview {
+  background:
+    rgba(7, 7, 9, 0.66) !important;
+
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* ปรับโทรศัพท์ */
+@media (max-width: 600px) {
+  .hero,
+  .section {
+    background:
+      rgba(5, 5, 5, 0.42) !important;
+  }
+
+  .concert-cover,
+  .concert-cover img {
+    border-radius: 18px !important;
+  }
+
+  .concert-content {
+    margin-top: 10px;
+    padding: 18px !important;
+    border-radius: 18px;
+  }
+
+  .package-card {
+    background:
+      rgba(8, 8, 10, 0.72) !important;
+  }
+}
   </style>
 </head>
 
