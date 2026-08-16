@@ -439,6 +439,78 @@ body::after {
     white-space: nowrap;
   }
 }
+
+/* ปรับส่วนโลโก้และปุ่มให้สมดุลบนมือถือ */
+.header {
+  gap: 10px;
+}
+
+.site-logo {
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 10px;
+}
+
+.site-logo-image {
+  width: 52px;
+  flex: 0 0 52px;
+}
+
+.site-logo-text {
+  min-width: 0;
+}
+
+.site-logo-name {
+  font-size: 25px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.site-logo-subtitle {
+  margin-top: 7px;
+  font-size: 9px;
+  line-height: 1.2;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.back-link {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .header {
+    align-items: center;
+    gap: 8px;
+  }
+
+  .site-logo {
+    gap: 8px;
+  }
+
+  .site-logo-image {
+    width: 44px;
+    flex-basis: 44px;
+  }
+
+  .site-logo-name {
+    font-size: 20px;
+  }
+
+  .site-logo-subtitle {
+    margin-top: 6px;
+    font-size: 8px;
+    letter-spacing: 0.7px;
+  }
+
+  .back-link {
+    min-width: 128px;
+    padding: 11px 10px;
+    font-size: 13px;
+  }
+}
   </style>
 </head>
 
