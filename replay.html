@@ -1690,83 +1690,8 @@
     font-size: 15px;
   }
 }
-
-/* REPLAY – พื้นหลังและกรอบโปร่งใสเหมือนหน้าชำระเงิน */
-body::before,
-body::after {
-  position: absolute !important;
-  min-height: 100%;
-}
-
-/* คงกรอบหัวข้อ รับชม REPLAY */
-.hero {
-  background: rgba(5, 5, 7, 0.62) !important;
-  border: 1px solid rgba(255, 255, 255, 0.20) !important;
-  box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.35),
-    inset 0 0 35px rgba(255, 7, 131, 0.025) !important;
-  backdrop-filter: blur(1.5px);
-  -webkit-backdrop-filter: blur(1.5px);
-}
-
-/* คงกรอบนอกส่วน REPLAY CONCERT */
-.section {
-  background: rgba(5, 5, 7, 0.62) !important;
-  border: 1px solid rgba(255, 255, 255, 0.20) !important;
-  box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.35),
-    inset 0 0 35px rgba(255, 7, 131, 0.025) !important;
-  backdrop-filter: blur(1.5px);
-  -webkit-backdrop-filter: blur(1.5px);
-}
-
-/* กล่องการ์ดคอนเสิร์ตให้เห็นเวทีเล็กน้อย */
-.concert-card {
-  background: rgba(5, 5, 7, 0.70) !important;
-}
-
-/* โทรศัพท์ */
-@media (max-width: 600px) {
-  .hero,
-  .section {
-    background: rgba(5, 5, 7, 0.67) !important;
-  }
-}
-
-/* แสดงภาพเวทีให้ชัดเหมือนหน้าชำระเงิน */
-body::before {
-  content: "" !important;
-  position: absolute !important;
-  inset: 0 !important;
-  min-height: 100% !important;
-  background-image: url("background-hero.PNG") !important;
-  background-repeat: no-repeat !important;
-  background-size: cover !important;
-  background-position: 64% top !important;
-  opacity: 1 !important;
-}
-
-/* ชั้นดำจางเพื่อให้ข้อความอ่านง่าย */
-body::after {
-  content: "" !important;
-  position: absolute !important;
-  inset: 0 !important;
-  min-height: 100% !important;
-  background: rgba(5, 5, 5, 0.42) !important;
-}
-
-/* เอากรอบกลางที่ครอบรายการคอนเสิร์ตออก */
-.section {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
   </style>
+<link rel="stylesheet" href="style.css?v=20">
 </head>
 
 <body>
