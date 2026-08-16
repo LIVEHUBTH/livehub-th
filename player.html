@@ -422,6 +422,23 @@ body::after {
     font-size: 10px;
   }
 }
+
+/* ปรับปุ่มออกจากการรับชมบนโทรศัพท์ */
+.back-link {
+  flex: 0 0 auto;
+  min-width: 190px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .back-link {
+    min-width: 142px;
+    padding: 12px 14px;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+}
   </style>
 </head>
 
