@@ -362,6 +362,43 @@ body::after {
       rgba(5, 5, 5, 0.72);
   }
 }
+
+/* PAYMENT – กรอบโปร่งใสและพื้นหลังเลื่อนตามหน้า */
+body::before,
+body::after {
+  position: absolute !important;
+  min-height: 100%;
+}
+
+/* คงกรอบหลัก แต่มองเห็นเวทีด้านหลัง */
+.payment-card {
+  background: rgba(5, 5, 7, 0.62) !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.35),
+    inset 0 0 35px rgba(255, 7, 131, 0.025) !important;
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+}
+
+/* กล่องแพ็กเกจให้โปร่งเล็กน้อย */
+.selected-package {
+  background: rgba(7, 7, 9, 0.68) !important;
+}
+
+/* กล่องแจ้งเตือนยังอ่านง่าย */
+.payment-notice,
+.line-notice,
+.notice {
+  background: rgba(38, 27, 4, 0.78) !important;
+}
+
+/* โทรศัพท์ */
+@media (max-width: 600px) {
+  .payment-card {
+    background: rgba(5, 5, 7, 0.67) !important;
+  }
+}
   </style>
 </head>
 
