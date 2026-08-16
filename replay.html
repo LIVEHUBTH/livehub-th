@@ -1732,6 +1732,28 @@ body::after {
     background: rgba(5, 5, 7, 0.67) !important;
   }
 }
+
+/* แสดงภาพเวทีให้ชัดเหมือนหน้าชำระเงิน */
+body::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  min-height: 100% !important;
+  background-image: url("background-hero.PNG") !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  background-position: 64% top !important;
+  opacity: 1 !important;
+}
+
+/* ชั้นดำจางเพื่อให้ข้อความอ่านง่าย */
+body::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  min-height: 100% !important;
+  background: rgba(5, 5, 5, 0.56) !important;
+}
   </style>
 </head>
 
