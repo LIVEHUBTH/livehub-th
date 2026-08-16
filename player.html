@@ -299,6 +299,75 @@
         grid-template-columns: 1fr;
       }
     }
+
+/* PLAYER — พื้นหลังเวทีแบบเดียวกับหน้าชำระเงิน */
+body {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background: #050505 !important;
+}
+
+/* ภาพเวทีเลื่อนตามหน้า */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  min-height: 100%;
+  background-image: url("background-hero.PNG");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 64% top;
+  pointer-events: none;
+}
+
+/* ชั้นสีดำจาง ช่วยให้อ่านข้อความง่าย */
+body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  min-height: 100%;
+  background: rgba(5, 5, 5, 0.52);
+  pointer-events: none;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+}
+
+/* กล่องโปร่งใส มองเห็นเวทีด้านหลัง */
+.header,
+.status-card,
+.concert-card,
+.player-shell {
+  background: rgba(5, 5, 7, 0.68) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.35),
+    inset 0 0 35px rgba(255, 20, 147, 0.025);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+}
+
+@media (max-width: 700px) {
+  body::before {
+    background-position: 70% top;
+  }
+
+  body::after {
+    background: rgba(5, 5, 5, 0.62);
+  }
+
+  .header,
+  .status-card,
+  .concert-card,
+  .player-shell {
+    background: rgba(5, 5, 7, 0.70) !important;
+  }
+}
   </style>
 </head>
 
