@@ -1317,6 +1317,89 @@ body::after {
       rgba(8, 8, 10, 0.72) !important;
   }
 }
+
+/* กรอบโปร่งใสแบบหน้า REPLAY */
+.hero,
+.section {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(8, 8, 10, 0.72),
+      rgba(8, 8, 10, 0.48)
+    ) !important;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.20) !important;
+
+  border-radius: 26px !important;
+
+  box-shadow:
+    0 18px 50px
+    rgba(0, 0, 0, 0.24) !important;
+
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* เว้นระยะกรอบรายการให้สมดุล */
+.section {
+  padding: 24px !important;
+}
+
+/* ภาพปกยังโค้งและไม่มีเส้นคั่น */
+.concert-card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.concert-cover,
+.concert-cover img {
+  border-radius: 24px !important;
+}
+
+.concert-cover {
+  overflow: hidden !important;
+}
+
+/* กล่องข้อมูลใต้รูปโปร่งใส */
+.concert-content {
+  margin-top: 14px;
+
+  background:
+    rgba(8, 8, 10, 0.58) !important;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12) !important;
+
+  border-radius: 22px !important;
+
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* มือถือ */
+@media (max-width: 600px) {
+  .hero,
+  .section {
+    border-radius: 20px !important;
+  }
+
+  .section {
+    padding: 16px !important;
+  }
+
+  .concert-cover,
+  .concert-cover img {
+    border-radius: 18px !important;
+  }
+
+  .concert-content {
+    border-radius: 18px !important;
+  }
+}
   </style>
 </head>
 
