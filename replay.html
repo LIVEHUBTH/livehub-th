@@ -1690,6 +1690,48 @@
     font-size: 15px;
   }
 }
+
+/* REPLAY – พื้นหลังและกรอบโปร่งใสเหมือนหน้าชำระเงิน */
+body::before,
+body::after {
+  position: absolute !important;
+  min-height: 100%;
+}
+
+/* คงกรอบหัวข้อ รับชม REPLAY */
+.hero {
+  background: rgba(5, 5, 7, 0.62) !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.35),
+    inset 0 0 35px rgba(255, 7, 131, 0.025) !important;
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+}
+
+/* คงกรอบนอกส่วน REPLAY CONCERT */
+.section {
+  background: rgba(5, 5, 7, 0.62) !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.35),
+    inset 0 0 35px rgba(255, 7, 131, 0.025) !important;
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+}
+
+/* กล่องการ์ดคอนเสิร์ตให้เห็นเวทีเล็กน้อย */
+.concert-card {
+  background: rgba(5, 5, 7, 0.70) !important;
+}
+
+/* โทรศัพท์ */
+@media (max-width: 600px) {
+  .hero,
+  .section {
+    background: rgba(5, 5, 7, 0.67) !important;
+  }
+}
   </style>
 </head>
 
